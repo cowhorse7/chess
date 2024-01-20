@@ -48,7 +48,8 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        board.getPiece(myPosition);
+        ArrayList<ChessMove> bishMoves = new ArrayList<ChessMove>();
+        bishMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1), null));
 //        ChessPosition northDiag = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
 //        ChessMove Bishop1 = new ChessMove(myPosition, northDiag, null);
         return new ArrayList<>();
