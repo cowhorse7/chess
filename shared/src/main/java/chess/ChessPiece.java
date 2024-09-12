@@ -11,7 +11,12 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
+    private final ChessGame.TeamColor pieceColor;
+    private final PieceType type;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -30,14 +35,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return type;
     }
 
     /**
@@ -59,14 +64,31 @@ public class ChessPiece {
                 break;
             case BISHOP:
                 while ((rowHold < 8) && (colHold < 8)){
-                    moves.add(myPosition, new ChessPosition(rowHold, colHold), null);
                     rowHold++;
                     colHold++;
-                }
-                while ((rowHold >= 0) && (colHold >= 0)){
-                    moves.add(myPosition, new ChessPosition(rowHold, colHold), null);
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold, colHold), null));
+}
+                rowHold = myPosition.getRow();
+                colHold = myPosition.getColumn();
+                while ((rowHold > 1) && (colHold > 1)){
                     rowHold--;
                     colHold--;
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold, colHold), null));
+}
+                rowHold = myPosition.getRow();
+                colHold = myPosition.getColumn();
+                while ((rowHold < 8) && (colHold > 1)){
+                    rowHold++;
+                    colHold--;
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold, colHold), null));
+}
+                rowHold = myPosition.getRow();
+                colHold = myPosition.getColumn();
+                while ((rowHold > 1) && (colHold < 8)){
+                    rowHold--;
+                    colHold++;
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold, colHold), null));
+
                 }
                 break;
             case KNIGHT:
