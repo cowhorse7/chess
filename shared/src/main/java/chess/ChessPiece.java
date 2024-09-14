@@ -32,6 +32,15 @@ public class ChessPiece {
         PAWN
     }
 
+//    public boolean pieceCheck(ChessBoard board, int row, int col, ChessPosition myPosition){
+//        ChessPosition holder = new ChessPosition(row, col);
+//        if (board.getPiece(holder)!= null) {
+//            if (board.getPiece(holder).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+//
+//            }
+//        }
+//    }
+
     /**
      * @return Which team this chess piece belongs to
      */
@@ -60,6 +69,30 @@ public class ChessPiece {
         int colHold = myPosition.getColumn();
         switch(piece){
             case KING:
+                if (rowHold + 1 < 8) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold), null));
+                    if (colHold + 1 < 8) {
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold + 1), null));
+                    }
+                    if (colHold - 1 > 0) {
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold - 1), null));
+                    }
+                }
+                if (rowHold - 1 > 0) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold), null));
+                    if (colHold - 1 > 0) {
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold - 1), null));
+                    }
+                    if (colHold + 1 < 8) {
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold + 1), null));
+                    }
+                }
+                if (colHold + 1 < 8) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold, colHold + 1), null));
+                }
+                if (colHold - 1 > 0) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold, colHold - 1), null));
+                }
                 break;
             case QUEEN:
                 break;
