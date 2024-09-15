@@ -32,14 +32,12 @@ public class ChessPiece {
         PAWN
     }
 
-//    public boolean pieceCheck(ChessBoard board, int row, int col, ChessPosition myPosition){
-//        ChessPosition holder = new ChessPosition(row, col);
-//        if (board.getPiece(holder)!= null) {
-//            if (board.getPiece(holder).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-//
-//            }
-//        }
-//    }
+    public boolean pieceCheck(ChessBoard board, ChessMove move){
+        if (board.getPiece(move.getEndPosition())!= null) {
+            return board.getPiece(move.getStartPosition()).getTeamColor() != board.getPiece(move.getEndPosition()).getTeamColor();
+        }
+        return true;
+    }
 
     /**
      * @return Which team this chess piece belongs to
@@ -69,28 +67,28 @@ public class ChessPiece {
         int colHold = myPosition.getColumn();
         switch(piece){
             case KING:
-                if (rowHold + 1 < 8) {
+                if (rowHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold), null))) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold), null));
-                    if (colHold + 1 < 8) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold + 1), null));
-                    }
-                    if (colHold - 1 > 0) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold - 1), null));
-                    }
                 }
-                if (rowHold - 1 > 0) {
+                if (rowHold + 1 < 8 && colHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold+1), null))) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold + 1), null));
+                }
+                if (rowHold + 1 < 8 && colHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold-1), null))) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold - 1), null));
+                }
+                if (rowHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold), null))) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold), null));
-                    if (colHold - 1 > 0) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold - 1), null));
-                    }
-                    if (colHold + 1 < 8) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold + 1), null));
-                    }
                 }
-                if (colHold + 1 < 8) {
+                if (rowHold - 1 > 0 && colHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold-1), null))) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold - 1), null));
+                }
+                if (rowHold - 1 > 0 && colHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold+1), null))) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold + 1), null));
+                }
+                if (colHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold, colHold+1), null))) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(rowHold, colHold + 1), null));
                 }
-                if (colHold - 1 > 0) {
+                if (colHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold, colHold-1), null))) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(rowHold, colHold - 1), null));
                 }
                 break;
@@ -150,7 +148,6 @@ public class ChessPiece {
                         break;
                     }
                     moves.add(new ChessMove(myPosition, holder, null));
-
                 }
                 break;
             case KNIGHT:
