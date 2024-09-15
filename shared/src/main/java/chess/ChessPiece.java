@@ -67,13 +67,13 @@ public class ChessPiece {
         int colHold = myPosition.getColumn();
         switch(piece){
             case KING:
-                if (rowHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold), null))) {
+                if (rowHold + 1 < 9 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold), null))) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold), null));
                 }
-                if (rowHold + 1 < 8 && colHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold+1), null))) {
+                if (rowHold + 1 < 9 && colHold + 1 < 9 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold+1), null))) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold + 1), null));
                 }
-                if (rowHold + 1 < 8 && colHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold-1), null))) {
+                if (rowHold + 1 < 9 && colHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold-1), null))) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold - 1), null));
                 }
                 if (rowHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold), null))) {
@@ -82,7 +82,7 @@ public class ChessPiece {
                 if (rowHold - 1 > 0 && colHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold-1), null))) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold - 1), null));
                 }
-                if (rowHold - 1 > 0 && colHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold+1), null))) {
+                if (rowHold - 1 > 0 && colHold + 1 < 9 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold+1), null))) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold + 1), null));
                 }
                 if (colHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold, colHold+1), null))) {
@@ -151,6 +151,38 @@ public class ChessPiece {
                 }
                 break;
             case KNIGHT:
+                if(rowHold + 2 < 9){
+                    if(colHold + 1 < 9 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+2, colHold+1), null))){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold+2, colHold+1), null));
+                    }
+                    if(colHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+2, colHold-1), null))){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold+2, colHold-1), null));
+                    }
+                }
+                if(rowHold - 2 > 0){
+                    if(colHold + 1 < 9 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-2, colHold+1), null))){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold-2, colHold+1), null));
+                    }
+                    if(colHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-2, colHold-1), null))){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold-2, colHold-1), null));
+                    }
+                }
+                if(colHold + 2 < 9){ //adding the equal sign made the last test pass, which is either a fluke, or I need to add the = to all the other tests, too
+                    if(rowHold + 1 < 9 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold+2), null))){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold+2), null));
+                    }
+                    if(rowHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold+2), null))){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold+2), null));
+                    }
+                }
+                if(colHold - 2 > 0){
+                    if(rowHold + 1 < 9 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold-2), null))){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold+1, colHold-2), null));
+                    }
+                    if(rowHold - 1 > 0 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold-2), null))){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold-1, colHold-2), null));
+                    }
+                }
                 break;
             case ROOK:
                 break;
