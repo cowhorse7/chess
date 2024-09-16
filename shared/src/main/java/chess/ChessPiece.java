@@ -189,20 +189,37 @@ public class ChessPiece {
                 break;
             case PAWN:
                 if(Objects.equals(board.getPiece(myPosition).getTeamColor().toString(), "WHITE")){
-                    if(rowHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold), null))){
+                    if(rowHold + 1 < 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold), null))) {
                         moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold), null));
-                    }
-                    if(rowHold == 2 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold + 2, colHold), null))) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 2, colHold), null));
+                        if (rowHold == 2 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold + 2, colHold), null))) {
+                            moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 2, colHold), null));
+                        }
                     }
                     if(rowHold + 1 == 8 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold), null))){
                         moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold), null));//FIXME: get user input for promotion piece
-                    }
+                    }//also add this bit to the below capture statements
                     if(rowHold + 1 < 9 && colHold + 1 < 9 && board.getPiece(new ChessPosition(rowHold + 1, colHold + 1)) != null && !Objects.equals(board.getPiece(new ChessPosition(rowHold + 1, colHold + 1)).getTeamColor().toString(), "WHITE")){
                         moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold + 1), null));
                     }
-                    if(rowHold + 1 < 9 && colHold - 1 < 9 && board.getPiece(new ChessPosition(rowHold + 1, colHold - 1)) != null && !Objects.equals(board.getPiece(new ChessPosition(rowHold + 1, colHold - 1)).getTeamColor().toString(), "WHITE")){
+                    if(rowHold + 1 < 9 && colHold - 1 > 0 && board.getPiece(new ChessPosition(rowHold + 1, colHold - 1)) != null && !Objects.equals(board.getPiece(new ChessPosition(rowHold + 1, colHold - 1)).getTeamColor().toString(), "WHITE")){
                         moves.add(new ChessMove(myPosition, new ChessPosition(rowHold + 1, colHold - 1), null));
+                    }
+                }
+                if(Objects.equals(board.getPiece(myPosition).getTeamColor().toString(), "BLACK")){
+                    if(rowHold - 1 > 1 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold), null))) {
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold), null));
+                        if (rowHold == 7 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold - 2, colHold), null))) {
+                            moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 2, colHold), null));
+                        }
+                    }
+                    if(rowHold - 1 == 1 && pieceCheck(board, new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold), null))){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold), null));//FIXME: get user input for promotion piece
+                    }
+                    if(rowHold - 1 > 0 && colHold + 1 < 9 && board.getPiece(new ChessPosition(rowHold - 1, colHold + 1)) != null && !Objects.equals(board.getPiece(new ChessPosition(rowHold - 1, colHold + 1)).getTeamColor().toString(), "BLACK")){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold + 1), null));
+                    }
+                    if(rowHold - 1 > 0 && colHold - 1 > 0 && board.getPiece(new ChessPosition(rowHold - 1, colHold - 1)) != null && !Objects.equals(board.getPiece(new ChessPosition(rowHold - 1, colHold - 1)).getTeamColor().toString(), "BLACK")){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(rowHold - 1, colHold - 1), null));
                     }
                 }
                 break;
