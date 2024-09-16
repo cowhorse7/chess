@@ -53,6 +53,11 @@ public class ChessBoard {
         addPiece(new ChessPosition(8,5),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
         for (int i = 1; i < 9; i++){
             addPiece(new ChessPosition(7,i),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+//            addPiece(new ChessPosition(6, i), null);
+//            addPiece(new ChessPosition(5, i), null);
+//            addPiece(new ChessPosition(4, i), null);
+//            addPiece(new ChessPosition(3, i), null);
+            addPiece(new ChessPosition(2, i),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
         }
 
         addPiece(new ChessPosition(1,1),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
@@ -63,9 +68,6 @@ public class ChessBoard {
         addPiece(new ChessPosition(1,6),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
         addPiece(new ChessPosition(1,4),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
         addPiece(new ChessPosition(1,5),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
-        for (int i = 1; i < 9; i++){
-            addPiece(new ChessPosition(2,i),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-        }
     }
 
     @Override
@@ -73,12 +75,12 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Arrays.equals(spaces, that.spaces);
+        return Arrays.deepEquals(spaces, that.spaces);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(spaces);
+        return Arrays.deepHashCode(spaces);
     }
 
     @Override
