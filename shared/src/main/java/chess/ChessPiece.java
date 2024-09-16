@@ -198,6 +198,53 @@ public class ChessPiece {
                 }
                 break;
             case ROOK:
+                while (rowHold < 8){
+                    rowHold++;
+                    ChessPosition holder = new ChessPosition(rowHold, colHold);
+                    if (board.getPiece(holder)!= null){
+                        if(board.getPiece(holder).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
+                            moves.add(new ChessMove(myPosition, holder, null));
+                        }
+                        break;
+                    }
+                    moves.add(new ChessMove(myPosition, holder, null));
+                }
+                rowHold = myPosition.getRow();
+                while (rowHold > 1){
+                    rowHold--;
+                    ChessPosition holder = new ChessPosition(rowHold, colHold);
+                    if (board.getPiece(holder)!= null){
+                        if(board.getPiece(holder).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
+                            moves.add(new ChessMove(myPosition, holder, null));
+                        }
+                        break;
+                    }
+                    moves.add(new ChessMove(myPosition, holder, null));
+                }
+                rowHold = myPosition.getRow();
+                while (colHold > 1){
+                    colHold--;
+                    ChessPosition holder = new ChessPosition(rowHold, colHold);
+                    if (board.getPiece(holder)!= null){
+                        if(board.getPiece(holder).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
+                            moves.add(new ChessMove(myPosition, holder, null));
+                        }
+                        break;
+                    }
+                    moves.add(new ChessMove(myPosition, holder, null));
+                }
+                colHold = myPosition.getColumn();
+                while (colHold < 8){
+                    colHold++;
+                    ChessPosition holder = new ChessPosition(rowHold, colHold);
+                    if (board.getPiece(holder)!= null){
+                        if(board.getPiece(holder).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
+                            moves.add(new ChessMove(myPosition, holder, null));
+                        }
+                        break;
+                    }
+                    moves.add(new ChessMove(myPosition, holder, null));
+                }
                 break;
             case PAWN:
                 if(Objects.equals(board.getPiece(myPosition).getTeamColor().toString(), "WHITE")){
