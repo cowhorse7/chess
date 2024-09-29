@@ -70,6 +70,7 @@ public class ChessGame {
         ChessPiece mover = board.getPiece(move.getStartPosition());
         board.makeNullSpace(move.getStartPosition());
         if (board.getPiece(move.getEndPosition()) != null){ board.makeNullSpace(move.getEndPosition());}
+        //if promotionpiece != null, reassign mover to a new ChessPiece with promotionPiece as type and same color as color
         board.addPiece(move.getEndPosition(), mover);
     }
 
@@ -83,8 +84,6 @@ public class ChessGame {
         TeamColor gameTime = getTeamTurn();
         if (board.getPiece(move.getStartPosition()).getTeamColor() != gameTime){ throw new InvalidMoveException();}
         //if move in validmoves(move.startposition): movePiece
-        //note that a chessMove has start,end, and promPiece
-        //if promPiece!=null, change pieceType
         if (gameTime == TeamColor.WHITE){setTeamTurn(TeamColor.BLACK);}
         else {setTeamTurn(TeamColor.WHITE);}
     }

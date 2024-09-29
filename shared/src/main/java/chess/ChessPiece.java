@@ -54,16 +54,7 @@ public class ChessPiece {
         }
         return false;
     }
-//    public boolean spaceCheckWhile(int row, int col){
-//        if (row > 0 && row < 9 && col > 0 && col < 9){
-//            return true;
-//        }
-//        return false;
-//    }
 
-    //    public boolean captureStop(ChessBoard board, ChessPosition start, ChessPosition end){
-//        if (board.getPiece(end).pieceColor
-//    }
     public boolean pieceCheck(ChessBoard board, ChessPosition start, ChessPosition end){
         if(board.getPiece(start).type == PieceType.PAWN){
             if (board.getPiece(end) != null){
