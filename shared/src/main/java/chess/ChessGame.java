@@ -66,6 +66,13 @@ public class ChessGame {
         return vMoves;
     }
 
+    public void movePiece(ChessMove move){
+        ChessPiece mover = board.getPiece(move.getStartPosition());
+        board.makeNullSpace(move.getStartPosition());
+        if (board.getPiece(move.getEndPosition()) != null){ board.makeNullSpace(move.getEndPosition());}
+        board.addPiece(move.getEndPosition(), mover);
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -74,7 +81,10 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         TeamColor gameTime = getTeamTurn();
-        //after making move
+        if (board.getPiece(move.getStartPosition()).getTeamColor() != gameTime){ throw new InvalidMoveException();}
+        //if move in validmoves(move.startposition): movePiece
+        //note that a chessMove has start,end, and promPiece
+        //if promPiece!=null, change pieceType
         if (gameTime == TeamColor.WHITE){setTeamTurn(TeamColor.BLACK);}
         else {setTeamTurn(TeamColor.WHITE);}
     }

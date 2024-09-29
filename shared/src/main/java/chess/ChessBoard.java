@@ -10,7 +10,7 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] spaces = new ChessPiece[8][8];
+    private final ChessPiece[][] spaces = new ChessPiece[8][8];
     public ChessBoard() {
 
     }
@@ -23,6 +23,10 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         spaces[position.getRow()-1][position.getColumn()-1]=piece;
+    }
+
+    public void makeNullSpace(ChessPosition position) {
+        spaces[position.getRow()-1][position.getColumn()-1]=null;
     }
 
     /**
