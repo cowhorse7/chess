@@ -12,12 +12,17 @@ import java.util.Collection;
 public class ChessGame {
 
     public ChessBoard board;
-    public TeamColor turn;
+    private TeamColor turn;
+
+    private boolean checkW;
+    private boolean checkB;
     public ChessGame() {
         board=new ChessBoard();
         setBoard(board);
         turn = TeamColor.WHITE;
         setTeamTurn(TeamColor.WHITE);
+        checkW = false;
+        checkB = false;
     }
 
     /**
@@ -95,7 +100,19 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (teamColor == TeamColor.WHITE){
+            if (checkW==true){
+                return true;
+            }
+            else{return false;}
+        }
+        if (teamColor == TeamColor.BLACK){
+            if (checkB==true){
+                return true;
+            }
+            else{return false;}
+        }
+        return false;
     }
 
     /**
