@@ -10,9 +10,17 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
-    private final ChessPiece[][] spaces = new ChessPiece[8][8];
+    private ChessPiece[][] spaces = new ChessPiece[8][8];
     public ChessBoard() {
 
+    }
+    public ChessBoard(ChessBoard c){
+        this.spaces = new ChessPiece[8][8];
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                this.spaces[i][j] = c.spaces[i][j];
+            }
+        }
     }
 
     /**

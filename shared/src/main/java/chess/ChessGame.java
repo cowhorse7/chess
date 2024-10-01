@@ -46,13 +46,14 @@ public class ChessGame {
     }
 
     private boolean forwardMove(ChessMove move){
-        ChessBoard board2 = board;
+        ChessBoard boardCopy = new ChessBoard(board);
+        ChessGame.TeamColor team = board.getPiece(move.getStartPosition()).getTeamColor();
         movePiece(move); //should this be makeMove?
-        if(isInCheck(board2.getPiece(move.getStartPosition()).getTeamColor())){
-            board = board2;
+        if(isInCheck(team)){
+            board = boardCopy;
             return false;
         }
-        board = board2;
+        board = boardCopy;
         return true;
     }
 
@@ -102,16 +103,10 @@ public class ChessGame {
         ChessGame.TeamColor team = board.getPiece(move.getStartPosition()).getTeamColor();
         if(isInCheck(team) && !forwardMove(move)){throw new InvalidMoveException();}
         Collection<ChessMove> vMoves = validMoves(move.getStartPosition());
-        if (vMoves.isEmpty()){throw new InvalidMoveException();}
+        if (vMoves.isEmpty() || !vMoves.contains(move)){throw new InvalidMoveException();}
+
         TeamColor gameTime = getTeamTurn();
         if (board.getPiece(move.getStartPosition()).getTeamColor() != gameTime){ throw new InvalidMoveException(); }
-        for (ChessMove e : vMoves){
-            if (move == e){
-                movePiece(move);
-                break;
-            }
-            else{throw new InvalidMoveException();}
-        }
 
         if (gameTime == TeamColor.WHITE){setTeamTurn(TeamColor.BLACK);}
         else {setTeamTurn(TeamColor.WHITE);}
