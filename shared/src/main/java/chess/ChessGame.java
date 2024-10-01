@@ -47,7 +47,7 @@ public class ChessGame {
 
     private boolean forwardMove(ChessMove move){
         ChessBoard board2 = board;
-        movePiece(move);
+        movePiece(move); //should this be makeMove?
         if(isInCheck(board2.getPiece(move.getStartPosition()).getTeamColor())){
             board = board2;
             return false;
@@ -74,8 +74,8 @@ public class ChessGame {
                     rem.add(e);
                 }
         }
-        for(int i = 0; i < rem.size(); i++){
-            vMoves.remove(rem.get(i));
+        for (ChessMove e : rem) {
+            vMoves.remove(e);
         }
         return vMoves;
     }
@@ -98,10 +98,21 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if(board.getPiece(move.getStartPosition()) == null){ throw new InvalidMoveException(); }
+        ChessGame.TeamColor team = board.getPiece(move.getStartPosition()).getTeamColor();
+        if(isInCheck(team) && !forwardMove(move)){throw new InvalidMoveException();}
+        Collection<ChessMove> vMoves = validMoves(move.getStartPosition());
+        if (vMoves.isEmpty()){throw new InvalidMoveException();}
         TeamColor gameTime = getTeamTurn();
-        if (board.getPiece(move.getStartPosition()).getTeamColor() != gameTime){ throw new InvalidMoveException();}
-        //if move in validmoves(move.startposition): movePiece // do I need to check for invalid moves? Is throwing exception in above line valid??
-        movePiece(move);
+        if (board.getPiece(move.getStartPosition()).getTeamColor() != gameTime){ throw new InvalidMoveException(); }
+        for (ChessMove e : vMoves){
+            if (move == e){
+                movePiece(move);
+                break;
+            }
+            else{throw new InvalidMoveException();}
+        }
+
         if (gameTime == TeamColor.WHITE){setTeamTurn(TeamColor.BLACK);}
         else {setTeamTurn(TeamColor.WHITE);}
     }
@@ -114,7 +125,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         if (teamColor == TeamColor.WHITE){
-
+            //check if any black pieces can reach white king
         }
         if (teamColor == TeamColor.BLACK){
 
@@ -129,7 +140,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //call isInCheck(teamColor) and see if validMoves is empty [for all pieces]--return true of both are true
+        //if(isInCheck(teamColor) && validMoves is empty [for all pieces]){return true;}
         throw new RuntimeException("Not implemented");
     }
 
@@ -141,7 +152,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        //if !isInCheck(teamColor) and validMoves are empty for all remaining pieces, return true
+        //if (!isInCheck(teamColor) && validMoves are empty for all remaining pieces){ return true;}
         throw new RuntimeException("Not implemented");
     }
 
