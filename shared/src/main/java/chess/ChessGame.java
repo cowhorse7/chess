@@ -14,15 +14,11 @@ public class ChessGame {
     public ChessBoard board;
     private TeamColor turn;
 
-    private boolean checkW;
-    private boolean checkB;
     public ChessGame() {
         board=new ChessBoard();
         setBoard(board);
         turn = TeamColor.WHITE;
         setTeamTurn(TeamColor.WHITE);
-        checkW = false;
-        checkB = false;
     }
 
     /**
@@ -49,6 +45,17 @@ public class ChessGame {
         BLACK
     }
 
+    private boolean forwardMove(ChessMove move){
+        ChessBoard board2 = board;
+        movePiece(move);
+        if(isInCheck(board2.getPiece(move.getStartPosition()).getTeamColor())){
+            board = board2;
+            return false;
+        }
+        board = board2;
+        return true;
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -61,13 +68,15 @@ public class ChessGame {
             return null;
         }
         Collection<ChessMove> vMoves = board.getPiece(startPosition).pieceMoves(board, startPosition);
-//        ArrayList<int>rem = new ArrayList<int>();
-//        for (int i = 0; i < vMoves.size(); i++){
-//            if(vMoves[i]){
-//                //if move causes check, add index val to rem
-//            }
-//        }
-        //iterate through rem and remove those index vals from vMoves
+        ArrayList<ChessMove>rem = new ArrayList<ChessMove>();
+        for (ChessMove e : vMoves){
+                if(!forwardMove(e)){
+                    rem.add(e);
+                }
+        }
+        for(int i = 0; i < rem.size(); i++){
+            vMoves.remove(rem.get(i));
+        }
         return vMoves;
     }
 
@@ -75,7 +84,10 @@ public class ChessGame {
         ChessPiece mover = board.getPiece(move.getStartPosition());
         board.makeNullSpace(move.getStartPosition());
         if (board.getPiece(move.getEndPosition()) != null){ board.makeNullSpace(move.getEndPosition());}
-        //if promotionpiece != null, reassign mover to a new ChessPiece with promotionPiece as type and same color as color
+        if (mover.getPieceType() == ChessPiece.PieceType.PAWN && (move.getEndPosition().getRow()==8 || move.getEndPosition().getRow()==1)){
+            ChessPiece.PieceType upgrade = move.getPromotionPiece();
+            mover = new ChessPiece(mover.getTeamColor(), upgrade);
+        }
         board.addPiece(move.getEndPosition(), mover);
     }
 
@@ -88,7 +100,8 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         TeamColor gameTime = getTeamTurn();
         if (board.getPiece(move.getStartPosition()).getTeamColor() != gameTime){ throw new InvalidMoveException();}
-        //if move in validmoves(move.startposition): movePiece
+        //if move in validmoves(move.startposition): movePiece // do I need to check for invalid moves? Is throwing exception in above line valid??
+        movePiece(move);
         if (gameTime == TeamColor.WHITE){setTeamTurn(TeamColor.BLACK);}
         else {setTeamTurn(TeamColor.WHITE);}
     }
@@ -101,16 +114,10 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         if (teamColor == TeamColor.WHITE){
-            if (checkW==true){
-                return true;
-            }
-            else{return false;}
+
         }
         if (teamColor == TeamColor.BLACK){
-            if (checkB==true){
-                return true;
-            }
-            else{return false;}
+
         }
         return false;
     }
@@ -122,6 +129,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        //call isInCheck(teamColor) and see if validMoves is empty [for all pieces]--return true of both are true
         throw new RuntimeException("Not implemented");
     }
 
@@ -133,6 +141,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        //if !isInCheck(teamColor) and validMoves are empty for all remaining pieces, return true
         throw new RuntimeException("Not implemented");
     }
 
