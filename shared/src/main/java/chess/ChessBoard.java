@@ -92,7 +92,7 @@ public class ChessBoard {
     @Override
     public String toString() {
         return "ChessBoard{" +
-                "spaces=" + Arrays.toString(spaces) +
+                "spaces=" + Arrays.deepToString(spaces) +
                 '}';
     }
 }
