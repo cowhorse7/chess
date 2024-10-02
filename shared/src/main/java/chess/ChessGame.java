@@ -120,15 +120,36 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //declare arrary of ChessPositions (which will hold the endPositions of the opposite team's valid chessmoves)
-        //could also be of chessmoves
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                //this.spaces[i][j] = c.spaces[i][j];
+        ArrayList<ChessPosition>enemyEndSquares = new ArrayList<>();
+        ChessPosition kingSpot = null;
+        //iterate through every space on the board. If enemy, collect the pieceMoves
+        for(int i = 1; i < 9; i++){
+            for(int j = 1; j < 9; j++){
+                ChessPosition currentSquare = new ChessPosition(i, j);
+                //checks if a given space contains a teammate or nothing so that we can handle enemy pieces in else{}
+                if (cBoard.getPiece(currentSquare) == null) {continue;}
+                else if (cBoard.getPiece(currentSquare).getTeamColor() == teamColor){
+                    if(cBoard.getPiece(currentSquare).getPieceType()== ChessPiece.PieceType.KING){
+                        kingSpot = currentSquare;
+                    }
+                    continue;
+                }
+                else{
+                    Collection<ChessMove>enemyMoves = cBoard.getPiece(currentSquare).pieceMoves(cBoard, currentSquare);
+                    for(ChessMove e : enemyMoves){
+                        enemyEndSquares.add(e.getEndPosition());
+                    }
+                }
             }
-        }//should be able to iterate through every space on the board. If null or matching teamColor, continue. else, collect the pieceMoves and add them to [array]
-        //when you find the king of teamColor, save the space it is on in a ChessPosition variable.
-        //iterate through [array]. If the king's position is in the array of moves, return true.
+        }
+        if (kingSpot == null){
+            return false;
+        }
+        for(ChessPosition p : enemyEndSquares){
+            if (p.equals(kingSpot)){
+                return true;
+            }
+        }
         return false;
     }
 
