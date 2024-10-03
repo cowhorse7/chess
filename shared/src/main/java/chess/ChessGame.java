@@ -153,6 +153,22 @@ public class ChessGame {
         return false;
     }
 
+    public boolean noRemainingMoves(TeamColor teamColor){
+        ArrayList<ChessMove>vMoves = new ArrayList<>();
+        for(int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition currentSquare = new ChessPosition(i, j);
+                if (cBoard.getPiece(currentSquare) == null || cBoard.getPiece(currentSquare).getTeamColor() != teamColor) {
+                    continue;
+                } else {
+                    Collection<ChessMove>possibleMoves = validMoves(currentSquare);
+                    vMoves.addAll(possibleMoves);
+                }
+            }
+        }
+        return vMoves.isEmpty();
+    }
+
     /**
      * Determines if the given team is in checkmate
      *
@@ -160,8 +176,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //if(isInCheck(teamColor) && validMoves is empty [for all pieces]){return true;}
-        throw new RuntimeException("Not implemented");
+        return isInCheck(teamColor) && noRemainingMoves(teamColor);
     }
 
     /**
@@ -172,8 +187,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        //if (!isInCheck(teamColor) && validMoves are empty for all remaining pieces){ return true;}
-        throw new RuntimeException("Not implemented");
+        return !isInCheck(teamColor) && noRemainingMoves(teamColor);
     }
 
     /**
