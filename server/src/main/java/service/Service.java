@@ -5,6 +5,13 @@ import dataaccess.*;
 public class Service {
     private final UserDAO dataAccess;
     public Service(UserDAO dataAccess) {this.dataAccess = dataAccess;}
+    public RegisterResult register(RegisterRequest request){return null;}
+    public LoginResult login(LoginRequest request){return null;}
+    public void logout(LogoutRequest request){}
+    public void join(JoinGameRequest request){}
+    public CreateGameResult createGame(CreateGameRequest request){return null;}
+    public ListGamesResult list(ListGamesRequest request){return null;}
+    public void clear(){}
 
     public UserData registerUser(UserData newUser) throws ServiceException {
         if (dataAccess.getUser(newUser.username()) != null) {
