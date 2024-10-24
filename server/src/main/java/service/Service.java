@@ -3,8 +3,8 @@ package service;
 import dataaccess.*;
 
 public class Service {
-    private final DataAccess dataAccess;
-    public Service(DataAccess dataAccess) {this.dataAccess = dataAccess;}
+    private final UserDAO dataAccess;
+    public Service(UserDAO dataAccess) {this.dataAccess = dataAccess;}
 
     public UserData registerUser(UserData newUser) throws ServiceException {
         if (dataAccess.getUser(newUser.username()) != null) {
