@@ -1,4 +1,4 @@
 package service;
 
-public class ListGamesResult {
+public record ListGamesResult (String games){
 }
