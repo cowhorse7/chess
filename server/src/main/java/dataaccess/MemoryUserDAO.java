@@ -9,7 +9,8 @@ public class MemoryUserDAO implements UserDAO{
     public void createUser(UserData newUser) {
 
     }
-    public void getUser(String username) {
-
+    public String getUser(UserData username) {
+        //search for username in database
+        return username.username();
     }
 }
