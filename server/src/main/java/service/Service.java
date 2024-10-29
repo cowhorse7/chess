@@ -27,17 +27,16 @@ public class Service {
     public static String generateAuthToken() {
         return UUID.randomUUID().toString();
     }
-    public UserData registerUser(UserData newUser) throws ServiceException {
+    public AuthData registerUser(UserData newUser) throws ServiceException {
         //do I need to de-serialize newUser here?
         if (userDataAccess.getUser(newUser) != null) {
             throw new SecurityException("User already exists");
         }
-        else {
-            userDataAccess.createUser(newUser);
-            String authToken = generateAuthToken();
-            authDataAccess.createAuth(new AuthData(authToken, newUser.username()));
-        }
-        return newUser;
+        userDataAccess.createUser(newUser);
+        String authToken = generateAuthToken();
+        AuthData registerAuth = new AuthData(authToken, newUser.username());
+        authDataAccess.createAuth(registerAuth);
+        return registerAuth;
     }
 
     /*

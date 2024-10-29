@@ -12,4 +12,5 @@ public interface UserDAO {
     also
     public void updateUser();??
      */
+    public int getDataBaseSize();
 }
