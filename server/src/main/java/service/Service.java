@@ -3,6 +3,8 @@ package service;
 import dataaccess.*;
 import model.*;
 
+import java.util.UUID;
+
 public class Service {
     private final UserDAO userDataAccess;
     private final AuthDAO authDataAccess;
@@ -22,6 +24,9 @@ public class Service {
 //    public ListGamesResult list(ListGamesRequest request){return null;}
     public void clear(){}
 
+    public static String generateAuthToken() {
+        return UUID.randomUUID().toString();
+    }
     public UserData registerUser(UserData newUser) throws ServiceException {
         //do I need to de-serialize newUser here?
         if (userDataAccess.getUser(newUser) != null) {
@@ -29,7 +34,8 @@ public class Service {
         }
         else {
             userDataAccess.createUser(newUser);
-            authDataAccess.createAuth(newUser);
+            String authToken = generateAuthToken();
+            authDataAccess.createAuth(new AuthData(authToken, newUser.username()));
         }
         return newUser;
     }
