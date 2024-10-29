@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import model.*;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Service {
@@ -22,14 +23,18 @@ public class Service {
 //    public void join(JoinGameRequest request){}
 //    public CreateGameResult createGame(CreateGameRequest request){return null;}
 //    public ListGamesResult list(ListGamesRequest request){return null;}
-    public void clear(){}
+    public void clear(){
+        userDataAccess.clear();
+        authDataAccess.clear();
+        gameDataAccess.clear();
+    }
 
     public static String generateAuthToken() {
         return UUID.randomUUID().toString();
     }
     public AuthData registerUser(UserData newUser) throws ServiceException {
         //do I need to de-serialize newUser here?
-        if (userDataAccess.getUser(newUser) != null) {
+        if (userDataAccess.getUser(newUser.username()) != null) {
             throw new SecurityException("User already exists");
         }
         userDataAccess.createUser(newUser);
@@ -39,12 +44,21 @@ public class Service {
         return registerAuth;
     }
 
-    /*
-    loginUser
-        getUser()
-        validatePassword()
-        return result (error if user not found in db)
-     */
+    public AuthData loginUser(String username, String password) throws ServiceException {
+        if(userDataAccess.getUser(username) == null){throw new ServiceException("user does not exist");}
+        UserData logger = userDataAccess.getUser(username);
+        if(authDataAccess.getAuth(username) != null){
+            throw new SecurityException("user already logged in");
+        }
+        if(!Objects.equals(logger.password(), password)){
+            throw new SecurityException("unauthorized");
+        }
+        String authToken = generateAuthToken();
+        return new AuthData(authToken, username);
+    }
+    public void logoutUser(String authToken){
+
+    }
     /*
     logoutUser
         getAuth() //throw error if null
@@ -71,10 +85,5 @@ public class Service {
         verify there is space for player
         updateGame()
      */
-    /*
-    clear
-        clear(Auth)
-        clear(User)
-        clear(Game)
-     */
+
 }

@@ -16,9 +16,7 @@ public class MyTests {
 
     @BeforeEach
     public void clear(){
-        userDataAccess.clear();
-        authDataAccess.clear();
-        gameDataAccess.clear();
+        myService.clear();
     }
     @Test
     @DisplayName("First Test")
@@ -53,5 +51,13 @@ public class MyTests {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = myService.registerUser(newUser1);
         Assertions.assertThrows(SecurityException.class, ()->{myService.registerUser(newUser1);});
+    }
+
+    @Test
+    @DisplayName("Login")
+    public void login() throws ServiceException {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        AuthData user1 = myService.registerUser(newUser1);
+        Assertions.assertThrows(SecurityException.class, ()->{myService.loginUser(newUser1.username(), newUser1.password());});
     }
 }

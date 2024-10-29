@@ -12,8 +12,8 @@ public class MemoryUserDAO implements UserDAO{
     public void createUser(UserData newUser) {
         dataBase.put(newUser.username(), newUser);
     }
-    public UserData getUser(UserData user) {
-        return dataBase.get(user.username());
+    public UserData getUser(String username) {
+        return dataBase.get(username);
     }
 
     public int getDataBaseSize(){
