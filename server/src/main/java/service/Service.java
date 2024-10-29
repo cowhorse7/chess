@@ -4,8 +4,16 @@ import dataaccess.*;
 import model.*;
 
 public class Service {
-    private final UserDAO dataAccess;
-    public Service(UserDAO dataAccess) {this.dataAccess = dataAccess;}
+    private final UserDAO userDataAccess;
+    private final AuthDAO authDataAccess;
+    private final GameDAO gameDataAccess;
+
+    public Service(UserDAO userDataAccess, AuthDAO authDataAccess, GameDAO gameDataAccess) {
+        this.userDataAccess = userDataAccess;
+        this.authDataAccess = authDataAccess;
+        this.gameDataAccess = gameDataAccess;
+
+    }
 //    public RegisterResult register(RegisterRequest request){return null;}
 //    public LoginResult login(LoginRequest request){return null;}
 //    public void logout(LogoutRequest request){}
@@ -15,10 +23,14 @@ public class Service {
     public void clear(){}
 
     public UserData registerUser(UserData newUser) throws ServiceException {
-        if (dataAccess.getUser(newUser) != null) {
+        //do I need to de-serialize newUser here?
+        if (userDataAccess.getUser(newUser) != null) {
             throw new SecurityException("User already exists");
         }
-
+        else {
+            userDataAccess.createUser(newUser);
+            authDataAccess.createAuth(newUser);
+        }
         return newUser;
     }
 

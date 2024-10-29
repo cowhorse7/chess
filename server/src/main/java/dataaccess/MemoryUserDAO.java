@@ -2,15 +2,17 @@ package dataaccess;
 
 import model.UserData;
 
-public class MemoryUserDAO implements UserDAO{
-    public void clear() {
+import java.util.HashMap;
 
+public class MemoryUserDAO implements UserDAO{
+    private final HashMap<String, UserData> dataBase = new HashMap<>();
+    public void clear() {
+        dataBase.clear();
     }
     public void createUser(UserData newUser) {
-
+        dataBase.put(newUser.username(), newUser);
     }
-    public String getUser(UserData username) {
-        //search for username in database
-        return username.username();
+    public UserData getUser(UserData user) {
+        return dataBase.get(user.username());
     }
 }
