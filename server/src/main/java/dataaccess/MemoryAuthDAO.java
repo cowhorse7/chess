@@ -2,22 +2,42 @@ package dataaccess;
 
 import model.AuthData;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class MemoryAuthDAO implements AuthDAO{
-    private final HashMap<String, AuthData> authDatabase = new HashMap<>();
+    private final ArrayList<AuthData> authDatabase = new ArrayList<>();
     public void createAuth(AuthData newAuth) {
-        authDatabase.put(newAuth.username(), newAuth);
+        authDatabase.add(newAuth);
     }
-
-    public AuthData getAuth(String user) {
-        return authDatabase.get(user);
+    public AuthData getAuthByToken(String userAuth){
+        AuthData foundAuth = null;
+        for (int i = 0; i < authDatabase.size(); i++){
+            if(Objects.equals(authDatabase.get(i).authToken(), userAuth)){
+                foundAuth = authDatabase.get(i);
+                break;
+            }
+        }
+        return foundAuth;
     }
-    public void deleteAuth(String userAuth) {
+    public AuthData getAuthByUser(String user) {
+        AuthData foundAuth = null;
+        for (int i = 0; i < authDatabase.size(); i++){
+            if(Objects.equals(authDatabase.get(i).username(), user)){
+                foundAuth = authDatabase.get(i);
+                break;
+            }
+        }
+        return foundAuth;
+    }
+    public void deleteAuth(AuthData userAuth) {
         authDatabase.remove(userAuth);
     }
 
     public void clear() {
         authDatabase.clear();
+    }
+    public int getDatabaseSize() {
+        return authDatabase.size();
     }
 }

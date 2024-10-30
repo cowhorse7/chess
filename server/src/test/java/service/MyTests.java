@@ -54,10 +54,37 @@ public class MyTests {
     }
 
     @Test
-    @DisplayName("Login")
+    @DisplayName("Can'tLogin")
     public void login() throws ServiceException {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = myService.registerUser(newUser1);
         Assertions.assertThrows(SecurityException.class, ()->{myService.loginUser(newUser1.username(), newUser1.password());});
+    }
+    @Test
+    @DisplayName("Logout")
+    public void logout() throws ServiceException {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        AuthData user1 = myService.registerUser(newUser1);
+        int size = authDataAccess.getDatabaseSize();
+        myService.logoutUser(user1.authToken());
+        Assertions.assertEquals(size-1, authDataAccess.getDatabaseSize());
+    }
+    @Test
+    @DisplayName("LogoutAndIn")
+    public void logs() throws ServiceException {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        AuthData user1 = myService.registerUser(newUser1);
+        int size = authDataAccess.getDatabaseSize();
+        myService.logoutUser(user1.authToken());
+        myService.loginUser(newUser1.username(), newUser1.password());
+        Assertions.assertEquals(size, authDataAccess.getDatabaseSize());
+    }
+    @Test
+    @DisplayName("WrongPassword")
+    public void passwordErr() throws ServiceException {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        AuthData user1 = myService.registerUser(newUser1);
+        myService.logoutUser(user1.authToken());
+        Assertions.assertThrows(SecurityException.class, ()->{myService.loginUser(newUser1.username(), "b");});
     }
 }

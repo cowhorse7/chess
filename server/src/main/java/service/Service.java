@@ -47,17 +47,23 @@ public class Service {
     public AuthData loginUser(String username, String password) throws ServiceException {
         if(userDataAccess.getUser(username) == null){throw new ServiceException("user does not exist");}
         UserData logger = userDataAccess.getUser(username);
-        if(authDataAccess.getAuth(username) != null){
+        if(authDataAccess.getAuthByUser(username) != null){
             throw new SecurityException("user already logged in");
         }
         if(!Objects.equals(logger.password(), password)){
             throw new SecurityException("unauthorized");
         }
         String authToken = generateAuthToken();
-        return new AuthData(authToken, username);
+        AuthData userAuth = new AuthData(authToken, username);
+        authDataAccess.createAuth(userAuth);
+        return userAuth;
     }
     public void logoutUser(String authToken){
-
+        AuthData userAuth = authDataAccess.getAuthByToken(authToken);
+        if (userAuth == null){
+            throw new SecurityException("unauthorized");
+        }
+        authDataAccess.deleteAuth(userAuth);
     }
     /*
     logoutUser
