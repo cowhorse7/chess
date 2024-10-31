@@ -1,10 +1,10 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import model.*;
 
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class Service {
     private final UserDAO userDataAccess;
@@ -59,31 +59,45 @@ public class Service {
         return userAuth;
     }
     public void logoutUser(String authToken){
+        AuthData userAuth = checkAuth(authToken);
+        authDataAccess.deleteAuth(userAuth);
+    }
+
+    public AuthData checkAuth(String authToken){
         AuthData userAuth = authDataAccess.getAuthByToken(authToken);
         if (userAuth == null){
             throw new SecurityException("unauthorized");
         }
-        authDataAccess.deleteAuth(userAuth);
+        return userAuth;
     }
-    /*
-    logoutUser
-        getAuth() //throw error if null
-        deleteAuth()
-        return result
-     */
-    /*
-    listGames
-        getAuth()
-        getGames()
-        list result
-     */
-    /*
-    createGame
-        getAuth()
-        assignGameID
-        createGame()
-        return ID on success
-     */
+    public ArrayList<GameData> listGames(String authToken){
+        ArrayList<GameData> listOfGames = new ArrayList<>();
+        checkAuth(authToken);
+        HashMap<Integer, GameData>gameDatabase = gameDataAccess.listGames();
+        gameDatabase.forEach(
+                (key, value)
+                    -> listOfGames.add(value));
+        return listOfGames;
+    }
+    public int createGame(String authToken, String gameName){
+        checkAuth(authToken);
+        int gameID = gameDataAccess.getGameDatabaseSize() + 1;
+        GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());
+        gameDataAccess.createGame(gameID, newGame);
+        return gameID;
+    }
+    public void joinGame(String authToken, String playerColor, int gameID) throws ServiceException {
+        checkAuth(authToken);
+        GameData gameInQuestion = gameDataAccess.getGame(gameID);
+        if(gameInQuestion == null){throw new ServiceException("game does not exist");}
+        if(Objects.equals(playerColor, "black") && gameInQuestion.blackUsername() == null){
+            GameData updatedGame = new GameData(gameInQuestion.gameID(), gameInQuestion.whiteUsername(), authDataAccess.getAuthByToken(authToken).username(), gameInQuestion.gameName(), gameInQuestion.game());
+        }
+        else if(Objects.equals(playerColor, "white") && gameInQuestion.whiteUsername() == null){
+            GameData updatedGame = new GameData(gameInQuestion.gameID(), authDataAccess.getAuthByToken(authToken).username(), gameInQuestion.blackUsername(), gameInQuestion.gameName(), gameInQuestion.game());
+        }
+
+    }
     /*
     joinGame
         getAuth()

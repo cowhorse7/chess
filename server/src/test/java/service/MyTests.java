@@ -2,9 +2,13 @@ package service;
 
 import dataaccess.*;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import service.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 //true, equals, null, notnull, throws, doesnotthrow
 //assertions.assert
@@ -86,5 +90,36 @@ public class MyTests {
         AuthData user1 = myService.registerUser(newUser1);
         myService.logoutUser(user1.authToken());
         Assertions.assertThrows(SecurityException.class, ()->{myService.loginUser(newUser1.username(), "b");});
+    }
+    @Test
+    @DisplayName("List")
+    public void List() throws ServiceException {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        AuthData user1 = myService.registerUser(newUser1);
+        Collection< GameData > listOfGames = myService.listGames(user1.authToken());
+        Assertions.assertTrue(listOfGames.isEmpty());
+    }
+    @Test
+    @DisplayName("Create")
+    public void create() throws ServiceException {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        AuthData user1 = myService.registerUser(newUser1);
+        myService.createGame(user1.authToken(), "hey");
+        ArrayList< GameData > listOfGames = myService.listGames(user1.authToken());
+        System.out.print(listOfGames.getFirst());
+        Assertions.assertFalse(listOfGames.isEmpty());
+    }
+    @Test
+    @DisplayName("Create Many")
+    public void createMany() throws ServiceException {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        AuthData user1 = myService.registerUser(newUser1);
+        myService.createGame(user1.authToken(), "hey");
+        myService.createGame(user1.authToken(), "yo");
+        myService.createGame(user1.authToken(), "five");
+        myService.createGame(user1.authToken(), "six");
+        myService.createGame(user1.authToken(), "oh");
+        ArrayList< GameData > listOfGames = myService.listGames(user1.authToken());
+        Assertions.assertEquals(5, gameDataAccess.getGameDatabaseSize());
     }
 }
