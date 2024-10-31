@@ -122,4 +122,35 @@ public class MyTests {
         ArrayList< GameData > listOfGames = myService.listGames(user1.authToken());
         Assertions.assertEquals(5, gameDataAccess.getGameDatabaseSize());
     }
+    @Test
+    @DisplayName("Join")
+    public void join() throws ServiceException {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        AuthData user1 = myService.registerUser(newUser1);
+        myService.createGame(user1.authToken(), "hey");
+        myService.createGame(user1.authToken(), "yo");
+        myService.joinGame(user1.authToken(), "white", 2);
+        ArrayList<GameData> listOfGames = myService.listGames(user1.authToken());
+        System.out.println(listOfGames);
+        Assertions.assertEquals(2, gameDataAccess.getGameDatabaseSize());
+    }
+    @Test
+    @DisplayName("No Join-Service Exceptions")
+    public void noJoin() throws ServiceException {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        UserData newUser2 = new UserData("b", "bbb", "c@c");
+        AuthData user1 = myService.registerUser(newUser1);
+        AuthData user2 = myService.registerUser(newUser2);
+        myService.createGame(user1.authToken(), "hey");
+        myService.createGame(user1.authToken(), "yo");
+        myService.joinGame(user1.authToken(), "white", 2);
+        myService.joinGame(user2.authToken(), "white", 1);
+        ArrayList<GameData> listOfGames = myService.listGames(user1.authToken());
+        System.out.println(listOfGames);
+        Assertions.assertThrows(ServiceException.class, ()->{myService.joinGame(user2.authToken(), "white", 2);});
+        Assertions.assertThrows(ServiceException.class, ()->{myService.joinGame(user2.authToken(), "black", 1);});
+        Assertions.assertThrows(ServiceException.class, ()->{myService.joinGame(user2.authToken(), "white", 1);});
+        Assertions.assertThrows(ServiceException.class, ()->{myService.joinGame(user2.authToken(), "black", 4);});
+
+    }
 }

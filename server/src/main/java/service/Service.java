@@ -87,23 +87,29 @@ public class Service {
         return gameID;
     }
     public void joinGame(String authToken, String playerColor, int gameID) throws ServiceException {
-        checkAuth(authToken);
+        AuthData currentUser = checkAuth(authToken);
         GameData gameInQuestion = gameDataAccess.getGame(gameID);
         if(gameInQuestion == null){throw new ServiceException("game does not exist");}
-        if(Objects.equals(playerColor, "black") && gameInQuestion.blackUsername() == null){
-            GameData updatedGame = new GameData(gameInQuestion.gameID(), gameInQuestion.whiteUsername(), authDataAccess.getAuthByToken(authToken).username(), gameInQuestion.gameName(), gameInQuestion.game());
+        if(Objects.equals(playerColor, "white") && gameInQuestion.whiteUsername() != null){
+            throw new ServiceException("Spot already taken");
+        }
+        else if(Objects.equals(playerColor, "white") && Objects.equals(gameInQuestion.blackUsername(), currentUser.username())){
+            throw new ServiceException("User already in game");
+        }
+        else if(Objects.equals(playerColor, "black") && gameInQuestion.blackUsername() != null){
+            throw new ServiceException("Spot already taken");
+        }
+        else if(Objects.equals(playerColor, "black") && Objects.equals(gameInQuestion.whiteUsername(), currentUser.username())){
+            throw new ServiceException("User already in game");
+        }
+        else if(Objects.equals(playerColor, "black") && gameInQuestion.blackUsername() == null){
+            GameData updatedGame = new GameData(gameInQuestion.gameID(), gameInQuestion.whiteUsername(), currentUser.username(), gameInQuestion.gameName(), gameInQuestion.game());
+            gameDataAccess.updateGame(gameID, updatedGame);
         }
         else if(Objects.equals(playerColor, "white") && gameInQuestion.whiteUsername() == null){
-            GameData updatedGame = new GameData(gameInQuestion.gameID(), authDataAccess.getAuthByToken(authToken).username(), gameInQuestion.blackUsername(), gameInQuestion.gameName(), gameInQuestion.game());
+            GameData updatedGame = new GameData(gameInQuestion.gameID(), currentUser.username(), gameInQuestion.blackUsername(), gameInQuestion.gameName(), gameInQuestion.game());
+            gameDataAccess.updateGame(gameID, updatedGame);
         }
-
     }
-    /*
-    joinGame
-        getAuth()
-        getGame(ID)
-        verify there is space for player
-        updateGame()
-     */
 
 }

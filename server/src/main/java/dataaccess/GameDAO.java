@@ -8,7 +8,7 @@ public interface GameDAO {
     public void createGame(int gameID, GameData newGame);
     public GameData getGame(int ID);
     public HashMap<Integer, GameData> listGames();
-    public void updateGame(GameData newGame);
+    public void updateGame(int gameID, GameData newGame);
     public void clear();
     public int getGameDatabaseSize();
 }

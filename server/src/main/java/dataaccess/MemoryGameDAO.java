@@ -9,19 +9,15 @@ public class MemoryGameDAO implements GameDAO{
     public void createGame(int gameID, GameData newGame) {
         gameDatabase.put(gameID, newGame);
     }
-
     public GameData getGame(int ID) {
         return gameDatabase.get(ID);
     }
-
     public HashMap<Integer, GameData> listGames() {
         return gameDatabase;
     }
-
-    public void updateGame(GameData newGame) {
-
+    public void updateGame(int gameID, GameData newGame) {
+        gameDatabase.replace(gameID, newGame);
     }
-
     public void clear() {
         gameDatabase.clear();
     }
