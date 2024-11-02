@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import model.*;
 import service.Service;
+import service.ServiceException;
 import service.joinRequest;
 import spark.*;
 
@@ -31,6 +32,7 @@ public class Server {
         Spark.put("/game", this::joinGame);
         Spark.post("/game", this::createGame);
         Spark.get("/game", this::listGames);
+        Spark.exception(Exception.class, this::exceptionHandler);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
 //        Spark.init();
@@ -43,6 +45,7 @@ public class Server {
     private String createUser(Request req, Response res) throws Exception{
         UserData newUser = serializer.fromJson(req.body(), UserData.class);
         AuthData result = service.registerUser(newUser);
+        //if (result)
         return serializer.toJson(result);
     }
     private String loginUser(Request req, Response res) throws Exception{
@@ -65,12 +68,12 @@ public class Server {
         service.joinGame(authToken, playerInfo.getPlayerColor(), playerInfo.getGameID());
         return serializer.toJson(null);
     }
-    //FIXME: "expected JSON, got 1" ↓
     private String createGame(Request req, Response res) throws Exception{
         String authToken = req.headers("authorization");
         String gameName = req.body();
         int result = service.createGame(authToken, gameName);
-        return serializer.toJson(result);
+        GameData resultForJson = new GameData(result, null, null, null, null);
+        return serializer.toJson(resultForJson);
     }
     private String listGames(Request req, Response res) throws Exception{
         String authToken = req.headers("authorization");
@@ -78,11 +81,19 @@ public class Server {
         return serializer.toJson(result);
     }
 
-    private void exceptionHandler(Exception ex, Request req, Response res){
-        res.status(500);
+    private Object exceptionHandler(Exception ex, Request req, Response res){
+        if (ex.getMessage().equals("unauthorized")){
+            res.status(401);
+        }
+        if(ex.getMessage().equals("Error: already taken")){
+            res.status(403);
+        }
         res.body(serializer.toJson(Map.of("message", ex.getMessage())));
-        ex.printStackTrace(System.out);
+        return res.body();
     }
+
+
+
     public void stop() {
         Spark.stop();
         Spark.awaitStop();

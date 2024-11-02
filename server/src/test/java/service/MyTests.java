@@ -54,7 +54,7 @@ public class MyTests {
     public void reRegister() throws ServiceException {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = myService.registerUser(newUser1);
-        Assertions.assertThrows(SecurityException.class, ()->{myService.registerUser(newUser1);});
+        Assertions.assertThrows(ServiceException.class, ()->{myService.registerUser(newUser1);});
     }
 
     @Test
@@ -62,7 +62,7 @@ public class MyTests {
     public void login() throws ServiceException {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = myService.registerUser(newUser1);
-        Assertions.assertThrows(SecurityException.class, ()->{myService.loginUser(newUser1.username(), newUser1.password());});
+        Assertions.assertThrows(ServiceException.class, ()->{myService.loginUser(newUser1.username(), newUser1.password());});
     }
     @Test
     @DisplayName("Logout")
@@ -89,7 +89,7 @@ public class MyTests {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = myService.registerUser(newUser1);
         myService.logoutUser(user1.authToken());
-        Assertions.assertThrows(SecurityException.class, ()->{myService.loginUser(newUser1.username(), "b");});
+        Assertions.assertThrows(ServiceException.class, ()->{myService.loginUser(newUser1.username(), "b");});
     }
     @Test
     @DisplayName("List")

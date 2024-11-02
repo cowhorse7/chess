@@ -35,7 +35,7 @@ public class Service {
     public AuthData registerUser(UserData newUser) throws ServiceException {
         //do I need to de-serialize newUser here?
         if (userDataAccess.getUser(newUser.username()) != null) {
-            throw new SecurityException("User already exists");
+            throw new ServiceException("Error: already taken");
         }
         userDataAccess.createUser(newUser);
         String authToken = generateAuthToken();
@@ -48,29 +48,29 @@ public class Service {
         if(userDataAccess.getUser(username) == null){throw new ServiceException("user does not exist");}
         UserData logger = userDataAccess.getUser(username);
         if(authDataAccess.getAuthByUser(username) != null){
-            throw new SecurityException("user already logged in");
+            throw new ServiceException("Error: user already logged in");
         }
         if(!Objects.equals(logger.password(), password)){
-            throw new SecurityException("unauthorized");
+            throw new ServiceException("Error: unauthorized");
         }
         String authToken = generateAuthToken();
         AuthData userAuth = new AuthData(authToken, username);
         authDataAccess.createAuth(userAuth);
         return userAuth;
     }
-    public void logoutUser(String authToken){
+    public void logoutUser(String authToken) throws ServiceException{
         AuthData userAuth = checkAuth(authToken);
         authDataAccess.deleteAuth(userAuth);
     }
 
-    public AuthData checkAuth(String authToken){
+    public AuthData checkAuth(String authToken) throws ServiceException{
         AuthData userAuth = authDataAccess.getAuthByToken(authToken);
         if (userAuth == null){
-            throw new SecurityException("unauthorized");
+            throw new ServiceException("Error: unauthorized");
         }
         return userAuth;
     }
-    public ArrayList<GameData> listGames(String authToken){
+    public ArrayList<GameData> listGames(String authToken) throws ServiceException{
         ArrayList<GameData> listOfGames = new ArrayList<>();
         checkAuth(authToken);
         HashMap<Integer, GameData>gameDatabase = gameDataAccess.listGames();
@@ -79,7 +79,7 @@ public class Service {
                     -> listOfGames.add(value));
         return listOfGames;
     }
-    public int createGame(String authToken, String gameName){
+    public int createGame(String authToken, String gameName) throws ServiceException{
         checkAuth(authToken);
         int gameID = gameDataAccess.getGameDatabaseSize() + 1;
         GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());
@@ -89,18 +89,18 @@ public class Service {
     public void joinGame(String authToken, String playerColor, int gameID) throws ServiceException {
         AuthData currentUser = checkAuth(authToken);
         GameData gameInQuestion = gameDataAccess.getGame(gameID);
-        if(gameInQuestion == null){throw new ServiceException("game does not exist");}
+        if(gameInQuestion == null){throw new ServiceException("Error: game does not exist");}
         if(Objects.equals(playerColor, "white") && gameInQuestion.whiteUsername() != null){
-            throw new ServiceException("Spot already taken");
+            throw new ServiceException("Error: already taken");
         }
         else if(Objects.equals(playerColor, "white") && Objects.equals(gameInQuestion.blackUsername(), currentUser.username())){
-            throw new ServiceException("User already in game");
+            throw new ServiceException("Error: User already in game");
         }
         else if(Objects.equals(playerColor, "black") && gameInQuestion.blackUsername() != null){
-            throw new ServiceException("Spot already taken");
+            throw new ServiceException("Error: already taken");
         }
         else if(Objects.equals(playerColor, "black") && Objects.equals(gameInQuestion.whiteUsername(), currentUser.username())){
-            throw new ServiceException("User already in game");
+            throw new ServiceException("Error: User already in game");
         }
         else if(Objects.equals(playerColor, "black") && gameInQuestion.blackUsername() == null){
             GameData updatedGame = new GameData(gameInQuestion.gameID(), gameInQuestion.whiteUsername(), currentUser.username(), gameInQuestion.gameName(), gameInQuestion.game());
