@@ -12,9 +12,7 @@ public class MemoryGameDAO implements GameDAO{
     public GameData getGame(int ID) {
         return gameDatabase.get(ID);
     }
-    public HashMap<Integer, GameData> listGames() {
-        return gameDatabase;
-    }
+    public HashMap<Integer, GameData> listGames() {return gameDatabase;}
     public void updateGame(int gameID, GameData newGame) {
         gameDatabase.replace(gameID, newGame);
     }

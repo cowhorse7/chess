@@ -68,7 +68,7 @@ public class Service {
         return userAuth;
     }
     public ListGamesResponse listGames(String authToken) throws ServiceException{
-        ArrayList<GameData> listOfGames = new ArrayList<>();
+        HashSet<GameData> listOfGames = new HashSet<>();
         checkAuth(authToken);
         HashMap<Integer, GameData>gameDatabase = gameDataAccess.listGames();
         gameDatabase.forEach(
@@ -92,15 +92,15 @@ public class Service {
         if(Objects.equals(playerColor, "WHITE") && gameInQuestion.whiteUsername() != null){
             throw new ServiceException("Error: already taken");
         }
-        else if(Objects.equals(playerColor, "WHITE") && Objects.equals(gameInQuestion.blackUsername(), currentUser.username())){
-            throw new ServiceException("Error: bad request");
-        }
+//        else if(Objects.equals(playerColor, "WHITE") && Objects.equals(gameInQuestion.blackUsername(), currentUser.username())){
+//            throw new ServiceException("Error: bad request");
+//        }
         else if(Objects.equals(playerColor, "BLACK") && gameInQuestion.blackUsername() != null){
             throw new ServiceException("Error: already taken");
         }
-        else if(Objects.equals(playerColor, "BLACK") && Objects.equals(gameInQuestion.whiteUsername(), currentUser.username())){
-            throw new ServiceException("Error: bad request");
-        }
+//        else if(Objects.equals(playerColor, "BLACK") && Objects.equals(gameInQuestion.whiteUsername(), currentUser.username())){
+//            throw new ServiceException("Error: bad request");
+//        }
         else if(Objects.equals(playerColor, "BLACK") && gameInQuestion.blackUsername() == null){
             GameData updatedGame = new GameData(gameInQuestion.gameID(), gameInQuestion.whiteUsername(), currentUser.username(), gameInQuestion.gameName(), gameInQuestion.game());
             gameDataAccess.updateGame(gameID, updatedGame);

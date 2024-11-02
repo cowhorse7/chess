@@ -2,12 +2,13 @@ package service;
 
 import model.GameData;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class ListGamesResponse {
-    private ArrayList<GameData> games;
+    private HashSet<GameData> games;
 
-    public ListGamesResponse(ArrayList<GameData> listOfGames){
+    public ListGamesResponse(HashSet<GameData> listOfGames){
         games = listOfGames;
     }
 }
