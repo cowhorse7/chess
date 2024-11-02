@@ -44,7 +44,6 @@ public class Server {
     private String createUser(Request req, Response res) throws Exception {
         UserData newUser = serializer.fromJson(req.body(), UserData.class);
         AuthData result = service.registerUser(newUser);
-        //if (result)
         return serializer.toJson(result);
     }
 
