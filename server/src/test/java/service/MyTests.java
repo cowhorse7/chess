@@ -96,8 +96,8 @@ public class MyTests {
     public void List() throws ServiceException {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = myService.registerUser(newUser1);
-        Collection< GameData > listOfGames = myService.listGames(user1.authToken());
-        Assertions.assertTrue(listOfGames.isEmpty());
+        ListGamesResponse listOfGames = myService.listGames(user1.authToken());
+        Assertions.assertNull(listOfGames);
     }
     @Test
     @DisplayName("Create")
@@ -105,9 +105,9 @@ public class MyTests {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = myService.registerUser(newUser1);
         myService.createGame(user1.authToken(), "hey");
-        ArrayList< GameData > listOfGames = myService.listGames(user1.authToken());
-        System.out.print(listOfGames.getFirst());
-        Assertions.assertFalse(listOfGames.isEmpty());
+        ListGamesResponse listOfGames = myService.listGames(user1.authToken());
+        //System.out.print(listOfGames.getFirst());
+        Assertions.assertNotNull(listOfGames);
     }
     @Test
     @DisplayName("Create Many")
@@ -119,7 +119,7 @@ public class MyTests {
         myService.createGame(user1.authToken(), "five");
         myService.createGame(user1.authToken(), "six");
         myService.createGame(user1.authToken(), "oh");
-        ArrayList< GameData > listOfGames = myService.listGames(user1.authToken());
+        ListGamesResponse listOfGames = myService.listGames(user1.authToken());
         Assertions.assertEquals(5, gameDataAccess.getGameDatabaseSize());
     }
     @Test
@@ -130,7 +130,7 @@ public class MyTests {
         myService.createGame(user1.authToken(), "hey");
         myService.createGame(user1.authToken(), "yo");
         myService.joinGame(user1.authToken(), "white", 2);
-        ArrayList<GameData> listOfGames = myService.listGames(user1.authToken());
+        ListGamesResponse listOfGames = myService.listGames(user1.authToken());
         System.out.println(listOfGames);
         Assertions.assertEquals(2, gameDataAccess.getGameDatabaseSize());
     }
@@ -145,7 +145,7 @@ public class MyTests {
         myService.createGame(user1.authToken(), "yo");
         myService.joinGame(user1.authToken(), "white", 2);
         myService.joinGame(user2.authToken(), "white", 1);
-        ArrayList<GameData> listOfGames = myService.listGames(user1.authToken());
+        ListGamesResponse listOfGames = myService.listGames(user1.authToken());
         System.out.println(listOfGames);
         Assertions.assertThrows(ServiceException.class, ()->{myService.joinGame(user2.authToken(), "white", 2);});
         Assertions.assertThrows(ServiceException.class, ()->{myService.joinGame(user2.authToken(), "black", 1);});

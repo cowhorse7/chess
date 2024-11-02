@@ -3,9 +3,8 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.*;
-import service.LoginResponse;
+import service.*;
 import service.Service;
-import service.JoinRequest;
 import spark.*;
 
 import java.util.ArrayList;
@@ -69,15 +68,14 @@ public class Server {
     }
     private String createGame(Request req, Response res) throws Exception{
         String authToken = req.headers("authorization");
-        String gameName = req.body();
-        int result = service.createGame(authToken, gameName);
+        CreateRequest gameName = serializer.fromJson(req.body(), CreateRequest.class);
+        int result = service.createGame(authToken, gameName.getGameName());
         GameData resultForJson = new GameData(result, null, null, null, null);
         return serializer.toJson(resultForJson);
     }
     private String listGames(Request req, Response res) throws Exception{
         String authToken = req.headers("authorization");
-        ArrayList<GameData> result = service.listGames(authToken);
-        if (result.isEmpty()){return serializer.toJson(null);}
+        ListGamesResponse result = service.listGames(authToken);
         return serializer.toJson(result);
     }
 

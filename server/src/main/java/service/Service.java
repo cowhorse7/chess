@@ -67,14 +67,15 @@ public class Service {
         }
         return userAuth;
     }
-    public ArrayList<GameData> listGames(String authToken) throws ServiceException{
+    public ListGamesResponse listGames(String authToken) throws ServiceException{
         ArrayList<GameData> listOfGames = new ArrayList<>();
         checkAuth(authToken);
         HashMap<Integer, GameData>gameDatabase = gameDataAccess.listGames();
         gameDatabase.forEach(
                 (key, value)
                     -> listOfGames.add(value));
-        return listOfGames;
+        if(listOfGames.isEmpty()){return null;}
+        return new ListGamesResponse(listOfGames);
     }
     public int createGame(String authToken, String gameName) throws ServiceException{
         checkAuth(authToken);
