@@ -20,16 +20,6 @@ public class MemoryAuthDAO implements AuthDAO{
         }
         return foundAuth;
     }
-    public AuthData getAuthByUser(String user) {
-        AuthData foundAuth = null;
-        for (int i = 0; i < authDatabase.size(); i++){
-            if(Objects.equals(authDatabase.get(i).username(), user)){
-                foundAuth = authDatabase.get(i);
-                break;
-            }
-        }
-        return foundAuth;
-    }
     public void deleteAuth(AuthData userAuth) {
         authDatabase.remove(userAuth);
     }

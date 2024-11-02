@@ -114,56 +114,56 @@ public class ChessPiece {
                 captureStop = false;
                 while (spaceCheck(curRow + i, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol + i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol + i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow - i, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol - i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol - i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow + i, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol - i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol - i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow - i, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol + i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol + i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 i = 1;
                 captureStop = false;
                 while (spaceCheck(curRow + i, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow - i, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol - i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol - i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol + i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol + i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 break;
@@ -172,28 +172,28 @@ public class ChessPiece {
                 captureStop = false;
                 while (spaceCheck(curRow + i, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol + i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol + i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow - i, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol - i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol - i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow + i, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol - i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol - i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow - i, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol + i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol + i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 break;
@@ -228,28 +228,28 @@ public class ChessPiece {
                 captureStop = false;
                 while (spaceCheck(curRow + i, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow - i, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol - i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol - i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 captureStop = false;
                 i = 1;
                 while (spaceCheck(curRow, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol + i))){
                     moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol + i), null));
-                    if (captureStop) break;
+                    if (captureStop) {break;}
                     i++;
                 }
                 break;
@@ -262,7 +262,7 @@ public class ChessPiece {
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), PieceType.BISHOP));
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), PieceType.QUEEN));
                         }
-                        else moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), null));
+                        else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), null));}
                         if (curRow == 2 && spaceCheck(curRow + 2, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow + 2, curCol))){
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 2, curCol), null));
                         }
@@ -274,7 +274,7 @@ public class ChessPiece {
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), PieceType.BISHOP));
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), PieceType.QUEEN));
                         }
-                        else moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), null));
+                        else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), null));}
                     }
                     if (spaceCheck(curRow + 1, curCol - 1) && board.getPiece(new ChessPosition(curRow + 1, curCol - 1)) != null && board.getPiece(new ChessPosition(curRow + 1, curCol - 1)).pieceColor == ChessGame.TeamColor.BLACK) {
                         if (curRow + 1 == 8){
@@ -283,7 +283,7 @@ public class ChessPiece {
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 1), PieceType.BISHOP));
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 1), PieceType.QUEEN));
                         }
-                        else moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 1), null));
+                        else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 1), null));}
                     }
 
                 }
@@ -295,7 +295,7 @@ public class ChessPiece {
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), PieceType.BISHOP));
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), PieceType.QUEEN));
                         }
-                        else moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), null));
+                        else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), null));}
                         if (curRow == 7 && spaceCheck(curRow - 2, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow - 2, curCol))){
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 2, curCol), null));
                         }
@@ -307,7 +307,7 @@ public class ChessPiece {
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), PieceType.BISHOP));
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), PieceType.QUEEN));
                         }
-                        else moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), null));
+                        else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), null));}
                     }
                     if (spaceCheck(curRow - 1, curCol + 1) && board.getPiece(new ChessPosition(curRow - 1, curCol + 1)) != null && board.getPiece(new ChessPosition(curRow - 1, curCol + 1)).pieceColor == ChessGame.TeamColor.WHITE) {
                         if (curRow - 1 == 1){
@@ -316,7 +316,7 @@ public class ChessPiece {
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 1), PieceType.BISHOP));
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 1), PieceType.QUEEN));
                         }
-                        else moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 1), null));
+                        else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 1), null));}
                     }
 
                 }
@@ -327,8 +327,8 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessPiece that = (ChessPiece) o;
         return pieceColor == that.pieceColor && type == that.type;
     }

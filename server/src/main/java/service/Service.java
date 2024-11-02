@@ -29,7 +29,6 @@ public class Service {
     }
 
     public AuthData registerUser(UserData newUser) throws ServiceException {
-        //do I need to de-serialize newUser here?
         if (userDataAccess.getUser(newUser.username()) != null) {
             throw new ServiceException("Error: already taken");
         }
@@ -93,21 +92,21 @@ public class Service {
         if (playerColor == null || gameID == null) {
             throw new ServiceException("Error: bad request");
         }
-        GameData gameInQuestion = gameDataAccess.getGame(gameID);
-        if (gameInQuestion == null) {
+        GameData game = gameDataAccess.getGame(gameID);
+        if (game == null) {
             throw new ServiceException("Error: bad request");
         }//game does not exist
-        if (Objects.equals(playerColor, "WHITE") && gameInQuestion.whiteUsername() != null) {
+        if (Objects.equals(playerColor, "WHITE") && game.whiteUsername() != null) {
             throw new ServiceException("Error: already taken");
         }
-        else if (Objects.equals(playerColor, "BLACK") && gameInQuestion.blackUsername() != null) {
+        else if (Objects.equals(playerColor, "BLACK") && game.blackUsername() != null) {
             throw new ServiceException("Error: already taken");
         }
-        else if (Objects.equals(playerColor, "BLACK") && gameInQuestion.blackUsername() == null) {
-            GameData updatedGame = new GameData(gameInQuestion.gameID(), gameInQuestion.whiteUsername(), currentUser.username(), gameInQuestion.gameName(), gameInQuestion.game());
+        else if (Objects.equals(playerColor, "BLACK") && game.blackUsername() == null) {
+            GameData updatedGame = new GameData(game.gameID(), game.whiteUsername(), currentUser.username(), game.gameName(), game.game());
             gameDataAccess.updateGame(gameID, updatedGame);
-        } else if (Objects.equals(playerColor, "WHITE") && gameInQuestion.whiteUsername() == null) {
-            GameData updatedGame = new GameData(gameInQuestion.gameID(), currentUser.username(), gameInQuestion.blackUsername(), gameInQuestion.gameName(), gameInQuestion.game());
+        } else if (Objects.equals(playerColor, "WHITE") && game.whiteUsername() == null) {
+            GameData updatedGame = new GameData(game.gameID(), currentUser.username(), game.blackUsername(), game.gameName(), game.game());
             gameDataAccess.updateGame(gameID, updatedGame);
         }
     }

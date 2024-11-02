@@ -85,7 +85,7 @@ public class MyTests {
     }
     @Test
     @DisplayName("List")
-    public void List() throws ServiceException {
+    public void list() throws ServiceException {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = myService.registerUser(newUser1);
         ListGamesResponse listOfGames = myService.listGames(user1.authToken());
@@ -98,7 +98,6 @@ public class MyTests {
         AuthData user1 = myService.registerUser(newUser1);
         myService.createGame(user1.authToken(), "hey");
         ListGamesResponse listOfGames = myService.listGames(user1.authToken());
-        //System.out.print(listOfGames.getFirst());
         Assertions.assertNotNull(listOfGames);
     }
     @Test
