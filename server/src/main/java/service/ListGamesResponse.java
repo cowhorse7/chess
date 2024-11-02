@@ -1,8 +1,6 @@
 package service;
 
 import model.GameData;
-
-import java.util.Collection;
 import java.util.HashSet;
 
 public class ListGamesResponse {

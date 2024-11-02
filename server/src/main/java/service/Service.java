@@ -74,7 +74,7 @@ public class Service {
         gameDatabase.forEach(
                 (key, value)
                     -> listOfGames.add(value));
-        if(listOfGames.isEmpty()){return null;}
+        //if(listOfGames.isEmpty()){return null;}
         return new ListGamesResponse(listOfGames);
     }
     public int createGame(String authToken, String gameName) throws ServiceException{
