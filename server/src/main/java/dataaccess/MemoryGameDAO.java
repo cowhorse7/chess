@@ -9,8 +9,8 @@ public class MemoryGameDAO implements GameDAO{
     public void createGame(int gameID, GameData newGame) {
         gameDatabase.put(gameID, newGame);
     }
-    public GameData getGame(int ID) {
-        return gameDatabase.get(ID);
+    public GameData getGame(int id) {
+        return gameDatabase.get(id);
     }
     public HashMap<Integer, GameData> listGames() {return gameDatabase;}
     public void updateGame(int gameID, GameData newGame) {
