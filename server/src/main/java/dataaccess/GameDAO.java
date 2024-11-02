@@ -5,10 +5,10 @@ import model.GameData;
 import java.util.HashMap;
 
 public interface GameDAO {
-    public void createGame(int gameID, GameData newGame);
-    public GameData getGame(int ID);
-    public HashMap<Integer, GameData> listGames();
-    public void updateGame(int gameID, GameData newGame);
-    public void clear();
-    public int getGameDatabaseSize();
+    void createGame(int gameID, GameData newGame);
+    GameData getGame(int ID);
+    HashMap<Integer, GameData> listGames();
+    void updateGame(int gameID, GameData newGame);
+    void clear();
+    int getGameDatabaseSize();
 }

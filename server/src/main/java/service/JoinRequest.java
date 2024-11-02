@@ -3,8 +3,8 @@ package service;
 import java.util.Objects;
 
 public class JoinRequest {
-    private String playerColor;
-    private int gameID;
+    private final String playerColor;
+    private final int gameID;
 
     public JoinRequest(String playerColor, int gameID) throws ServiceException {
         this.playerColor = playerColor;

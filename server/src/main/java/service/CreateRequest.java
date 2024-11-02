@@ -1,7 +1,7 @@
 package service;
 
 public class CreateRequest {
-    private String gameName;
+    private final String gameName;
     public CreateRequest(String gameName){
         this.gameName = gameName;
     }

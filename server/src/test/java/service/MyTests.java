@@ -2,21 +2,13 @@ package service;
 
 import dataaccess.*;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.Service;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-//true, equals, null, notnull, throws, doesnotthrow
-//assertions.assert
 public class MyTests {
-    private static UserDAO userDataAccess = new MemoryUserDAO();
-    private static AuthDAO authDataAccess = new MemoryAuthDAO();
-    private static GameDAO gameDataAccess = new MemoryGameDAO();
-    private static Service myService = new Service(userDataAccess, authDataAccess, gameDataAccess);
+    private static final UserDAO userDataAccess = new MemoryUserDAO();
+    private static final AuthDAO authDataAccess = new MemoryAuthDAO();
+    private static final GameDAO gameDataAccess = new MemoryGameDAO();
+    private static final Service myService = new Service(userDataAccess, authDataAccess, gameDataAccess);
 
     @BeforeEach
     public void clear(){

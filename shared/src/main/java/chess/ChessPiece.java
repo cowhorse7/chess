@@ -54,10 +54,7 @@ public class ChessPiece {
     }
 
     public boolean spaceCheck(int row, int col){
-        if (row > 0 && row < 9 && col > 0 && col < 9){
-            return true;
-        }
-        return false;
+        return row > 0 && row < 9 && col > 0 && col < 9;
     }
 
     public boolean pieceCheck(ChessBoard board, ChessPosition start, ChessPosition end){
@@ -68,9 +65,7 @@ public class ChessPiece {
         }
         if (board.getPiece(end) != null){
             captureStop = true;
-            if (board.getPiece(end).pieceColor == board.getPiece(start).pieceColor){
-                return false;
-            }
+            return board.getPiece(end).pieceColor != board.getPiece(start).pieceColor;
         }
         return true;
     }
