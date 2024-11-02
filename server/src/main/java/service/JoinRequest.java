@@ -2,11 +2,11 @@ package service;
 
 import java.util.Objects;
 
-public class joinRequest {
+public class JoinRequest {
     private String playerColor;
     private int gameID;
 
-    public joinRequest(String playerColor, int gameID) throws ServiceException {
+    public JoinRequest(String playerColor, int gameID) throws ServiceException {
         this.playerColor = playerColor;
         checkColor(playerColor);
         this.gameID = gameID;

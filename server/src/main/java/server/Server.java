@@ -3,9 +3,9 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.*;
+import service.LoginResponse;
 import service.Service;
-import service.ServiceException;
-import service.joinRequest;
+import service.JoinRequest;
 import spark.*;
 
 import java.util.ArrayList;
@@ -40,8 +40,7 @@ public class Server {
         Spark.awaitInitialization();
         return Spark.port();
     }
-//FIXME: on errors, result is being set to an html error message instead of the expected
-// datatype. Need to work on error handling.
+
     private String createUser(Request req, Response res) throws Exception{
         UserData newUser = serializer.fromJson(req.body(), UserData.class);
         AuthData result = service.registerUser(newUser);
@@ -50,7 +49,7 @@ public class Server {
     }
     private String loginUser(Request req, Response res) throws Exception{
         UserData user = serializer.fromJson(req.body(), UserData.class);
-        AuthData result = service.loginUser(user.username(),user.password());
+        LoginResponse result = service.loginUser(user.username(),user.password());
         return serializer.toJson(result);
     }
     private String logoutUser(Request req, Response res) throws Exception{
@@ -64,7 +63,7 @@ public class Server {
     }
     private String joinGame(Request req, Response res) throws Exception{
         String authToken = req.headers("authorization");
-        joinRequest playerInfo = serializer.fromJson(req.body(), joinRequest.class);
+        JoinRequest playerInfo = serializer.fromJson(req.body(), JoinRequest.class);
         service.joinGame(authToken, playerInfo.getPlayerColor(), playerInfo.getGameID());
         return serializer.toJson(null);
     }
@@ -78,16 +77,21 @@ public class Server {
     private String listGames(Request req, Response res) throws Exception{
         String authToken = req.headers("authorization");
         ArrayList<GameData> result = service.listGames(authToken);
+        if (result.isEmpty()){return serializer.toJson(null);}
         return serializer.toJson(result);
     }
 
     private Object exceptionHandler(Exception ex, Request req, Response res){
-        if (ex.getMessage().equals("unauthorized")){
+        if (ex.getMessage().equals("Error: unauthorized") || ex.getMessage().equals("Error: user does not exist")){
             res.status(401);
         }
-        if(ex.getMessage().equals("Error: already taken")){
+        else if(ex.getMessage().equals("Error: already taken")){
             res.status(403);
         }
+        else if(ex.getMessage().equals("Error: bad request")){
+            res.status(400);
+        }
+        else{res.status(500);}
         res.body(serializer.toJson(Map.of("message", ex.getMessage())));
         return res.body();
     }
