@@ -3,8 +3,8 @@ package dataaccess;
 import model.UserData;
 
 public interface UserDAO {
-    void clear();
-    void createUser(UserData newUser);
-    UserData getUser(String username);
+    void clear() throws Exception;
+    void createUser(UserData newUser) throws Exception;
+    UserData getUser(String username) throws Exception;
     int getDataBaseSize();
 }
