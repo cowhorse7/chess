@@ -13,13 +13,13 @@ public class MyTests {//I've refactored my code so much
     private static final Service SERVICE = new Service(USER_DATA_ACCESS, AUTH_DATA_ACCESS, GAME_DATA_ACCESS);
 
     @BeforeEach
-    public void clear() {
+    public void clear() throws Exception {
         SERVICE.clear();
     }
 
     @Test
     @DisplayName("First Test")
-    public void registerUser() throws ServiceException {
+    public void registerUser() throws Exception {
         String username = "HiImNew";
         String email = "yo@yahoo.com";
         String password = "yoho";
@@ -31,7 +31,7 @@ public class MyTests {//I've refactored my code so much
 
     @Test
     @DisplayName("RegisterManyUsers")
-    public void registrations() throws ServiceException {
+    public void registrations() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         UserData newUser2 = new UserData("b", "bbb", "c@c");
         UserData newUser3 = new UserData("c", "bbb", "c@c");
@@ -43,32 +43,32 @@ public class MyTests {//I've refactored my code so much
         AuthData user3 = SERVICE.registerUser(newUser3);
         AuthData user4 = SERVICE.registerUser(newUser4);
         AuthData user5 = SERVICE.registerUser(newUser5);
-        Assertions.assertEquals(5, USER_DATA_ACCESS.getDataBaseSize());
+        Assertions.assertEquals(newUser4, USER_DATA_ACCESS.getUser("d"));
     }
 
     @Test
     @DisplayName("RegisterSameUser")
-    public void reRegister() throws ServiceException {
+    public void reRegister() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
-        Assertions.assertThrows(ServiceException.class, () -> {
+        Assertions.assertThrows(Exception.class, () -> {
             SERVICE.registerUser(newUser1);
         });
     }
 
     @Test
     @DisplayName("Login")
-    public void login() throws ServiceException {
+    public void login() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
-        Assertions.assertThrows(ServiceException.class, () -> {
+        Assertions.assertThrows(Exception.class, () -> {
             SERVICE.loginUser(newUser1.username(), newUser1.password());
         });
     }
 
     @Test
     @DisplayName("Logout")
-    public void logout() throws ServiceException {
+    public void logout() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         int size = AUTH_DATA_ACCESS.getDatabaseSize();
@@ -78,7 +78,7 @@ public class MyTests {//I've refactored my code so much
 
     @Test
     @DisplayName("LogoutAndIn")
-    public void logs() throws ServiceException {
+    public void logs() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         int size = AUTH_DATA_ACCESS.getDatabaseSize();
@@ -89,18 +89,18 @@ public class MyTests {//I've refactored my code so much
 
     @Test
     @DisplayName("WrongPassword")
-    public void passwordErr() throws ServiceException {
+    public void passwordErr() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         SERVICE.logoutUser(user1.authToken());
-        Assertions.assertThrows(ServiceException.class, () -> {
+        Assertions.assertThrows(Exception.class, () -> {
             SERVICE.loginUser(newUser1.username(), "b");
         });
     }
 
     @Test
     @DisplayName("List")
-    public void list() throws ServiceException {
+    public void list() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
@@ -109,7 +109,7 @@ public class MyTests {//I've refactored my code so much
 
     @Test
     @DisplayName("Create")
-    public void create() throws ServiceException {
+    public void create() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         SERVICE.createGame(user1.authToken(), "hey");
@@ -119,7 +119,7 @@ public class MyTests {//I've refactored my code so much
 
     @Test
     @DisplayName("Create Many")
-    public void createMany() throws ServiceException {
+    public void createMany() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         SERVICE.createGame(user1.authToken(), "hey");
@@ -133,7 +133,7 @@ public class MyTests {//I've refactored my code so much
 
     @Test
     @DisplayName("Join")
-    public void join() throws ServiceException {
+    public void join() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         SERVICE.createGame(user1.authToken(), "hey");
@@ -146,7 +146,7 @@ public class MyTests {//I've refactored my code so much
 
     @Test
     @DisplayName("No Join-Service Exceptions")
-    public void noJoin() throws ServiceException {
+    public void noJoin() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         UserData newUser2 = new UserData("b", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
@@ -157,16 +157,16 @@ public class MyTests {//I've refactored my code so much
         SERVICE.joinGame(user2.authToken(), "white", 1);
         ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
         System.out.println(listOfGames);
-        Assertions.assertThrows(ServiceException.class, () -> {
+        Assertions.assertThrows(Exception.class, () -> {
             SERVICE.joinGame(user2.authToken(), "white", 2);
         });
-        Assertions.assertThrows(ServiceException.class, () -> {
+        Assertions.assertThrows(Exception.class, () -> {
             SERVICE.joinGame(user2.authToken(), "black", 1);
         });
-        Assertions.assertThrows(ServiceException.class, () -> {
+        Assertions.assertThrows(Exception.class, () -> {
             SERVICE.joinGame(user2.authToken(), "white", 1);
         });
-        Assertions.assertThrows(ServiceException.class, () -> {
+        Assertions.assertThrows(Exception.class, () -> {
             SERVICE.joinGame(user2.authToken(), "black", 4);
         });
 

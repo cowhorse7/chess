@@ -15,8 +15,4 @@ public class MemoryUserDAO implements UserDAO{
     public UserData getUser(String username) {
         return dataBase.get(username);
     }
-
-    public int getDataBaseSize(){
-        return dataBase.size();
-    }
 }

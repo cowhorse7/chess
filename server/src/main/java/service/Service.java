@@ -18,7 +18,7 @@ public class Service {
 
     }
 
-    public void clear() {
+    public void clear() throws Exception {
         userDataAccess.clear();
         authDataAccess.clear();
         gameDataAccess.clear();
@@ -28,12 +28,12 @@ public class Service {
         return UUID.randomUUID().toString();
     }
 
-    public AuthData registerUser(UserData newUser) throws ServiceException {
+    public AuthData registerUser(UserData newUser) throws Exception {
         if (userDataAccess.getUser(newUser.username()) != null) {
-            throw new ServiceException("Error: already taken");
+            throw new Exception("Error: already taken");
         }
         if (newUser.username() == null || newUser.password() == null) {
-            throw new ServiceException("Error: bad request");
+            throw new Exception("Error: bad request");
         }
         userDataAccess.createUser(newUser);
         String authToken = generateAuthToken();
@@ -42,13 +42,13 @@ public class Service {
         return registerAuth;
     }
 
-    public LoginResponse loginUser(String username, String password) throws ServiceException {
+    public LoginResponse loginUser(String username, String password) throws Exception {
         if (userDataAccess.getUser(username) == null) {
-            throw new ServiceException("Error: user does not exist");
+            throw new Exception("Error: user does not exist");
         }
         UserData logger = userDataAccess.getUser(username);
         if (!Objects.equals(logger.password(), password)) {
-            throw new ServiceException("Error: unauthorized");
+            throw new Exception("Error: unauthorized");
         }
         String authToken = generateAuthToken();
         AuthData userAuth = new AuthData(authToken, username);
@@ -56,20 +56,20 @@ public class Service {
         return new LoginResponse(username, authToken);
     }
 
-    public void logoutUser(String authToken) throws ServiceException {
+    public void logoutUser(String authToken) throws Exception {
         AuthData userAuth = checkAuth(authToken);
         authDataAccess.deleteAuth(userAuth);
     }
 
-    public AuthData checkAuth(String authToken) throws ServiceException {
+    public AuthData checkAuth(String authToken) throws Exception {
         AuthData userAuth = authDataAccess.getAuthByToken(authToken);
         if (userAuth == null) {
-            throw new ServiceException("Error: unauthorized");
+            throw new Exception("Error: unauthorized");
         }
         return userAuth;
     }
 
-    public ListGamesResponse listGames(String authToken) throws ServiceException {
+    public ListGamesResponse listGames(String authToken) throws Exception {
         HashSet<GameData> listOfGames = new HashSet<>();
         checkAuth(authToken);
         HashMap<Integer, GameData> gameDatabase = gameDataAccess.listGames();
@@ -79,7 +79,7 @@ public class Service {
         return new ListGamesResponse(listOfGames);
     }
 
-    public int createGame(String authToken, String gameName) throws ServiceException {
+    public int createGame(String authToken, String gameName) throws Exception {
         checkAuth(authToken);
         int gameID = gameDataAccess.getGameDatabaseSize() + 1;
         GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());
@@ -87,20 +87,20 @@ public class Service {
         return gameID;
     }
 
-    public void joinGame(String authToken, String playerColor, Integer gameID) throws ServiceException {
+    public void joinGame(String authToken, String playerColor, Integer gameID) throws Exception {
         AuthData currentUser = checkAuth(authToken);
         if (playerColor == null || gameID == null) {
-            throw new ServiceException("Error: bad request");
+            throw new Exception("Error: bad request");
         }
         GameData game = gameDataAccess.getGame(gameID);
         if (game == null) {
-            throw new ServiceException("Error: bad request");
+            throw new Exception("Error: bad request");
         }//game does not exist
         if (Objects.equals(playerColor, "WHITE") && game.whiteUsername() != null) {
-            throw new ServiceException("Error: already taken");
+            throw new Exception("Error: already taken");
         }
         else if (Objects.equals(playerColor, "BLACK") && game.blackUsername() != null) {
-            throw new ServiceException("Error: already taken");
+            throw new Exception("Error: already taken");
         }
         else if (Objects.equals(playerColor, "BLACK") && game.blackUsername() == null) {
             GameData updatedGame = new GameData(game.gameID(), game.whiteUsername(), currentUser.username(), game.gameName(), game.game());

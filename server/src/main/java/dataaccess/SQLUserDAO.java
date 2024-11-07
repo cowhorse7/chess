@@ -31,11 +31,6 @@ public class SQLUserDAO implements UserDAO{
             }
         }
     }
-
-    public int getDataBaseSize() {
-        return 0;
-    }
-
     private final String[] createStatements = {
             """
                 CREATE TABLE IF NOT EXISTS user (
