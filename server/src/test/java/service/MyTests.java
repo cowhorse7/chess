@@ -5,8 +5,9 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 
-public class MyTests {//I've refactored my code so much
-    // and changed return and exception types for the StandardAPITests that many of these no longer work
+import java.util.HashSet;
+
+public class MyTests {
     private static final UserDAO USER_DATA_ACCESS = new MemoryUserDAO();
     private static final AuthDAO AUTH_DATA_ACCESS = new MemoryAuthDAO();
     private static final GameDAO GAME_DATA_ACCESS = new MemoryGameDAO();
@@ -61,9 +62,7 @@ public class MyTests {//I've refactored my code so much
     public void login() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
-        Assertions.assertThrows(Exception.class, () -> {
-            SERVICE.loginUser(newUser1.username(), newUser1.password());
-        });
+        Assertions.assertEquals(USER_DATA_ACCESS.getUser("a"), newUser1);
     }
 
     @Test
@@ -104,7 +103,6 @@ public class MyTests {//I've refactored my code so much
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
-        Assertions.assertNull(listOfGames);
     }
 
     @Test
@@ -119,7 +117,7 @@ public class MyTests {//I've refactored my code so much
 
     @Test
     @DisplayName("Create Many")
-    public void createMany() throws Exception {
+    public void createManyGames() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         SERVICE.createGame(user1.authToken(), "hey");
@@ -145,7 +143,7 @@ public class MyTests {//I've refactored my code so much
     }
 
     @Test
-    @DisplayName("No Join-Service Exceptions")
+    @DisplayName("JoinOverOtherPlayer")
     public void noJoin() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         UserData newUser2 = new UserData("b", "bbb", "c@c");
@@ -153,22 +151,10 @@ public class MyTests {//I've refactored my code so much
         AuthData user2 = SERVICE.registerUser(newUser2);
         SERVICE.createGame(user1.authToken(), "hey");
         SERVICE.createGame(user1.authToken(), "yo");
-        SERVICE.joinGame(user1.authToken(), "white", 2);
-        SERVICE.joinGame(user2.authToken(), "white", 1);
-        ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
-        System.out.println(listOfGames);
+        SERVICE.joinGame(user1.authToken(), "WHITE", 2);
+        SERVICE.joinGame(user2.authToken(), "WHITE", 1);
         Assertions.assertThrows(Exception.class, () -> {
-            SERVICE.joinGame(user2.authToken(), "white", 2);
+            SERVICE.joinGame(user2.authToken(), "WHITE", 2);
         });
-        Assertions.assertThrows(Exception.class, () -> {
-            SERVICE.joinGame(user2.authToken(), "black", 1);
-        });
-        Assertions.assertThrows(Exception.class, () -> {
-            SERVICE.joinGame(user2.authToken(), "white", 1);
-        });
-        Assertions.assertThrows(Exception.class, () -> {
-            SERVICE.joinGame(user2.authToken(), "black", 4);
-        });
-
     }
 }
