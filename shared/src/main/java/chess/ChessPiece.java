@@ -53,11 +53,11 @@ public class ChessPiece {
         return type;
     }
 
-    public boolean spaceCheck(int row, int col){
+    private boolean spaceCheck(int row, int col){
         return row > 0 && row < 9 && col > 0 && col < 9;
     }
 
-    public boolean pieceCheck(ChessBoard board, ChessPosition start, ChessPosition end){
+    private boolean pieceCheck(ChessBoard board, ChessPosition start, ChessPosition end){
         if(board.getPiece(start).type == PieceType.PAWN){
             if (board.getPiece(end) != null){
                 return false;
@@ -69,6 +69,47 @@ public class ChessPiece {
         }
         return true;
     }
+    private void determineMoveSet(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> moves){
+        switch (type){
+            case BISHOP:
+                int[][] bishopMoveDirections = {{1,1},{1,-1},{-1,1},{-1,-1}};
+                calculateMoves(board, myPosition, moves, bishopMoveDirections);
+                break;
+            case ROOK:
+                int[][] rookMoveDirections = {{1,0},{0,-1},{0,1},{-1,0}};
+                calculateMoves(board, myPosition, moves, rookMoveDirections);
+                break;
+            case QUEEN,KING:
+                int[][] queenMoveDirections = {{1,1},{1,-1},{-1,1},{-1,-1},{1,0},{0,-1},{0,1},{-1,0}};
+                calculateMoves(board, myPosition, moves, queenMoveDirections);
+                break;
+            case KNIGHT:
+                int[][] knightMoveDirections = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{1,-2},{-1,-2},{-1,2}};
+                calculateMoves(board, myPosition, moves, knightMoveDirections);
+        }
+    }
+    private void calculateMoves(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> moves, int[][] moveDirections){
+        int curRow = myPosition.getRow();
+        int curCol = myPosition.getColumn();
+        for (int[] direction : moveDirections) {
+            int rowDir = direction[0];
+            int colDir = direction[1];
+            int i = 1;
+            captureStop = false;
+            while (spaceCheck(curRow + (i * rowDir), curCol + (i * colDir)) && pieceCheck(board, myPosition, new ChessPosition(curRow + (i * rowDir), curCol + (i * colDir)))) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(curRow + (i * rowDir), curCol + (i * colDir)), null));
+                if (captureStop || this.type == PieceType.KING || this.type == PieceType.KNIGHT){break;}
+                i++;
+            }
+        }
+    }
+    private void pawnPromotionPossibilities(ChessPosition myPosition, ChessPosition endPosition, ArrayList<ChessMove> moves){
+        moves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
+        moves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+        moves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+        moves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+    }
+
 
     /**
      * Calculates all the positions a chess piece can move to
@@ -83,184 +124,14 @@ public class ChessPiece {
         int curRow = myPosition.getRow();
         int curCol = myPosition.getColumn();
         switch (type) {
-            case KING:
-                if (spaceCheck(curRow + 1, curCol + 1) && pieceCheck(board, myPosition, new ChessPosition(curRow+1, curCol + 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow+1, curCol + 1), null));
-                }
-                if (spaceCheck(curRow + 1, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow+1, curCol))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow+1, curCol), null));
-                }
-                if (spaceCheck(curRow + 1, curCol - 1) && pieceCheck(board, myPosition, new ChessPosition(curRow+1, curCol - 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow+1, curCol - 1), null));
-                }
-                if (spaceCheck(curRow - 1, curCol + 1) && pieceCheck(board, myPosition, new ChessPosition(curRow-1, curCol + 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow-1, curCol + 1), null));
-                }
-                if (spaceCheck(curRow - 1, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow-1, curCol))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow-1, curCol), null));
-                }
-                if (spaceCheck(curRow - 1, curCol - 1) && pieceCheck(board, myPosition, new ChessPosition(curRow-1, curCol - 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow-1, curCol - 1), null));
-                }
-                if (spaceCheck(curRow, curCol + 1) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol + 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol + 1), null));
-                }
-                if (spaceCheck(curRow, curCol - 1) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol - 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol - 1), null));
-                }
-                break;
-            case QUEEN:
-                i = 1;
-                captureStop = false;
-                while (spaceCheck(curRow + i, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol + i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol + i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow - i, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol - i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol - i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow + i, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol - i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol - i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow - i, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol + i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol + i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                i = 1;
-                captureStop = false;
-                while (spaceCheck(curRow + i, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow - i, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol - i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol - i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol + i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol + i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                break;
-            case BISHOP:
-                i = 1;
-                captureStop = false;
-                while (spaceCheck(curRow + i, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol + i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol + i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow - i, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol - i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol - i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow + i, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol - i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol - i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow - i, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol + i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol + i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                break;
-            case KNIGHT:
-                if (spaceCheck(curRow + 2, curCol - 1) && pieceCheck(board, myPosition, new ChessPosition(curRow + 2, curCol - 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 2, curCol - 1), null));
-                }
-                if (spaceCheck(curRow + 2, curCol + 1) && pieceCheck(board, myPosition, new ChessPosition(curRow + 2, curCol + 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 2, curCol + 1), null));
-                }
-                if (spaceCheck(curRow - 2, curCol - 1) && pieceCheck(board, myPosition, new ChessPosition(curRow - 2, curCol - 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 2, curCol - 1), null));
-                }
-                if (spaceCheck(curRow - 2, curCol + 1) && pieceCheck(board, myPosition, new ChessPosition(curRow - 2, curCol + 1))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 2, curCol + 1), null));
-                }
-                if (spaceCheck(curRow - 1, curCol - 2) && pieceCheck(board, myPosition, new ChessPosition(curRow - 1, curCol - 2))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 2), null));
-                }
-                if (spaceCheck(curRow + 1, curCol - 2) && pieceCheck(board, myPosition, new ChessPosition(curRow + 1, curCol - 2))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 2), null));
-                }
-                if (spaceCheck(curRow - 1, curCol + 2) && pieceCheck(board, myPosition, new ChessPosition(curRow - 1, curCol + 2))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 2), null));
-                }
-                if (spaceCheck(curRow + 1, curCol + 2) && pieceCheck(board, myPosition, new ChessPosition(curRow + 1, curCol + 2))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 2), null));
-                }
-                break;
-            case ROOK:
-                i = 1;
-                captureStop = false;
-                while (spaceCheck(curRow + i, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow + i, curCol))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + i, curCol), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow - i, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow - i, curCol))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - i, curCol), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow, curCol - i) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol - i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol - i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
-                captureStop = false;
-                i = 1;
-                while (spaceCheck(curRow, curCol + i) && pieceCheck(board, myPosition, new ChessPosition(curRow, curCol + i))){
-                    moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow, curCol + i), null));
-                    if (captureStop) {break;}
-                    i++;
-                }
+            case BISHOP, ROOK, QUEEN, KING, KNIGHT:
+                determineMoveSet(board, myPosition, moveSet);
                 break;
             case PAWN:
                 if (pieceColor == ChessGame.TeamColor.WHITE){
                     if (spaceCheck(curRow + 1, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow + 1, curCol))) {
                         if (curRow + 1 == 8){
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), PieceType.ROOK));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), PieceType.KNIGHT));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), PieceType.BISHOP));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), PieceType.QUEEN));
+                            pawnPromotionPossibilities(myPosition, new ChessPosition(curRow + 1, curCol), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), null));}
                         if (curRow == 2 && spaceCheck(curRow + 2, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow + 2, curCol))){
@@ -269,19 +140,13 @@ public class ChessPiece {
                     }
                     if (spaceCheck(curRow + 1, curCol + 1) && board.getPiece(new ChessPosition(curRow + 1, curCol + 1)) != null && board.getPiece(new ChessPosition(curRow + 1, curCol + 1)).pieceColor == ChessGame.TeamColor.BLACK) {
                         if (curRow + 1 == 8){
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), PieceType.ROOK));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), PieceType.KNIGHT));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), PieceType.BISHOP));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), PieceType.QUEEN));
+                            pawnPromotionPossibilities(myPosition, new ChessPosition(curRow + 1, curCol + 1), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), null));}
                     }
                     if (spaceCheck(curRow + 1, curCol - 1) && board.getPiece(new ChessPosition(curRow + 1, curCol - 1)) != null && board.getPiece(new ChessPosition(curRow + 1, curCol - 1)).pieceColor == ChessGame.TeamColor.BLACK) {
                         if (curRow + 1 == 8){
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 1), PieceType.ROOK));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 1), PieceType.KNIGHT));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 1), PieceType.BISHOP));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 1), PieceType.QUEEN));
+                            pawnPromotionPossibilities(myPosition, new ChessPosition(curRow + 1, curCol - 1), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol - 1), null));}
                     }
@@ -290,10 +155,7 @@ public class ChessPiece {
                 if (pieceColor == ChessGame.TeamColor.BLACK){
                     if (spaceCheck(curRow - 1, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow - 1, curCol))) {
                         if (curRow - 1 == 1){
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), PieceType.ROOK));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), PieceType.KNIGHT));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), PieceType.BISHOP));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), PieceType.QUEEN));
+                            pawnPromotionPossibilities(myPosition, new ChessPosition(curRow - 1, curCol), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), null));}
                         if (curRow == 7 && spaceCheck(curRow - 2, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow - 2, curCol))){
@@ -302,19 +164,13 @@ public class ChessPiece {
                     }
                     if (spaceCheck(curRow - 1, curCol - 1) && board.getPiece(new ChessPosition(curRow - 1, curCol - 1)) != null && board.getPiece(new ChessPosition(curRow - 1, curCol - 1)).pieceColor == ChessGame.TeamColor.WHITE) {
                         if (curRow - 1 == 1){
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), PieceType.ROOK));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), PieceType.KNIGHT));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), PieceType.BISHOP));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), PieceType.QUEEN));
+                            pawnPromotionPossibilities(myPosition, new ChessPosition(curRow - 1, curCol - 1), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), null));}
                     }
                     if (spaceCheck(curRow - 1, curCol + 1) && board.getPiece(new ChessPosition(curRow - 1, curCol + 1)) != null && board.getPiece(new ChessPosition(curRow - 1, curCol + 1)).pieceColor == ChessGame.TeamColor.WHITE) {
                         if (curRow - 1 == 1){
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 1), PieceType.ROOK));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 1), PieceType.KNIGHT));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 1), PieceType.BISHOP));
-                            moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 1), PieceType.QUEEN));
+                            pawnPromotionPossibilities(myPosition, new ChessPosition(curRow - 1, curCol + 1), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol + 1), null));}
                     }
