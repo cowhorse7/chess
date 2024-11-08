@@ -21,10 +21,13 @@ public class SQLUserDAO implements UserDAO{
 
     public UserData getUser(String username) throws Exception {
         try(var conn = DatabaseManager.getConnection()){
-            String statement = "SELECT username FROM user WHERE username=?";
+            String statement = "SELECT username, password, email FROM user WHERE username=?";
             try(var ps = conn.prepareStatement(statement)){
+                ps.setString(1, username);
                 try(var rs = ps.executeQuery()){
-                    return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+                    if(rs.next()) {
+                        return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+                    }else{return null;}
                 }
             }catch (SQLException e){
                 throw new Exception(String.format("Unable to read data: %s", e.getMessage()));
@@ -34,10 +37,10 @@ public class SQLUserDAO implements UserDAO{
     private final String[] createStatements = {
             """
                 CREATE TABLE IF NOT EXISTS user (
-                    'username' varchar(128) NOT NULL,
-                    'password' varchar(128) NOT NULL,
-                    'email' varchar(128) NOT NULL,
-                   PRIMARY KEY ('username'),
+                    `username` varchar(128) NOT NULL,
+                    `password` varchar(128) NOT NULL,
+                    `email` varchar(128) NOT NULL,
+                   PRIMARY KEY (`username`),
                    INDEX(email)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """

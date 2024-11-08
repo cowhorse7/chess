@@ -4,8 +4,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-
-import java.util.HashSet;
+import org.junit.jupiter.api.BeforeAll;
 
 public class MyTests {
     private static UserDAO USER_DATA_ACCESS;
