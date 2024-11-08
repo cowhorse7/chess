@@ -8,10 +8,22 @@ import org.junit.jupiter.api.*;
 import java.util.HashSet;
 
 public class MyTests {
-    private static final UserDAO USER_DATA_ACCESS = new MemoryUserDAO();
-    private static final AuthDAO AUTH_DATA_ACCESS = new MemoryAuthDAO();
-    private static final GameDAO GAME_DATA_ACCESS = new MemoryGameDAO();
-    private static final Service SERVICE = new Service(USER_DATA_ACCESS, AUTH_DATA_ACCESS, GAME_DATA_ACCESS);
+    private static UserDAO USER_DATA_ACCESS;
+    private static AuthDAO AUTH_DATA_ACCESS;
+    private static GameDAO GAME_DATA_ACCESS;
+    private static Service SERVICE;
+
+    @BeforeAll
+    public static void setup(){
+        try {
+            USER_DATA_ACCESS = new SQLUserDAO();
+            AUTH_DATA_ACCESS = new MemoryAuthDAO();
+            GAME_DATA_ACCESS = new MemoryGameDAO();
+            SERVICE = new Service(USER_DATA_ACCESS, AUTH_DATA_ACCESS, GAME_DATA_ACCESS);
+        }catch(Exception e){
+            System.out.print("Initialization problem");
+        }
+    }
 
     @BeforeEach
     public void clear() throws Exception {
