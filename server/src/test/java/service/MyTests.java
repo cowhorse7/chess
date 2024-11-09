@@ -30,7 +30,7 @@ public class MyTests {
     }
 
     @Test
-    @DisplayName("First Test")
+    @DisplayName("Register")
     public void registerUser() throws Exception {
         String username = "HiImNew";
         String email = "yo@yahoo.com";
@@ -49,17 +49,16 @@ public class MyTests {
         UserData newUser3 = new UserData("c", "bbb", "c@c");
         UserData newUser4 = new UserData("d", "bbb", "c@c");
         UserData newUser5 = new UserData("e", "bbb", "c@c");
-        UserData newUser6 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         AuthData user2 = SERVICE.registerUser(newUser2);
         AuthData user3 = SERVICE.registerUser(newUser3);
         AuthData user4 = SERVICE.registerUser(newUser4);
         AuthData user5 = SERVICE.registerUser(newUser5);
-        Assertions.assertEquals(newUser4, USER_DATA_ACCESS.getUser("d"));
+        Assertions.assertNotNull(USER_DATA_ACCESS.getUser("d"));
     }
 
     @Test
-    @DisplayName("RegisterSameUser")
+    @DisplayName("NoRegisterSameUser")
     public void reRegister() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
@@ -67,13 +66,28 @@ public class MyTests {
             SERVICE.registerUser(newUser1);
         });
     }
+    @Test
+    @DisplayName("NullFailRegister")
+    public void nullRegisterAttempts() throws Exception {
+        UserData newUser1 = new UserData("a", null, "c@c");
+        UserData newUser2 = new UserData(null, "bbb", "c@c");
+        UserData newUser3 = new UserData("a", "bbb", null);
 
+        Assertions.assertThrows(Exception.class, () -> {SERVICE.registerUser(newUser1);});
+        Assertions.assertThrows(Exception.class, () -> {SERVICE.registerUser(newUser2);});
+        Assertions.assertThrows(Exception.class, () -> {SERVICE.registerUser(newUser3);});
+    }
     @Test
     @DisplayName("Login")
     public void login() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
-        AuthData user1 = SERVICE.registerUser(newUser1);
-        Assertions.assertEquals(USER_DATA_ACCESS.getUser("a"), newUser1);
+        SERVICE.registerUser(newUser1);
+        Assertions.assertNotNull(SERVICE.loginUser(newUser1.username(), newUser1.password()));}
+    @Test
+    @DisplayName("UserDoesNotExist")
+    public void noLogin() throws Exception {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        Assertions.assertThrows(Exception.class, () -> {SERVICE.loginUser("bogus", newUser1.password());});
     }
 
     @Test
@@ -83,15 +97,6 @@ public class MyTests {
         AuthData user1 = SERVICE.registerUser(newUser1);
         SERVICE.logoutUser(user1.authToken());
         Assertions.assertNull(AUTH_DATA_ACCESS.getAuthByToken(user1.authToken()));
-    }
-
-    @Test
-    @DisplayName("LogoutAndIn")
-    public void logs() throws Exception {
-        UserData newUser1 = new UserData("a", "bbb", "c@c");
-        AuthData user1 = SERVICE.registerUser(newUser1);
-        SERVICE.logoutUser(user1.authToken());
-        Assertions.assertNotNull(SERVICE.loginUser(newUser1.username(), newUser1.password()));
     }
 
     @Test

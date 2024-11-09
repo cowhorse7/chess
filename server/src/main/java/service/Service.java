@@ -3,6 +3,7 @@ package service;
 import chess.ChessGame;
 import dataaccess.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.*;
 
@@ -32,7 +33,7 @@ public class Service {
         if (userDataAccess.getUser(newUser.username()) != null) {
             throw new Exception("Error: already taken");
         }
-        if (newUser.username() == null || newUser.password() == null) {
+        if (newUser.username() == null || newUser.password() == null || newUser.email() == null) {
             throw new Exception("Error: bad request");
         }
         userDataAccess.createUser(newUser);
@@ -47,7 +48,7 @@ public class Service {
             throw new Exception("Error: user does not exist");
         }
         UserData logger = userDataAccess.getUser(username);
-        if (!Objects.equals(logger.password(), password)) {
+        if (!BCrypt.checkpw(password, logger.password())){//Objects.equals(logger.password(), password)) {
             throw new Exception("Error: unauthorized");
         }
         String authToken = generateAuthToken();
