@@ -16,7 +16,7 @@ public class MyTests {
     public static void setup(){
         try {
             USER_DATA_ACCESS = new SQLUserDAO();
-            AUTH_DATA_ACCESS = new MemoryAuthDAO();
+            AUTH_DATA_ACCESS = new SQLAuthDAO();
             GAME_DATA_ACCESS = new MemoryGameDAO();
             SERVICE = new Service(USER_DATA_ACCESS, AUTH_DATA_ACCESS, GAME_DATA_ACCESS);
         }catch(Exception e){

@@ -25,7 +25,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     public void createUser(UserData newUser) throws Exception {
-        var statement = "INSERT INTO user (username, password, email) VALUES (?,?,?)";
+        String statement = "INSERT INTO user (username, password, email) VALUES (?,?,?)";
         DatabaseManager.executeUpdate(statement, newUser.username(),newUser.password(), newUser.email());
     }
 

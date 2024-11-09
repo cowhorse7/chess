@@ -3,7 +3,6 @@ package dataaccess;
 import model.AuthData;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class SQLAuthDAO implements AuthDAO{
     public SQLAuthDAO() throws Exception{
@@ -12,24 +11,39 @@ public class SQLAuthDAO implements AuthDAO{
                 CREATE TABLE IF NOT EXISTS auth (
                     `authToken` varchar(128) NOT NULL,
                     `username` varchar(128) NOT NULL,
-                   PRIMARY KEY (`authToken`),
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                   PRIMARY KEY (`authToken`)
+                )
             """
         };
         DatabaseManager.configureDatabase(createStatements);
     }
-    public void createAuth(AuthData newAuth) {
-
+    public void createAuth(AuthData newAuth) throws Exception {
+        String statement = "INSERT INTO auth (authToken, username) VALUES (?,?)";
+        DatabaseManager.executeUpdate(statement, newAuth.authToken(), newAuth.username());
     }
 
-    public AuthData getAuthByToken(String userAuth) {
-        return null;
+    public AuthData getAuthByToken(String userAuth) throws Exception{
+        try(var conn = DatabaseManager.getConnection()){
+            String statement = "SELECT authToken, username FROM auth WHERE authToken=?";
+            try(var ps = conn.prepareStatement(statement)){
+                ps.setString(1, userAuth);
+                try(var rs = ps.executeQuery()){
+                    if(rs.next()) {
+                        return new AuthData(rs.getString("authToken"), rs.getString("username"));
+                    }else{return null;}
+                }
+            }catch (SQLException e){
+                throw new Exception(String.format("Unable to read data: %s", e.getMessage()));
+            }
+        }
     }
 
-    public void deleteAuth(AuthData userAuth) {
-
+    public void deleteAuth(AuthData userAuth) throws Exception {
+        String statement = "DELETE FROM auth WHERE authToken=?";
+        DatabaseManager.executeUpdate(statement, userAuth.authToken());
     }
-    public void clear() {
-
+    public void clear() throws Exception {
+        String statement = "TRUNCATE auth";
+        DatabaseManager.executeUpdate(statement);
     }
 }

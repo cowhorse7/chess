@@ -9,6 +9,6 @@ public interface GameDAO {
     GameData getGame(int id);
     HashMap<Integer, GameData> listGames();
     void updateGame(int gameID, GameData newGame);
-    void clear();
+    void clear() throws Exception;
     int getGameDatabaseSize();
 }
