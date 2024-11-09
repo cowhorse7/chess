@@ -75,7 +75,8 @@ public class DatabaseManager {
                 for(int i = 0; i < params.length; i++){
                     var param = params[i];
                     if (param instanceof String p) ps.setString(i+1,p);
-                    else {throw new Exception("parameter not a String");}
+                    else if (param instanceof Integer p) ps.setInt(i+1,p);
+                    else {throw new Exception("parameter not a String or Integer");}
                 }
                 ps.executeUpdate();
             }catch (SQLException e){

@@ -17,7 +17,7 @@ public class MyTests {
         try {
             USER_DATA_ACCESS = new SQLUserDAO();
             AUTH_DATA_ACCESS = new SQLAuthDAO();
-            GAME_DATA_ACCESS = new MemoryGameDAO();
+            GAME_DATA_ACCESS = new SQLGameDAO();
             SERVICE = new Service(USER_DATA_ACCESS, AUTH_DATA_ACCESS, GAME_DATA_ACCESS);
         }catch(Exception e){
             System.out.print("Initialization problem");
@@ -125,28 +125,33 @@ public class MyTests {
         ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
         Assertions.assertEquals(0, listOfGames.listSize());
     }
-
     @Test
-    @DisplayName("Create")
+    @DisplayName("BadAuthOnList")
+    public void noList() throws Exception {
+        UserData newUser1 = new UserData("a", "bbb", "c@c");
+        AuthData user1 = SERVICE.registerUser(newUser1);
+        Assertions.assertThrows(Exception.class, ()->{SERVICE.listGames("bogusAuth");});
+    }
+    @Test
+    @DisplayName("CreateGame")
     public void create() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
-        SERVICE.createGame(user1.authToken(), "hey");
-        ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
-        Assertions.assertNotNull(listOfGames);
+        int game1id = SERVICE.createGame(user1.authToken(), "hey");
+        Assertions.assertEquals("hey", GAME_DATA_ACCESS.getGame(game1id).gameName());
     }
 
     @Test
-    @DisplayName("Create Many")
+    @DisplayName("CreateMany")
     public void createManyGames() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
-        SERVICE.createGame(user1.authToken(), "hey");
+        int game1id = SERVICE.createGame(user1.authToken(), "hey");
         SERVICE.createGame(user1.authToken(), "yo");
         SERVICE.createGame(user1.authToken(), "five");
         SERVICE.createGame(user1.authToken(), "six");
         SERVICE.createGame(user1.authToken(), "oh");
-        Assertions.assertEquals(5, GAME_DATA_ACCESS.getGameDatabaseSize());
+        Assertions.assertEquals("hey", GAME_DATA_ACCESS.getGame(game1id).gameName());
     }
 
     @Test
@@ -154,27 +159,26 @@ public class MyTests {
     public void join() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
-        SERVICE.createGame(user1.authToken(), "hey");
+        int game1id = SERVICE.createGame(user1.authToken(), "hey");
         SERVICE.createGame(user1.authToken(), "yo");
-        SERVICE.joinGame(user1.authToken(), "white", 2);
-        ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
-        System.out.println(listOfGames);
-        Assertions.assertEquals(2, GAME_DATA_ACCESS.getGameDatabaseSize());
+        SERVICE.joinGame(user1.authToken(), "WHITE", game1id);
+        Assertions.assertEquals(game1id, GAME_DATA_ACCESS.getGame(game1id).gameID());
+        Assertions.assertEquals(user1.username(), GAME_DATA_ACCESS.getGame(game1id).whiteUsername());
     }
 
     @Test
-    @DisplayName("JoinOverOtherPlayer")
+    @DisplayName("CantJoinOverOtherPlayer")
     public void noJoin() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         UserData newUser2 = new UserData("b", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         AuthData user2 = SERVICE.registerUser(newUser2);
-        SERVICE.createGame(user1.authToken(), "hey");
-        SERVICE.createGame(user1.authToken(), "yo");
-        SERVICE.joinGame(user1.authToken(), "WHITE", 2);
-        SERVICE.joinGame(user2.authToken(), "WHITE", 1);
+        int game1id = SERVICE.createGame(user1.authToken(), "hey");
+        int game2id = SERVICE.createGame(user1.authToken(), "yo");
+        SERVICE.joinGame(user1.authToken(), "WHITE", game2id);
+        SERVICE.joinGame(user2.authToken(), "WHITE", game1id);
         Assertions.assertThrows(Exception.class, () -> {
-            SERVICE.joinGame(user2.authToken(), "WHITE", 2);
+            SERVICE.joinGame(user2.authToken(), "WHITE", game2id);
         });
     }
 }

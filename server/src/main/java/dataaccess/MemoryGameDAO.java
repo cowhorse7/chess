@@ -19,5 +19,4 @@ public class MemoryGameDAO implements GameDAO{
     public void clear() {
         gameDatabase.clear();
     }
-    public int getGameDatabaseSize(){return gameDatabase.size();}
 }

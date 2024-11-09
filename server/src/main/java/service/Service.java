@@ -11,12 +11,13 @@ public class Service {
     private final UserDAO userDataAccess;
     private final AuthDAO authDataAccess;
     private final GameDAO gameDataAccess;
+    public int currentGameCount;
 
     public Service(UserDAO userDataAccess, AuthDAO authDataAccess, GameDAO gameDataAccess) {
         this.userDataAccess = userDataAccess;
         this.authDataAccess = authDataAccess;
         this.gameDataAccess = gameDataAccess;
-
+        currentGameCount = 0;
     }
 
     public void clear() throws Exception {
@@ -82,7 +83,8 @@ public class Service {
 
     public int createGame(String authToken, String gameName) throws Exception {
         checkAuth(authToken);
-        int gameID = gameDataAccess.getGameDatabaseSize() + 1;
+        int gameID = currentGameCount + 1;
+        currentGameCount += 1;
         GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());
         gameDataAccess.createGame(gameID, newGame);
         return gameID;
