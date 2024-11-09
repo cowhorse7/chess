@@ -9,4 +9,5 @@ public class ListGamesResponse {
     public ListGamesResponse(HashSet<GameData> listOfGames){
         games = listOfGames;
     }
+    public int listSize(){return games.size();}
 }

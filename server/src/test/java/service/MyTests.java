@@ -81,9 +81,8 @@ public class MyTests {
     public void logout() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
-        int size = AUTH_DATA_ACCESS.getDatabaseSize();
         SERVICE.logoutUser(user1.authToken());
-        Assertions.assertEquals(size - 1, AUTH_DATA_ACCESS.getDatabaseSize());
+        Assertions.assertNull(AUTH_DATA_ACCESS.getAuthByToken(user1.authToken()));
     }
 
     @Test
@@ -91,10 +90,15 @@ public class MyTests {
     public void logs() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
-        int size = AUTH_DATA_ACCESS.getDatabaseSize();
         SERVICE.logoutUser(user1.authToken());
-        SERVICE.loginUser(newUser1.username(), newUser1.password());
-        Assertions.assertEquals(size, AUTH_DATA_ACCESS.getDatabaseSize());
+        Assertions.assertNotNull(SERVICE.loginUser(newUser1.username(), newUser1.password()));
+    }
+
+    @Test
+    @DisplayName("FailedLogout")
+    public void badLogout() throws Exception {
+        registerUser();
+        Assertions.assertThrows(Exception.class, ()->{SERVICE.logoutUser("bogusAuth");});
     }
 
     @Test
@@ -109,11 +113,12 @@ public class MyTests {
     }
 
     @Test
-    @DisplayName("List")
+    @DisplayName("EmptyList")
     public void list() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
+        Assertions.assertEquals(0, listOfGames.listSize());
     }
 
     @Test
@@ -136,7 +141,6 @@ public class MyTests {
         SERVICE.createGame(user1.authToken(), "five");
         SERVICE.createGame(user1.authToken(), "six");
         SERVICE.createGame(user1.authToken(), "oh");
-        ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
         Assertions.assertEquals(5, GAME_DATA_ACCESS.getGameDatabaseSize());
     }
 

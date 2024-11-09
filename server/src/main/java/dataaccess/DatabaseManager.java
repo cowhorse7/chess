@@ -69,4 +69,30 @@ public class DatabaseManager {
             throw new DataAccessException(e.getMessage());
         }
     }
+    public static void executeUpdate(String statement, Object... params) throws Exception{
+        try(var conn = DatabaseManager.getConnection()){
+            try(var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)){
+                for(int i = 0; i < params.length; i++){
+                    var param = params[i];
+                    if (param instanceof String p) ps.setString(i+1,p);
+                    else {throw new Exception("parameter not a String");}
+                }
+                ps.executeUpdate();
+            }catch (SQLException e){
+                throw new Exception(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            }
+        }
+    }
+    public static void configureDatabase(String[] createStatements) throws Exception {
+        DatabaseManager.createDatabase();
+        try(var conn = DatabaseManager.getConnection()){
+            for(var statement: createStatements){
+                try(var preparedStatement = conn.prepareStatement(statement)){
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex){
+            throw new Exception(String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }
 }

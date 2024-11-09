@@ -7,5 +7,4 @@ public interface AuthDAO {
     AuthData getAuthByToken(String userAuth);
     void deleteAuth(AuthData userAuth);
     void clear();
-    int getDatabaseSize();
 }

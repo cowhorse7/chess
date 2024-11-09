@@ -27,7 +27,4 @@ public class MemoryAuthDAO implements AuthDAO{
     public void clear() {
         authDatabase.clear();
     }
-    public int getDatabaseSize() {
-        return authDatabase.size();
-    }
 }
