@@ -1,6 +1,5 @@
-package dataAccess;
+package dataaccess;
 
-import dataaccess.*;
 import org.junit.jupiter.api.*;
 import service.Service;
 
@@ -21,4 +20,25 @@ public class DataAccessTests {
                 System.out.print("Initialization problem");
             }
         }
+        @Test
+        public void userCreatePos(){
+
+        }
+    @Test
+    public void userCreateNeg(){
+
+    }
+    @Test
+    public void userClear(){
+
+    }
+    @Test
+    public void getUserPos(){
+
+    }
+    @Test
+    public void getUserNeg(){
+
+    }
+
 }
