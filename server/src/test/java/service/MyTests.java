@@ -119,7 +119,7 @@ public class MyTests {
 
     @Test
     @DisplayName("EmptyList")
-    public void list() throws Exception {
+    public void emptyList() throws Exception {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
@@ -131,6 +131,15 @@ public class MyTests {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = SERVICE.registerUser(newUser1);
         Assertions.assertThrows(Exception.class, ()->{SERVICE.listGames("bogusAuth");});
+    }
+    @Test
+    @DisplayName("LongerGameList")
+    public void list() throws Exception{
+        createManyGames();
+        UserData newUser1 = new UserData("b", "bbb", "c@c");
+        AuthData user1 = SERVICE.registerUser(newUser1);
+        ListGamesResponse listOfGames = SERVICE.listGames(user1.authToken());
+        Assertions.assertEquals(5, listOfGames.listSize());
     }
     @Test
     @DisplayName("CreateGame")

@@ -41,8 +41,21 @@ public class SQLGameDAO implements GameDAO{
             }
         }
     }
-    public HashMap<Integer, GameData> listGames() {
-        return null;
+    public HashMap<Integer, GameData> listGames() throws Exception{
+        HashMap<Integer, GameData> gameList = new HashMap<>();
+        try(var conn = DatabaseManager.getConnection()){
+            String statement = "SELECT * FROM games";
+            try(var ps = conn.prepareStatement(statement)){
+                try(var rs = ps.executeQuery()){
+                    while(rs.next()) {
+                        gameList.put(rs.getInt("gameID"), serializer.fromJson(rs.getString("jsonGame"), GameData.class));
+                    }
+                }
+            }catch (SQLException e){
+                throw new Exception(String.format("Unable to read data: %s", e.getMessage()));
+            }
+        }
+        return gameList;
     }
     public void updateGame(int gameID, GameData newGame) throws Exception {
         String statement = "UPDATE games SET jsonGame=? WHERE gameID=?";

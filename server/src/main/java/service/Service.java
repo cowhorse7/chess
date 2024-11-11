@@ -49,7 +49,7 @@ public class Service {
             throw new Exception("Error: user does not exist");
         }
         UserData logger = userDataAccess.getUser(username);
-        if (!BCrypt.checkpw(password, logger.password())){//Objects.equals(logger.password(), password)) {
+        if (!BCrypt.checkpw(password, logger.password())){
             throw new Exception("Error: unauthorized");
         }
         String authToken = generateAuthToken();
