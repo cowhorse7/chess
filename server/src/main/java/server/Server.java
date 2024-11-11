@@ -11,11 +11,22 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class Server {
-    private final UserDAO userDataAccess = new MemoryUserDAO();
-    private final AuthDAO authDataAccess = new MemoryAuthDAO();
-    private final GameDAO gameDataAccess = new MemoryGameDAO();
-    private final Service service = new Service(userDataAccess, authDataAccess, gameDataAccess);
+    private UserDAO userDataAccess;
+    private AuthDAO authDataAccess;
+    private GameDAO gameDataAccess;
+    private Service service;
     private final Gson serializer = new Gson();
+
+    public Server(){
+        try {
+            userDataAccess = new SQLUserDAO();
+            authDataAccess = new SQLAuthDAO();
+            gameDataAccess = new SQLGameDAO();
+            service = new Service(userDataAccess, authDataAccess, gameDataAccess);
+        }catch(Exception e){
+            System.out.print("Initialization problem");
+        }
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
