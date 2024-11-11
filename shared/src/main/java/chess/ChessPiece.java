@@ -96,7 +96,8 @@ public class ChessPiece {
             int colDir = direction[1];
             int i = 1;
             captureStop = false;
-            while (spaceCheck(curRow + (i * rowDir), curCol + (i * colDir)) && pieceCheck(board, myPosition, new ChessPosition(curRow + (i * rowDir), curCol + (i * colDir)))) {
+            while (spaceCheck(curRow + (i * rowDir), curCol + (i * colDir))
+                    && pieceCheck(board, myPosition, new ChessPosition(curRow + (i * rowDir), curCol + (i * colDir)))) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(curRow + (i * rowDir), curCol + (i * colDir)), null));
                 if (captureStop || this.type == PieceType.KING || this.type == PieceType.KNIGHT){break;}
                 i++;
@@ -134,17 +135,22 @@ public class ChessPiece {
                             pawnPromotionPossibilities(myPosition, new ChessPosition(curRow + 1, curCol), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol), null));}
-                        if (curRow == 2 && spaceCheck(curRow + 2, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow + 2, curCol))){
+                        if (curRow == 2 && spaceCheck(curRow + 2, curCol)
+                                && pieceCheck(board, myPosition, new ChessPosition(curRow + 2, curCol))){
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 2, curCol), null));
                         }
                     }
-                    if (spaceCheck(curRow + 1, curCol + 1) && board.getPiece(new ChessPosition(curRow + 1, curCol + 1)) != null && board.getPiece(new ChessPosition(curRow + 1, curCol + 1)).pieceColor == ChessGame.TeamColor.BLACK) {
+                    if (spaceCheck(curRow + 1, curCol + 1)
+                            && board.getPiece(new ChessPosition(curRow + 1, curCol + 1)) != null
+                            && board.getPiece(new ChessPosition(curRow + 1, curCol + 1)).pieceColor == ChessGame.TeamColor.BLACK) {
                         if (curRow + 1 == 8){
                             pawnPromotionPossibilities(myPosition, new ChessPosition(curRow + 1, curCol + 1), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow + 1, curCol + 1), null));}
                     }
-                    if (spaceCheck(curRow + 1, curCol - 1) && board.getPiece(new ChessPosition(curRow + 1, curCol - 1)) != null && board.getPiece(new ChessPosition(curRow + 1, curCol - 1)).pieceColor == ChessGame.TeamColor.BLACK) {
+                    if (spaceCheck(curRow + 1, curCol - 1)
+                            && board.getPiece(new ChessPosition(curRow + 1, curCol - 1)) != null
+                            && board.getPiece(new ChessPosition(curRow + 1, curCol - 1)).pieceColor == ChessGame.TeamColor.BLACK) {
                         if (curRow + 1 == 8){
                             pawnPromotionPossibilities(myPosition, new ChessPosition(curRow + 1, curCol - 1), moveSet);
                         }
@@ -158,17 +164,22 @@ public class ChessPiece {
                             pawnPromotionPossibilities(myPosition, new ChessPosition(curRow - 1, curCol), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol), null));}
-                        if (curRow == 7 && spaceCheck(curRow - 2, curCol) && pieceCheck(board, myPosition, new ChessPosition(curRow - 2, curCol))){
+                        if (curRow == 7 && spaceCheck(curRow - 2, curCol)
+                                && pieceCheck(board, myPosition, new ChessPosition(curRow - 2, curCol))){
                             moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 2, curCol), null));
                         }
                     }
-                    if (spaceCheck(curRow - 1, curCol - 1) && board.getPiece(new ChessPosition(curRow - 1, curCol - 1)) != null && board.getPiece(new ChessPosition(curRow - 1, curCol - 1)).pieceColor == ChessGame.TeamColor.WHITE) {
+                    if (spaceCheck(curRow - 1, curCol - 1)
+                            && board.getPiece(new ChessPosition(curRow - 1, curCol - 1)) != null
+                            && board.getPiece(new ChessPosition(curRow - 1, curCol - 1)).pieceColor == ChessGame.TeamColor.WHITE) {
                         if (curRow - 1 == 1){
                             pawnPromotionPossibilities(myPosition, new ChessPosition(curRow - 1, curCol - 1), moveSet);
                         }
                         else {moveSet.add(new ChessMove(myPosition, new ChessPosition(curRow - 1, curCol - 1), null));}
                     }
-                    if (spaceCheck(curRow - 1, curCol + 1) && board.getPiece(new ChessPosition(curRow - 1, curCol + 1)) != null && board.getPiece(new ChessPosition(curRow - 1, curCol + 1)).pieceColor == ChessGame.TeamColor.WHITE) {
+                    if (spaceCheck(curRow - 1, curCol + 1)
+                            && board.getPiece(new ChessPosition(curRow - 1, curCol + 1)) != null
+                            && board.getPiece(new ChessPosition(curRow - 1, curCol + 1)).pieceColor == ChessGame.TeamColor.WHITE) {
                         if (curRow - 1 == 1){
                             pawnPromotionPossibilities(myPosition, new ChessPosition(curRow - 1, curCol + 1), moveSet);
                         }

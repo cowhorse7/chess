@@ -74,8 +74,8 @@ public class DatabaseManager {
             try(var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)){
                 for(int i = 0; i < params.length; i++){
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i+1,p);
-                    else if (param instanceof Integer p) ps.setInt(i+1,p);
+                    if (param instanceof String p) {ps.setString(i+1,p);}
+                    else if (param instanceof Integer p) {ps.setInt(i+1,p);}
                     else {throw new Exception("parameter not a String or Integer");}
                 }
                 ps.executeUpdate();
