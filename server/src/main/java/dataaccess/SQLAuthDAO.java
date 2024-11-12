@@ -39,6 +39,7 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     public void deleteAuth(AuthData userAuth) throws Exception {
+        if(getAuthByToken(userAuth.authToken()) == null){throw new Exception("No such token");}
         String statement = "DELETE FROM auth WHERE authToken=?";
         DatabaseManager.executeUpdate(statement, userAuth.authToken());
     }

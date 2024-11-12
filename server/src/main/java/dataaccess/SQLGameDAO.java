@@ -58,6 +58,7 @@ public class SQLGameDAO implements GameDAO{
         return gameList;
     }
     public void updateGame(int gameID, GameData newGame) throws Exception {
+        if(getGame(gameID) == null){throw new Exception("no such game");}
         String statement = "UPDATE games SET jsonGame=? WHERE gameID=?";
         DatabaseManager.executeUpdate(statement, serializer.toJson(newGame), gameID);
     }
