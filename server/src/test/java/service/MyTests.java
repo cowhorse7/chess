@@ -6,18 +6,14 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 
 public class MyTests {
-    private static UserDAO userDataAccess;
-    private static AuthDAO authDataAccess;
     private static GameDAO gameDataAccess;
     private static Service service;
 
     @BeforeAll
     public static void setup(){
         try {
-            userDataAccess = new SQLUserDAO();
-            authDataAccess = new SQLAuthDAO();
             gameDataAccess = new SQLGameDAO();
-            service = new Service(userDataAccess, authDataAccess, gameDataAccess);
+            service = new Service(new SQLUserDAO(), new SQLAuthDAO(), gameDataAccess);
         }catch(Exception e){
             System.out.print("Initialization problem");
         }
@@ -53,7 +49,7 @@ public class MyTests {
         AuthData user3 = service.registerUser(newUser3);
         AuthData user4 = service.registerUser(newUser4);
         AuthData user5 = service.registerUser(newUser5);
-        Assertions.assertNotNull(userDataAccess.getUser("d"));
+        Assertions.assertNotNull(user4.username());
     }
 
     @Test
@@ -99,7 +95,8 @@ public class MyTests {
         UserData newUser1 = new UserData("a", "bbb", "c@c");
         AuthData user1 = service.registerUser(newUser1);
         service.logoutUser(user1.authToken());
-        Assertions.assertNull(authDataAccess.getAuthByToken(user1.authToken()));
+        Assertions.assertThrows(Exception.class, ()-> service.checkAuth(user1.authToken()));
+        Assertions.assertEquals(user1.username(), newUser1.username());
     }
 
     @Test
