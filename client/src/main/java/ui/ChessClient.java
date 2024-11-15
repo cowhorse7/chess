@@ -1,5 +1,5 @@
 package ui;
-import server.ServerFacade;
+import serverfacade.ServerFacade;
 public class ChessClient {
     private final ServerFacade server;
     private final String serverUrl;

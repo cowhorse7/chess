@@ -1,4 +1,5 @@
-package server;
+package serverfacade;
+
 import com.google.gson.Gson;
 
 import model.UserData;
@@ -14,6 +15,14 @@ public class ServerFacade {
         var path = "/user";
         return this.makeRequest("POST", path, user, UserData.class);
     }
+    public Object loginUser(){
+        return null;
+    }
+    public void logoutUser(){}
+    public Object createChessGame(){return null;}
+    public Object listGames(){return null;}
+    public void clear(){}
+    public void joinGame(){}
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
         try {
