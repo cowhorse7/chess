@@ -12,17 +12,28 @@ public class ServerFacade {
         serverUrl = url;
     }
     public UserData createUser(UserData user) throws Exception {
-        var path = "/user";
+        String path = "/user";
         return this.makeRequest("POST", path, user, UserData.class);
     }
     public Object loginUser(){
+        String path = "/session";
         return null;
     }
-    public void logoutUser(){}
-    public Object createChessGame(){return null;}
-    public Object listGames(){return null;}
-    public void clear(){}
-    public void joinGame(){}
+    public void logoutUser(){String path = "/session";}
+    public Object createChessGame(){
+        String path = "/game";
+        return null;
+    }
+    public Object listGames(){
+        String path = "/game";
+        return null;
+    }
+    public void clear(){
+        String path = "/db";
+    }
+    public void joinGame(){
+        String path = "/game";
+    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
         try {
