@@ -1,5 +1,8 @@
 package ui;
 import serverfacade.ServerFacade;
+
+import java.util.Arrays;
+
 public class ChessClient {
     private String username = null;
     private final ServerFacade server;
@@ -10,7 +13,20 @@ public class ChessClient {
         this.serverUrl = serverUrl;
     }
     public String eval(String input){
-        return "";
+        try{
+            var tokens = input.toLowerCase().split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch(cmd){
+                case "login" -> login(params);
+                case "logout" -> logout();
+                case "quit" -> "quit";
+
+                default -> help();
+            };
+        }catch(Exception e){
+            return e.getMessage();
+        }
     }
     public String help() {
         if (state == State.SIGNEDOUT) {
@@ -49,5 +65,20 @@ public class ChessClient {
         if (state == State.SIGNEDOUT) {
             throw new Exception("You must sign in");
         }
+    }
+    public String register(){
+        return"";
+    }
+    public String listGames(){
+        return "";
+    }
+    public String createGame(){
+        return "";
+    }
+    public String playGame(){
+        return "";
+    }
+    public String observeGame(){
+        return "";
     }
 }
