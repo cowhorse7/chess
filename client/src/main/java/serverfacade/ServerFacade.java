@@ -2,24 +2,32 @@ package serverfacade;
 
 import com.google.gson.Gson;
 
+import model.AuthData;
 import model.UserData;
 import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
     private final String serverUrl;
+    private String authToken = null;
     public ServerFacade(String url){
         serverUrl = url;
     }
-    public UserData createUser(UserData user) throws Exception {
+    public AuthData createUser(UserData user) throws Exception {
         String path = "/user";
-        return this.makeRequest("POST", path, user, UserData.class);
+        AuthData auth = this.makeRequest("POST", path, user, AuthData.class);
+        authToken = auth.authToken();
+        return auth;
     }
     public Object loginUser(){
         String path = "/session";
         return null;
     }
-    public void logoutUser(){String path = "/session";}
+    public void logoutUser(){
+        String path = "/session";
+        authToken = null;
+        makeRequest("DELETE", path);
+    }
     public Object createChessGame(){
         String path = "/game";
         return null;
@@ -41,6 +49,9 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+            if (authToken != null){
+                http.addRequestProperty("authorization", authToken);
+            }
 
             writeBody(request, http);
             http.connect();
