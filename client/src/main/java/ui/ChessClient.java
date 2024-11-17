@@ -66,19 +66,23 @@ public class ChessClient {
             throw new Exception("You must sign in");
         }
     }
-    public String register(){
-        return"";
-    }
-    public String listGames(){
+    public String register() throws Exception {
         return "";
     }
-    public String createGame(){
+    public String listGames() throws Exception {
+        assertLoggedIn();
         return "";
     }
-    public String playGame(){
+    public String createGame() throws Exception {
+        assertLoggedIn();
         return "";
     }
-    public String observeGame(){
+    public String playGame() throws Exception {
+        assertLoggedIn();
+        return "";
+    }
+    public String observeGame() throws Exception {
+        assertLoggedIn();
         return "";
     }
 }

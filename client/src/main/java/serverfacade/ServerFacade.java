@@ -3,6 +3,7 @@ package serverfacade;
 import com.google.gson.Gson;
 
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import java.io.*;
 import java.net.*;
@@ -19,28 +20,32 @@ public class ServerFacade {
         authToken = auth.authToken();
         return auth;
     }
-    public Object loginUser(){
+    public AuthData loginUser(UserData user) throws Exception {
         String path = "/session";
-        return null;
+        AuthData auth = this.makeRequest("POST", path, user, AuthData.class);
+        authToken = auth.authToken();
+        return auth;
     }
-    public void logoutUser(){
+    public void logoutUser(String authToken) throws Exception {
         String path = "/session";
         authToken = null;
-        makeRequest("DELETE", path);
+        makeRequest("DELETE", path, authToken, null);
     }
-    public Object createChessGame(){
+    public int createChessGame(String authToken, String gameName) throws Exception {
         String path = "/game";
-        return null;
+        return this.makeRequest("POST", path, gameName, Integer.class);
     }
-    public Object listGames(){
+    public ListGamesResponse listGames(String authToken) throws Exception {
         String path = "/game";
-        return null;
+        return this.makeRequest("GET", path, authToken, ListGamesResponse.class);
     }
-    public void clear(){
+    public void clear() throws Exception {
         String path = "/db";
+        this.makeRequest("DELETE", path, null, null);
     }
-    public void joinGame(){
+    public void joinGame(String authToken, JoinRequest request) throws Exception {
         String path = "/game";
+        this.makeRequest("PUT", path, request, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
