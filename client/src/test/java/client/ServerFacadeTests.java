@@ -78,7 +78,10 @@ public class ServerFacadeTests {
         Assertions.assertDoesNotThrow(()->serverFacade.listGames());
     }
     @Test
-    public void listGamesNeg() throws Exception {}
+    public void listGamesNeg() throws Exception {
+        logoutUserPos();
+        Assertions.assertThrows(Exception.class, ()->serverFacade.listGames());
+    }
     @Test
     public void joinGamePos() throws Exception {
         createUserPos();
@@ -87,8 +90,12 @@ public class ServerFacadeTests {
     }
     @Test
     public void joinGameNeg() throws Exception {
-        joinGamePos();
-        
+        createUserPos();
+        int gameId = serverFacade.createChessGame("heyy");
+        serverFacade.joinGame(gameId, "white");
+        serverFacade.logoutUser();
+        serverFacade.createUser(new UserData("yo","yoyo","yo@yo"));
+        Assertions.assertThrows(Exception.class, ()->serverFacade.joinGame(gameId, "white"));
     }
 
 }
