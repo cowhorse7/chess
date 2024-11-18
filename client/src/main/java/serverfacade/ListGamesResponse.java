@@ -14,8 +14,17 @@ public class ListGamesResponse {
 
     @Override
     public String toString() {
-        return "ListGamesResponse{" +
-                "games=" + games +
-                '}';
+        if (listSize() == 0){
+            return "No games to display\n";
+        }
+        StringBuilder response = new StringBuilder();
+        for(GameData game : games){
+            response.append("GAME ID: ").append(game.gameID()).
+                    append(" NAME: ").append(game.gameName()).
+                    append(" PLAYER WHITE: ").append(game.whiteUsername()).
+                    append(" PLAYER BLACK: ").append(game.blackUsername()).
+                    append("\n");
+        }
+        return response.toString();
     }
 }

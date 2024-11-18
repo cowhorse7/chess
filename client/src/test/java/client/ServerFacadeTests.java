@@ -76,6 +76,12 @@ public class ServerFacadeTests {
     public void listGamesPos() throws Exception {
         createUserPos();
         Assertions.assertDoesNotThrow(()->serverFacade.listGames());
+        System.out.print(serverFacade.listGames());
+    }
+    @Test
+    public void listGamesWithJoin() throws Exception{
+        joinGamePos();
+        System.out.print(serverFacade.listGames());
     }
     @Test
     public void listGamesNeg() throws Exception {
