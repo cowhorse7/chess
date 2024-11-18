@@ -28,24 +28,24 @@ public class ServerFacade {
         authToken = auth.authToken();
         return auth;
     }
-    public void logoutUser(String authToken) throws Exception {
+    public void logoutUser() throws Exception {
         String path = "/session";
         authToken = null;
         makeRequest("DELETE", path, authToken, null);
     }
-    public int createChessGame(String authToken, String gameName) throws Exception {
+    public int createChessGame(String gameName) throws Exception {
         String path = "/game";
         return this.makeRequest("POST", path, gameName, Integer.class);
     }
-    public ListGamesResponse listGames(String authToken) throws Exception {
+    public String listGames() throws Exception {
         String path = "/game";
-        return this.makeRequest("GET", path, authToken, ListGamesResponse.class);
+        return this.makeRequest("GET", path, authToken, String.class);
     }
     public void clear() throws Exception {
         String path = "/db";
         this.makeRequest("DELETE", path, null, null);
     }
-    public void joinGame(String authToken, JoinRequest request) throws Exception {
+    public void joinGame(JoinRequest request) throws Exception {
         String path = "/game";
         this.makeRequest("PUT", path, request, null);
     }
