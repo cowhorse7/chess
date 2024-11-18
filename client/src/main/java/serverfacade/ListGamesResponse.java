@@ -11,4 +11,11 @@ public class ListGamesResponse {
         games = listOfGames;
     }
     public int listSize(){return games.size();}
+
+    @Override
+    public String toString() {
+        return "ListGamesResponse{" +
+                "games=" + games +
+                '}';
+    }
 }

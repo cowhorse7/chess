@@ -30,23 +30,28 @@ public class ServerFacade {
     }
     public void logoutUser() throws Exception {
         String path = "/session";
+        makeRequest("DELETE", path, null, null);
         authToken = null;
-        makeRequest("DELETE", path, authToken, null);
     }
     public int createChessGame(String gameName) throws Exception {
+        if(gameName == null){throw new Exception("no name for game");}
         String path = "/game";
-        return this.makeRequest("POST", path, gameName, Integer.class);
+        CreateRequest newGame = new CreateRequest(gameName);
+        GameData creation = this.makeRequest("POST", path, newGame, GameData.class);
+        return creation.gameID();
     }
     public String listGames() throws Exception {
         String path = "/game";
-        return this.makeRequest("GET", path, authToken, String.class);
+        ListGamesResponse list = this.makeRequest("GET", path, null, ListGamesResponse.class);
+        return list.toString();
     }
     public void clear() throws Exception {
         String path = "/db";
         this.makeRequest("DELETE", path, null, null);
     }
-    public void joinGame(JoinRequest request) throws Exception {
+    public void joinGame(int gameId, String playerColor) throws Exception {
         String path = "/game";
+        JoinRequest request = new JoinRequest(playerColor, gameId);
         this.makeRequest("PUT", path, request, null);
     }
 
@@ -82,7 +87,15 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws Exception {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new Exception(STR."failure: \{status}");
+            String errMsg = "";
+            if (http.getContentLength() < 0) {
+                try (InputStream respBody = http.getInputStream()) {
+                    InputStreamReader reader = new InputStreamReader(respBody);
+                    Message message =  new Gson().fromJson(reader, Message.class);
+                    errMsg = message.message();
+                }
+            }
+            throw new Exception(STR."failure: \{status}" + errMsg);
         }
     }
 

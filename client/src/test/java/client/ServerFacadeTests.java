@@ -39,23 +39,56 @@ public class ServerFacadeTests {
         UserData newUser = new UserData("username","password", null);
         Assertions.assertThrows(Exception.class, ()-> serverFacade.createUser(newUser));
     }
-    public void createGamePos() throws Exception {}
-    public void createGameNeg() throws Exception {}
+    @Test
     public void loginUserPos() throws Exception {
+        createUserPos();
         UserData newUser = new UserData("username","password", null);
-        AuthData auth =  serverFacade.createUser(newUser);
+        AuthData auth =  serverFacade.loginUser(newUser);
         Assertions.assertEquals(auth.username(), "username");
     }
+    @Test
     public void loginUserNeg() throws Exception {
+        createUserPos();
         UserData newUser = new UserData("username",null, null);
         Assertions.assertThrows(Exception.class, ()-> serverFacade.loginUser(newUser));
     }
-    public void logoutUserPos() throws Exception {}
-    public void logoutUserNeg() throws Exception {}
-    public void listGamesPos() throws Exception {}
+    @Test
+    public void logoutUserPos() throws Exception {
+        loginUserPos();
+        Assertions.assertDoesNotThrow(()->serverFacade.logoutUser());
+    }
+    @Test
+    public void logoutUserNeg() throws Exception {
+        logoutUserPos();
+        Assertions.assertThrows(Exception.class, ()->serverFacade.logoutUser());
+    }
+    @Test
+    public void createGamePos() throws Exception {
+        createUserPos();
+        Assertions.assertDoesNotThrow(()->serverFacade.createChessGame("yoyo"));
+    }
+    @Test
+    public void createGameNeg() throws Exception {
+        createUserPos();
+        Assertions.assertThrows(Exception.class, ()->serverFacade.createChessGame(null));
+    }
+    @Test
+    public void listGamesPos() throws Exception {
+        createUserPos();
+        Assertions.assertDoesNotThrow(()->serverFacade.listGames());
+    }
+    @Test
     public void listGamesNeg() throws Exception {}
-    public void joinGamePos() throws Exception {}
-    public void joinGameNeg() throws Exception {}
-    public void clear() throws Exception {}
+    @Test
+    public void joinGamePos() throws Exception {
+        createUserPos();
+        int gameId = serverFacade.createChessGame("heyy");
+        Assertions.assertDoesNotThrow(()->serverFacade.joinGame(gameId, "white"));
+    }
+    @Test
+    public void joinGameNeg() throws Exception {
+        joinGamePos();
+        
+    }
 
 }

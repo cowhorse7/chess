@@ -101,11 +101,17 @@ public class ChessClient {
         server.createChessGame(params[0]);
         return String.format("%s successfully created", params[0]);
     }
-    public String playGame() throws Exception {
+    public String playGame(String... params) throws Exception {
+        if (params.length != 2) {
+            return "You must include <gameID> <colorYouWishToPlay>";
+        }
         assertLoggedIn();
         return "";
     }
-    public String observeGame() throws Exception {
+    public String observeGame(String... params) throws Exception {
+        if (params.length != 2) {
+            return "You must include <gameID> \"observe\"";
+        }
         assertLoggedIn();
         return "";
     }
