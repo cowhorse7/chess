@@ -15,6 +15,8 @@ public class ServerFacade {
         serverUrl = url;
     }
     public AuthData createUser(UserData user) throws Exception {
+        if (user.username() == null || user.password() == null || user.email() == null){throw new Exception("incomplete user data");}
+        if (user.email().indexOf('@') < 0) {throw new Exception("email must contain @");}
         String path = "/user";
         AuthData auth = this.makeRequest("POST", path, user, AuthData.class);
         authToken = auth.authToken();

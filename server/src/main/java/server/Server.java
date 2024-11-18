@@ -34,7 +34,6 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
 
-        //Spark.post("/user", this::exceptionHandler);
         Spark.post("/user", this::createUser);
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);
@@ -43,9 +42,6 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.get("/game", this::listGames);
         Spark.exception(Exception.class, this::exceptionHandler);
-
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-//        Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();
