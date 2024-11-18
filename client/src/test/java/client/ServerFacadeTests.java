@@ -24,13 +24,17 @@ public class ServerFacadeTests {
     static void stopServer() {
         server.stop();
     }
-
+    @BeforeEach
+    void preStuff() throws Exception {
+        serverFacade.clear();
+    }
     @Test
     public void createUserPos() throws Exception {
         UserData newUser = new UserData("username","password", "email@email");
         AuthData auth =  serverFacade.createUser(newUser);
         Assertions.assertEquals(auth.username(), "username");
     }
+    @Test
     public void createUserNeg() throws Exception {
         UserData newUser = new UserData("username","password", null);
         Assertions.assertThrows(Exception.class, ()-> serverFacade.createUser(newUser));
