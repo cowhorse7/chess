@@ -40,9 +40,10 @@ public class ServerFacade {
         GameData creation = this.makeRequest("POST", path, newGame, GameData.class);
         return creation.gameID();
     }
-    public String listGames() throws Exception {
+    public String listGames(int gameID) throws Exception {
         String path = "/game";
         ListGamesResponse list = this.makeRequest("GET", path, null, ListGamesResponse.class);
+        if (gameID > 0){return list.game(gameID).toString();}
         return list.toString();
     }
     public void clear() throws Exception {

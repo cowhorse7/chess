@@ -1,5 +1,7 @@
 package serverfacade;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import model.GameData;
 
 import java.util.HashSet;
@@ -11,6 +13,13 @@ public class ListGamesResponse {
         games = listOfGames;
     }
     public int listSize(){return games.size();}
+    public ChessBoard game(int gameID){
+        for(GameData gameIterator : games){
+            if(gameIterator.gameID() != gameID){continue;}
+            else{return gameIterator.game().cBoard;}
+        }
+        return null;
+    }
 
     @Override
     public String toString() {

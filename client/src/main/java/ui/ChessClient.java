@@ -1,4 +1,5 @@
 package ui;
+import chess.ChessBoard;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
@@ -29,6 +30,8 @@ public class ChessClient {
                 case "quit" -> "quit";
                 case "create" -> createGame(params);
                 case "list" -> listGames();
+                case "join", "observe" -> playGame(params);
+                //case "observe" -> observeGame(params);
 
                 default -> help();
             };
@@ -92,8 +95,7 @@ public class ChessClient {
     }
     public String listGames() throws Exception {
         assertLoggedIn();
-        String list = server.listGames();
-        return list;
+        return server.listGames(0);
     }
     public String createGame(String... params) throws Exception {
         if (params.length!=1){return "Please include <nameOfGame>";}
@@ -103,19 +105,27 @@ public class ChessClient {
     }
     public String playGame(String... params) throws Exception {
         if (params.length != 2) {
-            return "You must include <gameID> <colorYouWishToPlay>";
+            return "You must include <gameID> <colorYouWishToPlay or \"observe\">";
         }
         assertLoggedIn();
-        return "";
-    }
-    public String observeGame(String... params) throws Exception {
-        if (params.length != 2) {
-            return "You must include <gameID> \"observe\"";
+        int gameID = Integer.parseInt(params[0]);
+        String search = String.format("gameID: %d", gameID);
+        String listOfGames = listGames();
+        if(!listOfGames.contains(search)){
+            return "Game does not exist";
         }
-        assertLoggedIn();
-        return "";
+        String chessBoard = server.listGames(gameID);
+        server.joinGame(gameID, params[1]);
+        return gameBoard(chessBoard);
     }
-    public String gameBoard(){
+//    public String observeGame(String... params) throws Exception {
+//        if (params.length != 2) {
+//            return "You must include <gameID> \"observe\"";
+//        }
+//        assertLoggedIn();
+//        return "";
+//    }
+    public String gameBoard(String chessBoard){
         char[][] arr = new char[9][9];
         initGameBoard(arr);
 
