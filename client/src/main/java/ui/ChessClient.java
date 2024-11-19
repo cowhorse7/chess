@@ -131,18 +131,37 @@ public class ChessClient {
     public String gameBoard(ChessBoard chessBoard){
         String[][] arr = new String[9][9];
         initGameBoard(arr, chessBoard);
-//        for (int i = 1; i < 9; i ++) {
-//            for (int j = 1; j < 9; j++) {
-//                if(chessBoard.getPiece(new ChessPosition(i, j)) == null){
-//                    arr[i][j] = "   ";
-//                }
-//            }
-//        }
-        return prettyBoard(arr);
+        StringBuilder printBoards = new StringBuilder();
+        printBoards.append(prettyBoard(arr));
+        reverseBoard(arr);
+        printBoards.append("\n");
+        printBoards.append(prettyBoard(arr));
+        return printBoards.toString();
+    }
+    public void reverseBoard(String[][]arr){
+        reverseRows(arr);
+        reverseColumns(arr);
+    }
+    public void reverseRows(String[][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 1; j <= arr[i].length / 2; j++) {
+                String temp = arr[i][j];
+                arr[i][j] = arr[i][arr[i].length - j];
+                arr[i][arr[i].length - j] = temp;
+            }
+        }
+    }
+    public static void reverseColumns(String[][] arr) {
+        for (int j = 0; j < arr[0].length; j++) {
+            for (int i = 1; i <= arr.length / 2; i++) {
+                String temp = arr[i][j];
+                arr[i][j] = arr[arr.length - i][j];
+                arr[arr.length - i][j] = temp;
+            }
+        }
     }
     public String prettyBoard(String[][] arr){
         StringBuilder pretty = new StringBuilder();
-        int width = 9;
         for(String[] row : arr){
             for (int i = 0; i < row.length; i++){
                 pretty.append(row[i]);
@@ -155,7 +174,7 @@ public class ChessClient {
         char[] letters = {'0','a','b','c','d','e','f','g','h'};
         char[] nums = {'0', '8', '7', '6', '5', '4', '3', '2', '1'};
         String space = "";
-        ChessPiece pieceType = null;
+        ChessPiece piece = null;
         for (int i = 0; i < 9; i ++){
             for(int j = 0; j < 9; j++){
                 if (i == 0){
@@ -165,32 +184,9 @@ public class ChessClient {
                     arr[i][j] = SET_TEXT_COLOR_GREEN + RESET_BG_COLOR + String.format(" %s ", nums[i]);
                 }
                 else {
-                    pieceType = chessBoard.getPiece(new ChessPosition(i, j));
-                    if (pieceType == null){space = "   ";}
-                    else if(i < 5) {
-                        switch (pieceType.getPieceType()) {
-                            case PAWN -> space = " p ";
-                            case KNIGHT -> space = " n ";
-                            case KING -> space = " k ";
-                            case QUEEN -> space = " q ";
-                            case ROOK -> space = " r ";
-                            case BISHOP -> space = " b ";
-
-                            default -> space = "   ";
-                        }
-                    }
-                    else{
-                        switch (pieceType.getPieceType()) {
-                            case PAWN -> space = " P ";
-                            case KNIGHT -> space = " N ";
-                            case KING -> space = " K ";
-                            case QUEEN -> space = " Q ";
-                            case ROOK -> space = " R ";
-                            case BISHOP -> space = " B ";
-
-                            default -> space = "   ";
-                        }
-                    }
+                    piece = chessBoard.getPiece(new ChessPosition(i, j));
+                    if (piece == null){space = "   ";}
+                    else{space = setSpace(piece, i);}
 
                     if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) {
                         arr[i][j] = SET_BG_COLOR_BLACK + SET_TEXT_COLOR_LIGHT_GREY + space;
@@ -200,5 +196,28 @@ public class ChessClient {
                 }
             }
         }
+    }
+    public String setSpace(ChessPiece piece, int definingLine){
+        if(definingLine < 5) {
+            switch (piece.getPieceType()) {
+                case PAWN -> {return " p ";}
+                case KNIGHT ->{ return " n ";}
+                case KING -> {return " k ";}
+                case QUEEN -> {return " q ";}
+                case ROOK -> {return " r ";}
+                case BISHOP -> {return " b ";}
+            }
+        }
+        else{
+            switch (piece.getPieceType()) {
+                case PAWN -> {return " P ";}
+                case KNIGHT -> {return " N ";}
+                case KING -> {return " K ";}
+                case QUEEN -> {return " Q ";}
+                case ROOK -> {return " R ";}
+                case BISHOP -> {return " B ";}
+            }
+        }
+        return "   ";
     }
 }
