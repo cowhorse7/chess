@@ -29,6 +29,6 @@ public class Repl {
         System.out.println();
     }
     private void printPrompt(){
-        System.out.print("\n>");
+        System.out.print(RESET_BG_COLOR + SET_TEXT_COLOR_GREEN + "\n>");
     }
 }

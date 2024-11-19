@@ -1,5 +1,6 @@
 package serverfacade;
 
+import chess.ChessBoard;
 import com.google.gson.Gson;
 
 import model.AuthData;
@@ -43,7 +44,7 @@ public class ServerFacade {
     public String listGames(int gameID) throws Exception {
         String path = "/game";
         ListGamesResponse list = this.makeRequest("GET", path, null, ListGamesResponse.class);
-        if (gameID > 0){return list.game(gameID).toString();}
+        if (gameID > 0){return new Gson().toJson(list.game(gameID), ChessBoard.class);}
         return list.toString();
     }
     public void clear() throws Exception {

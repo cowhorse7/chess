@@ -1,11 +1,15 @@
 package ui;
 import chess.ChessBoard;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
-import serverfacade.ListGamesResponse;
+
 import serverfacade.ServerFacade;
 
+import static chess.ChessPiece.PieceType.*;
+import static ui.EscapeSequences.*;
 import java.util.*;
 
 public class ChessClient {
@@ -30,7 +34,7 @@ public class ChessClient {
                 case "quit" -> "quit";
                 case "create" -> createGame(params);
                 case "list" -> listGames();
-                case "join", "observe" -> playGame(params);
+                case "join" -> playGame(params);
                 //case "observe" -> observeGame(params);
 
                 default -> help();
@@ -52,8 +56,7 @@ public class ChessClient {
                     - help
                     - list -> list existing games
                     - create -> create new game
-                    - join -> play an existing game
-                    - observe -> observe an existing game
+                    - join -> play or observe an existing game
                     - logout
                     - quit
                     """;
@@ -109,12 +112,12 @@ public class ChessClient {
         }
         assertLoggedIn();
         int gameID = Integer.parseInt(params[0]);
-        String search = String.format("gameID: %d", gameID);
+        String search = String.format("ID: %d", gameID);
         String listOfGames = listGames();
         if(!listOfGames.contains(search)){
             return "Game does not exist";
         }
-        String chessBoard = server.listGames(gameID);
+        ChessBoard chessBoard = serializer.fromJson(server.listGames(gameID), ChessBoard.class);
         server.joinGame(gameID, params[1]);
         return gameBoard(chessBoard);
     }
@@ -125,21 +128,76 @@ public class ChessClient {
 //        assertLoggedIn();
 //        return "";
 //    }
-    public String gameBoard(String chessBoard){
-        char[][] arr = new char[9][9];
-        initGameBoard(arr);
-
-        return "";
+    public String gameBoard(ChessBoard chessBoard){
+        String[][] arr = new String[9][9];
+        initGameBoard(arr, chessBoard);
+//        for (int i = 1; i < 9; i ++) {
+//            for (int j = 1; j < 9; j++) {
+//                if(chessBoard.getPiece(new ChessPosition(i, j)) == null){
+//                    arr[i][j] = "   ";
+//                }
+//            }
+//        }
+        return prettyBoard(arr);
     }
-    public void initGameBoard(char[][] arr){
+    public String prettyBoard(String[][] arr){
+        StringBuilder pretty = new StringBuilder();
+        int width = 9;
+        for(String[] row : arr){
+            for (int i = 0; i < row.length; i++){
+                pretty.append(row[i]);
+            }
+            pretty.append(RESET_BG_COLOR + "\n");
+        }
+        return pretty.toString();
+    }
+    public void initGameBoard(String[][] arr, ChessBoard chessBoard){
         char[] letters = {'0','a','b','c','d','e','f','g','h'};
-        int[] nums = {0, 8, 7, 6, 5, 4, 3, 2, 1};
+        char[] nums = {'0', '8', '7', '6', '5', '4', '3', '2', '1'};
+        String space = "";
+        ChessPiece pieceType = null;
         for (int i = 0; i < 9; i ++){
             for(int j = 0; j < 9; j++){
-                if (i == 0){arr[i][j] = letters[j];}
-                else if (j == 0){arr[i][j] = (char) nums[i];}
-                else if ((i%2 == 0 && j%2 == 1) || (i%2 == 1 && j%2 == 0)){arr[i][j] = 'n';}
-                else{arr[i][j] = 'w';}
+                if (i == 0){
+                    arr[i][j] = SET_TEXT_COLOR_GREEN + String.format(" %s ", letters[j]);
+                }
+                else if (j == 0){
+                    arr[i][j] = SET_TEXT_COLOR_GREEN + RESET_BG_COLOR + String.format(" %s ", nums[i]);
+                }
+                else {
+                    pieceType = chessBoard.getPiece(new ChessPosition(i, j));
+                    if (pieceType == null){space = "   ";}
+                    else if(i < 5) {
+                        switch (pieceType.getPieceType()) {
+                            case PAWN -> space = " p ";
+                            case KNIGHT -> space = " n ";
+                            case KING -> space = " k ";
+                            case QUEEN -> space = " q ";
+                            case ROOK -> space = " r ";
+                            case BISHOP -> space = " b ";
+
+                            default -> space = "   ";
+                        }
+                    }
+                    else{
+                        switch (pieceType.getPieceType()) {
+                            case PAWN -> space = " P ";
+                            case KNIGHT -> space = " N ";
+                            case KING -> space = " K ";
+                            case QUEEN -> space = " Q ";
+                            case ROOK -> space = " R ";
+                            case BISHOP -> space = " B ";
+
+                            default -> space = "   ";
+                        }
+                    }
+
+                    if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) {
+                        arr[i][j] = SET_BG_COLOR_BLACK + SET_TEXT_COLOR_LIGHT_GREY + space;
+                    } else {
+                        arr[i][j] = SET_BG_COLOR_WHITE + SET_TEXT_COLOR_DARK_GREY + space;
+                    }
+                }
             }
         }
     }
