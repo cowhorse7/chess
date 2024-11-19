@@ -8,7 +8,6 @@ import model.GameData;
 import model.UserData;
 import java.io.*;
 import java.net.*;
-import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -111,19 +110,6 @@ public class ServerFacade {
             throw new Exception(errMsg);
         }
     }
-//    private Object exceptionHandler(Exception ex) {
-//        if (ex.getMessage().equals("Error: unauthorized") || ex.getMessage().equals("Error: user does not exist")) {
-//            res.status(401);
-//        } else if (ex.getMessage().equals("Error: already taken")) {
-//            res.status(403);
-//        } else if (ex.getMessage().equals("Error: bad request")) {
-//            res.status(400);
-//        } else {
-//            res.status(500);
-//        }
-//        res.body(serializer.toJson(Map.of("message", ex.getMessage())));
-//        return res.body();
-//    }
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws Exception {
         T response = null;

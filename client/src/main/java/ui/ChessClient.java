@@ -5,10 +5,7 @@ import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
-
 import serverfacade.ServerFacade;
-
-import static chess.ChessPiece.PieceType.*;
 import static ui.EscapeSequences.*;
 import java.util.*;
 
@@ -24,7 +21,7 @@ public class ChessClient {
     }
     public String eval(String input){
         try{
-            var tokens = input.toLowerCase().split(" "); //may want to change case sensitivity
+            var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch(cmd){
