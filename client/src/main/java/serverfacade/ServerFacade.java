@@ -102,13 +102,13 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             String errMsg = "";
             if (http.getContentLength() < 0) {
-                try (InputStream respBody = http.getInputStream()) {
+                try (InputStream respBody = http.getErrorStream()) {
                     InputStreamReader reader = new InputStreamReader(respBody);
                     Message message =  new Gson().fromJson(reader, Message.class);
                     errMsg = message.message();
                 }
             }
-            throw new Exception(STR."failure: \{status}" + errMsg);
+            throw new Exception(errMsg);
         }
     }
 //    private Object exceptionHandler(Exception ex) {

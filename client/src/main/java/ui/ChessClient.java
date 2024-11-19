@@ -40,7 +40,7 @@ public class ChessClient {
                 default -> help();
             };
         }catch(Exception e){
-            return e.getMessage();
+            return SET_TEXT_COLOR_RED + e.getMessage();
         }
     }
     public String help() {
