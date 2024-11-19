@@ -81,6 +81,7 @@ public class ServerFacadeTests {
     @Test
     public void listGamesWithJoin() throws Exception{
         joinGamePos();
+        Assertions.assertDoesNotThrow(()->serverFacade.listGames());
         System.out.print(serverFacade.listGames());
     }
     @Test
@@ -90,18 +91,17 @@ public class ServerFacadeTests {
     }
     @Test
     public void joinGamePos() throws Exception {
-        createUserPos();
-        int gameId = serverFacade.createChessGame("heyy");
-        Assertions.assertDoesNotThrow(()->serverFacade.joinGame(gameId, "white"));
+        listGamesPos();
+        serverFacade.createChessGame("heyy");
+        serverFacade.listGames();
+        Assertions.assertDoesNotThrow(()->serverFacade.joinGame(1, "white"));
     }
     @Test
     public void joinGameNeg() throws Exception {
-        createUserPos();
-        int gameId = serverFacade.createChessGame("heyy");
-        serverFacade.joinGame(gameId, "white");
+        joinGamePos();
         serverFacade.logoutUser();
         serverFacade.createUser(new UserData("yo","yoyo","yo@yo"));
-        Assertions.assertThrows(Exception.class, ()->serverFacade.joinGame(gameId, "white"));
+        Assertions.assertThrows(Exception.class, ()->serverFacade.joinGame(1, "white"));
     }
 
 }

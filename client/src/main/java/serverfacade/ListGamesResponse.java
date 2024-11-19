@@ -9,7 +9,7 @@ import java.util.HashSet;
 
 public class ListGamesResponse {
     private final HashSet<GameData> games;
-    public HashMap<Integer, Integer> linkedGames;
+    public HashMap<Integer, Integer> linkedGames = new HashMap<>();
     public ListGamesResponse(HashSet<GameData> listOfGames){
         games = listOfGames;
     }
@@ -29,7 +29,7 @@ public class ListGamesResponse {
         }
         StringBuilder response = new StringBuilder();
         int iterator = 0;
-        linkedGames.clear();
+        linkedGames = new HashMap<>();
         for(GameData game : games){
             ++iterator;
             linkedGames.put(iterator, game.gameID());

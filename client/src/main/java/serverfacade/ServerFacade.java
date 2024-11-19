@@ -60,6 +60,8 @@ public class ServerFacade {
         return new Gson().toJson(listOfGames.game(gameID), ChessBoard.class);
     }
     public void joinGame(int gameNum, String playerColor) throws Exception {
+        if (listOfGames == null){throw new Exception("You must \"list\" before joining");}
+        if (listOfGames.linkedGames == null){throw new Exception("No games exist");}
         if (!listOfGames.linkedGames.containsKey(gameNum)){throw new Exception("Game does not exist");}
         String path = "/game";
         int gameID = listOfGames.linkedGames.get(gameNum);
