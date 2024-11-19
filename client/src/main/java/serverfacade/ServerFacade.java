@@ -8,6 +8,7 @@ import model.GameData;
 import model.UserData;
 import java.io.*;
 import java.net.*;
+import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -44,25 +45,26 @@ public class ServerFacade {
         GameData creation = this.makeRequest("POST", path, newGame, GameData.class);
         return creation.gameID();
     }
-    public String listGames(int gameID) throws Exception {
+    public String listGames() throws Exception {
         String path = "/game";
         listOfGames = this.makeRequest("GET", path, null, ListGamesResponse.class);
-        if (gameID > 0){
-            gameID = listOfGames.linkedGames.get(gameID);
-            return new Gson().toJson(listOfGames.game(gameID), ChessBoard.class);
-        }
         return listOfGames.toString();
     }
     public void clear() throws Exception {
         String path = "/db";
         this.makeRequest("DELETE", path, null, null);
     }
-    public void joinGame(int gameId, String playerColor) throws Exception {
+    public String getGame(int gameNum) throws Exception{
         if (listOfGames == null){throw new Exception("You must \"list\" before joining");}
-        if (!listOfGames.linkedGames.containsKey(gameId)){throw new Exception("Game does not exist");}
+        if (!listOfGames.linkedGames.containsKey(gameNum)){throw new Exception("Game does not exist");}
+        int gameID = listOfGames.linkedGames.get(gameNum);
+        return new Gson().toJson(listOfGames.game(gameID), ChessBoard.class);
+    }
+    public void joinGame(int gameNum, String playerColor) throws Exception {
+        if (!listOfGames.linkedGames.containsKey(gameNum)){throw new Exception("Game does not exist");}
         String path = "/game";
-        gameId = listOfGames.linkedGames.get(gameId);
-        JoinRequest request = new JoinRequest(playerColor, gameId);
+        int gameID = listOfGames.linkedGames.get(gameNum);
+        JoinRequest request = new JoinRequest(playerColor, gameID);
         this.makeRequest("PUT", path, request, null);
     }
 
@@ -109,6 +111,19 @@ public class ServerFacade {
             throw new Exception(STR."failure: \{status}" + errMsg);
         }
     }
+//    private Object exceptionHandler(Exception ex) {
+//        if (ex.getMessage().equals("Error: unauthorized") || ex.getMessage().equals("Error: user does not exist")) {
+//            res.status(401);
+//        } else if (ex.getMessage().equals("Error: already taken")) {
+//            res.status(403);
+//        } else if (ex.getMessage().equals("Error: bad request")) {
+//            res.status(400);
+//        } else {
+//            res.status(500);
+//        }
+//        res.body(serializer.toJson(Map.of("message", ex.getMessage())));
+//        return res.body();
+//    }
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws Exception {
         T response = null;

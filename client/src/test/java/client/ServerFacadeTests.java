@@ -75,18 +75,18 @@ public class ServerFacadeTests {
     @Test
     public void listGamesPos() throws Exception {
         createUserPos();
-        Assertions.assertDoesNotThrow(()->serverFacade.listGames(0));
-        System.out.print(serverFacade.listGames(0));
+        Assertions.assertDoesNotThrow(()->serverFacade.listGames());
+        System.out.print(serverFacade.listGames());
     }
     @Test
     public void listGamesWithJoin() throws Exception{
         joinGamePos();
-        System.out.print(serverFacade.listGames(0));
+        System.out.print(serverFacade.listGames());
     }
     @Test
     public void listGamesNeg() throws Exception {
         logoutUserPos();
-        Assertions.assertThrows(Exception.class, ()->serverFacade.listGames(0));
+        Assertions.assertThrows(Exception.class, ()->serverFacade.listGames());
     }
     @Test
     public void joinGamePos() throws Exception {

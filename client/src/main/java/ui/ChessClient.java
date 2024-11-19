@@ -99,7 +99,7 @@ public class ChessClient {
     }
     public String listGames() throws Exception {
         assertLoggedIn();
-        return server.listGames(0);
+        return server.listGames();
     }
     public String createGame(String... params) throws Exception {
         if (params.length!=1){return "Please include <nameOfGame>";}
@@ -109,11 +109,11 @@ public class ChessClient {
     }
     public String playGame(String... params) throws Exception {
         if (params.length != 2) {
-            return "You must include <gameNumber> <colorYouWishToPlay or \"observe\">";
+            return "You must include <gameNumber> <colorYouWishToPlay>";
         }
         assertLoggedIn();
         int gameNum = Integer.parseInt(params[0]);
-        ChessBoard chessBoard = serializer.fromJson(server.listGames(gameNum), ChessBoard.class);
+        ChessBoard chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
         server.joinGame(gameNum, params[1]);
         return gameBoard(chessBoard);
     }
@@ -123,7 +123,7 @@ public class ChessClient {
         }
         assertLoggedIn();
         int gameNum = Integer.parseInt(params[0]);
-        ChessBoard chessBoard = serializer.fromJson(server.listGames(gameNum), ChessBoard.class);
+        ChessBoard chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
         return gameBoard(chessBoard);
     }
     public String gameBoard(ChessBoard chessBoard){
