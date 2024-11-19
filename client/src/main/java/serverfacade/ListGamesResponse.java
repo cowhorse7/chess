@@ -4,11 +4,12 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import model.GameData;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class ListGamesResponse {
     private final HashSet<GameData> games;
-
+    public HashMap<int, int> linkedGames;
     public ListGamesResponse(HashSet<GameData> listOfGames){
         games = listOfGames;
     }
@@ -27,9 +28,13 @@ public class ListGamesResponse {
             return "No games to display\n";
         }
         StringBuilder response = new StringBuilder();
+        int iterator = 0;
+        linkedGames.clear();
         for(GameData game : games){
-            response.append("GAME ID: ").append(game.gameID()).
-                    append(" NAME: ").append(game.gameName()).
+            ++iterator;
+            linkedGames.put(iterator, game.gameID());
+            response.append(iterator).append(": ").
+                    append(game.gameName()).
                     append(" PLAYER WHITE: ").append(game.whiteUsername()).
                     append(" PLAYER BLACK: ").append(game.blackUsername()).
                     append("\n");

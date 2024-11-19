@@ -15,8 +15,11 @@ public class ServerFacade {
     public ServerFacade(String url){
         serverUrl = url;
     }
+    public ListGamesResponse listOfGames = null;
     public AuthData createUser(UserData user) throws Exception {
-        if (user.username() == null || user.password() == null || user.email() == null){throw new Exception("incomplete user data");}
+        if (user.username() == null || user.password() == null || user.email() == null){
+            throw new Exception("incomplete user data");
+        }
         if (user.email().indexOf('@') < 0) {throw new Exception("email must contain @");}
         String path = "/user";
         AuthData auth = this.makeRequest("POST", path, user, AuthData.class);
@@ -43,16 +46,22 @@ public class ServerFacade {
     }
     public String listGames(int gameID) throws Exception {
         String path = "/game";
-        ListGamesResponse list = this.makeRequest("GET", path, null, ListGamesResponse.class);
-        if (gameID > 0){return new Gson().toJson(list.game(gameID), ChessBoard.class);}
-        return list.toString();
+        listOfGames = this.makeRequest("GET", path, null, ListGamesResponse.class);
+        if (gameID > 0){
+            gameID = listOfGames.linkedGames.get(gameID);
+            return new Gson().toJson(listOfGames.game(gameID), ChessBoard.class);
+        }
+        return listOfGames.toString();
     }
     public void clear() throws Exception {
         String path = "/db";
         this.makeRequest("DELETE", path, null, null);
     }
     public void joinGame(int gameId, String playerColor) throws Exception {
+        if (listOfGames == null){throw new Exception("You must \"list\" before joining");}
+        if (!listOfGames.linkedGames.containsKey(gameId)){throw new Exception("Game does not exist");}
         String path = "/game";
+        gameId = listOfGames.linkedGames.get(gameId);
         JoinRequest request = new JoinRequest(playerColor, gameId);
         this.makeRequest("PUT", path, request, null);
     }
