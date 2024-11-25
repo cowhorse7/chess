@@ -99,7 +99,7 @@ public class ChessClient {
         return server.listGames();
     }
     public String createGame(String... params) throws Exception {
-        if (params.length!=1){return "Please include <nameOfGame>";}
+        if (params.length!=1){return "Please include <nameOfGame> (no spaces allowed in name)";}
         assertLoggedIn();
         server.createChessGame(params[0]);
         return String.format("%s successfully created", params[0]);
