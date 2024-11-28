@@ -19,10 +19,16 @@ public class WebsocketServer {
             session.getRemote().sendString("WebSocket response: " + message);
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             switch (command.getCommandType()){
-                case LEAVE -> break;
-                case RESIGN -> break;
-                case CONNECT -> break;
-                case MAKE_MOVE ->
+                case LEAVE -> leave();
+                case RESIGN -> resign();
+                case CONNECT -> connect();
+                case MAKE_MOVE -> makeMove();
             }
         }
+        private void leave(){
+
+        }
+        private void resign(){}
+        private void connect(){}
+        private void makeMove(){}
 }
