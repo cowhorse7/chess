@@ -1,8 +1,10 @@
 package server;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.commands.UserGameCommand;
 
 @WebSocket
 public class WebsocketServer {
@@ -15,5 +17,12 @@ public class WebsocketServer {
         @OnWebSocketMessage
         public void onMessage(Session session, String message) throws Exception {
             session.getRemote().sendString("WebSocket response: " + message);
+            UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+            switch (command.getCommandType()){
+                case LEAVE -> break;
+                case RESIGN -> break;
+                case CONNECT -> break;
+                case MAKE_MOVE ->
+            }
         }
 }
