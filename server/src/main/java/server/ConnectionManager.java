@@ -1,9 +1,10 @@
 package server;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.ServerMessage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class ConnectionManager {
     public HashMap<Integer, ArrayList<String>> gamesToUsers = new HashMap<>();
@@ -17,19 +18,16 @@ public class ConnectionManager {
         gamesToUsers.put(gameID, players);
     }
     public void remove(String authToken, Integer gameID){
-        //Integer index = findUser(authToken, gameID);
         gamesToUsers.get(gameID).remove(authToken);
     }
-//    private Integer findUser(String authToken, Integer gameID){
-//        ArrayList<String> users = gamesToUsers.get(gameID);
-//        String auth = "";
-//        int i = 0;
-//        for(i = 0; i < users.size(); i++) {
-//            auth = users.get(i);
-//            if(Objects.equals(auth, authToken)){
-//                break;
-//            }
-//        }
-//        return i;
-//    }
+    public void notifyUser(String authToken, ServerMessage message) throws IOException {
+        Connection user = allUsers.get(authToken);
+        user.send(message.toString()); //not sure what will happen with this toString...
+    }
+    public void notifyAllButUser(String authToExclude, Integer gameID, ServerMessage notification) throws IOException {
+
+    }
+    public void notifyAllInGame(String authToExclude, Integer gameID, ServerMessage notification) throws IOException {
+
+    }
 }

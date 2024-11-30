@@ -5,6 +5,11 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+
+import java.io.IOException;
 
 @WebSocket
 public class WebsocketServer {
@@ -14,6 +19,7 @@ public class WebsocketServer {
 //            Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
 //        }
     ConnectionManager manager = new ConnectionManager();
+    String message = "";
 
         @OnWebSocketMessage
         public void onMessage(Session session, String message) throws Exception {
@@ -32,8 +38,13 @@ public class WebsocketServer {
         private void resign(String authToken, Integer gameID){
             leave(authToken,gameID);
         }
-        private void connect(String authToken, Session session, Integer gameID){
+        private void connect(String authToken, Session session, Integer gameID) throws IOException {
             manager.add(authToken, session, gameID);
+            message = String.format("player has joined game %d.\n", gameID);//FIXME: make message to include player/observer's name
+            LoadGameMessage onJoin = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameID);
+            manager.notifyUser(authToken, onJoin);
+            NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            manager.notifyAllButUser(authToken, gameID, toOthers);
         }
         private void makeMove(){}
 }
