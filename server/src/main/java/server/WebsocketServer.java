@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -29,14 +30,20 @@ public class WebsocketServer {
                 case LEAVE -> leave(command.getAuthToken(), command.getGameID());
                 case RESIGN -> resign(command.getAuthToken(), command.getGameID());
                 case CONNECT -> connect(command.getAuthToken(), session, command.getGameID());
-                case MAKE_MOVE -> makeMove();
+                case MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID());
             }
         }
-        private void leave(String authToken, Integer gameID){
-            manager.remove(authToken, gameID);
+        private void leave(String authToken, Integer gameID) throws IOException {
+            manager.leaveGame(authToken, gameID);
+            message = String.format("player has left game %d.\n", gameID);
+            NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            manager.notifyAllButUser(authToken, gameID, toOthers);
         }
-        private void resign(String authToken, Integer gameID){
+        private void resign(String authToken, Integer gameID) throws IOException {
             leave(authToken,gameID);
+            message = "player has resigned.\n";
+            NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            manager.notifyAllInGame(gameID, toOthers);
         }
         private void connect(String authToken, Session session, Integer gameID) throws IOException {
             manager.add(authToken, session, gameID);
@@ -46,5 +53,11 @@ public class WebsocketServer {
             NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllButUser(authToken, gameID, toOthers);
         }
-        private void makeMove(){}
+        private void makeMove(String authToken, Integer gameID) throws IOException {//, ChessMove move){
+            LoadGameMessage onMove = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameID);
+            manager.notifyAllInGame(gameID, onMove);
+            message = "player has moved piece at x to y.\n";//move.getStartPosition, move.getEndPosition
+            NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            manager.notifyAllButUser(authToken, gameID, toOthers);
+        }
 }
