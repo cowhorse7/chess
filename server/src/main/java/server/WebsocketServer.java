@@ -2,6 +2,8 @@ package server;
 
 import chess.ChessMove;
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
+import model.AuthData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -19,13 +21,18 @@ public class WebsocketServer {
 //            Spark.webSocket("/ws", WSServer.class);
 //            Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
 //        }
-    ConnectionManager manager = new ConnectionManager();
-    String message = "";
-
+    private ConnectionManager manager = new ConnectionManager();
+    private String message = "";
+    private AuthDAO authDataAccess;
+    private AuthData user;
+    public WebsocketServer(AuthDAO authDataAccess) {
+        this.authDataAccess = authDataAccess;
+    }
         @OnWebSocketMessage
         public void onMessage(Session session, String message) throws Exception {
-            session.getRemote().sendString("WebSocket response: " + message);
+            //session.getRemote().sendString("WebSocket response: " + message);
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+            user = authDataAccess.getAuthByToken(command.getAuthToken());
             switch (command.getCommandType()){
                 case LEAVE -> leave(command.getAuthToken(), command.getGameID());
                 case RESIGN -> resign(command.getAuthToken(), command.getGameID());
@@ -33,21 +40,21 @@ public class WebsocketServer {
                 case MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID());
             }
         }
-        private void leave(String authToken, Integer gameID) throws IOException {
+        private void leave(String authToken, Integer gameID) throws Exception {
             manager.leaveGame(authToken, gameID);
-            message = String.format("player has left game %d.\n", gameID);
+            message = String.format("%s has left game %d.\n", user.username(), gameID);
             NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllButUser(authToken, gameID, toOthers);
         }
-        private void resign(String authToken, Integer gameID) throws IOException {
+        private void resign(String authToken, Integer gameID) throws Exception {
             leave(authToken,gameID);
-            message = "player has resigned.\n";
+            message = String.format("%s has resigned.\n", user.username());
             NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllInGame(gameID, toOthers);
         }
         private void connect(String authToken, Session session, Integer gameID) throws IOException {
             manager.add(authToken, session, gameID);
-            message = String.format("player has joined game %d.\n", gameID);//FIXME: make message to include player/observer's name
+            message = String.format("%s has joined game %d.\n", user.username(), gameID);
             LoadGameMessage onJoin = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameID);
             manager.notifyUser(authToken, onJoin);
             NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
@@ -56,7 +63,7 @@ public class WebsocketServer {
         private void makeMove(String authToken, Integer gameID) throws IOException {//, ChessMove move){
             LoadGameMessage onMove = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameID);
             manager.notifyAllInGame(gameID, onMove);
-            message = "player has moved piece at x to y.\n";//move.getStartPosition, move.getEndPosition
+            message = String.format("%s has moved piece at x to y.\n", user.username());//move.getStartPosition, move.getEndPosition
             NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllButUser(authToken, gameID, toOthers);
         }
