@@ -32,11 +32,15 @@ public class ListGamesResponse {
         linkedGames = new HashMap<>();
         for(GameData game : games){
             ++iterator;
+            String white = game.whiteUsername();
+            String black = game.blackUsername();
+            if(white == null){white = "<none>";}
+            if(black == null){black = "<none>";}
             linkedGames.put(iterator, game.gameID());
             response.append(iterator).append(": ").
                     append(game.gameName()).
-                    append(" PLAYER WHITE: ").append(game.whiteUsername()).
-                    append(" PLAYER BLACK: ").append(game.blackUsername()).
+                    append(" PLAYER WHITE: ").append(white).
+                    append(" PLAYER BLACK: ").append(black).
                     append("\n");
         }
         return response.toString();
