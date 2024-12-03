@@ -1,18 +1,26 @@
 package server;
 
+import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 import model.AuthData;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @WebSocket
 public class WebsocketServer {
@@ -24,8 +32,10 @@ public class WebsocketServer {
     private ConnectionManager manager = new ConnectionManager();
     private String message = "";
     private AuthDAO authDataAccess;
+    private GameDAO gameDataAccess;
     private AuthData user;
-    public WebsocketServer(AuthDAO authDataAccess) {
+    public WebsocketServer(AuthDAO authDataAccess, GameDAO gameDataAccess) {
+        this.gameDataAccess = gameDataAccess;
         this.authDataAccess = authDataAccess;
     }
         @OnWebSocketMessage
@@ -37,12 +47,14 @@ public class WebsocketServer {
                 case LEAVE -> leave(command.getAuthToken(), command.getGameID());
                 case RESIGN -> resign(command.getAuthToken(), command.getGameID());
                 case CONNECT -> connect(command.getAuthToken(), session, command.getGameID());
-                case MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID());
+                case MAKE_MOVE -> {
+                    MakeMoveCommand mmCommand = new Gson().fromJson(message, MakeMoveCommand.class);
+                    makeMove(command.getAuthToken(), command.getGameID(), mmCommand.getMove());}
             }
         }
         private void leave(String authToken, Integer gameID) throws Exception {
             manager.leaveGame(authToken, gameID);
-            message = String.format("%s has left game %d.\n", user.username(), gameID);
+            message = String.format("%s has left the game.\n", user.username());
             NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllButUser(authToken, gameID, toOthers);
         }
@@ -52,19 +64,57 @@ public class WebsocketServer {
             NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllInGame(gameID, toOthers);
         }
-        private void connect(String authToken, Session session, Integer gameID) throws IOException {
+        private void connect(String authToken, Session session, Integer gameID) throws Exception {
+            GameData gameData = gameDataAccess.getGame(gameID);
+            String color = "";
+            ChessGame game = gameData.game();
             manager.add(authToken, session, gameID);
-            message = String.format("%s has joined game %d.\n", user.username(), gameID);
-            LoadGameMessage onJoin = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameID);
+            if (Objects.equals(gameData.whiteUsername(), user.username())){
+                color = "white";
+                message = String.format("%s has joined %s as %s.\n", user.username(), gameData.gameName(), color);
+            }
+            else if (Objects.equals(gameData.blackUsername(), user.username())){
+                color = "black";
+                message = String.format("%s has joined %s as %s.\n", user.username(), gameData.gameName(), color);
+            }
+            else{message = String.format("%s has joined %s as observer.\n", user.username(), gameData.gameName());}
+            ServerMessage onJoin = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
             manager.notifyUser(authToken, onJoin);
-            NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllButUser(authToken, gameID, toOthers);
         }
-        private void makeMove(String authToken, Integer gameID) throws IOException {//, ChessMove move){
-            LoadGameMessage onMove = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameID);
+        private void makeMove(String authToken, Integer gameID, ChessMove move) throws Exception {
+            GameData gameData = gameDataAccess.getGame(gameID);
+            ChessGame game = gameData.game();
+            ChessPosition start = move.getStartPosition();
+            ChessPosition end = move.getEndPosition();
+            game.makeMove(move);
+            ServerMessage onMove = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
             manager.notifyAllInGame(gameID, onMove);
-            message = String.format("%s has moved piece at x to y.\n", user.username());//move.getStartPosition, move.getEndPosition
-            NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            message = String.format("%s moved piece at %d,%d to %d,%d.\n",
+                    user.username(), start.getRow(), start.getColumn(), end.getRow(), end.getColumn());
+            ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllButUser(authToken, gameID, toOthers);
+            String color = String.valueOf(game.getTeamTurn());
+            if (game.isInCheckmate(game.getTeamTurn())){
+                message = String.format("%s is in checkmate", color);
+                toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                manager.notifyAllInGame(gameID, toOthers);
+            }
+            else if (game.isInCheck(game.getTeamTurn())){
+                message = String.format("%s is in check", color);
+                toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                manager.notifyAllInGame(gameID, toOthers);
+            }
+            else if (game.isInStalemate(game.getTeamTurn())){
+                message = String.format("%s is in stalemate", gameData.gameName());
+                toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                manager.notifyAllInGame(gameID, toOthers);
+            }
         }
+        @OnWebSocketError
+    public void errorTime(Throwable ex) throws IOException {
+        ServerMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
+        manager.notifyUser(user.authToken(), errorMessage);
+    }
 }
