@@ -1,23 +1,15 @@
 package server;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
+import org.eclipse.jetty.websocket.api.annotations.*;
+import websocket.commands.*;
+import websocket.messages.*;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -55,13 +47,13 @@ public class WebsocketServer {
         private void leave(String authToken, Integer gameID) throws Exception {
             manager.leaveGame(authToken, gameID);
             message = String.format("%s has left the game.\n", user.username());
-            NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllButUser(authToken, gameID, toOthers);
         }
         private void resign(String authToken, Integer gameID) throws Exception {
             leave(authToken,gameID);
             message = String.format("%s has resigned.\n", user.username());
-            NotificationMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllInGame(gameID, toOthers);
         }
         private void connect(String authToken, Session session, Integer gameID) throws Exception {
