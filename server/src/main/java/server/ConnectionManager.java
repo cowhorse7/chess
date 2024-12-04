@@ -12,9 +12,10 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ConnectionManager {
-    public HashMap<Integer, ArrayList<String>> gamesToUsers = new HashMap<>();
-    public HashMap<String, Connection> allUsers = new HashMap<>();
-    public HashMap<String, Connection> resignedPlayers = new HashMap<>();
+    private HashMap<Integer, ArrayList<String>> gamesToUsers = new HashMap<>();
+    private HashMap<String, Connection> allUsers = new HashMap<>();
+//    public HashMap<String, Connection> resignedPlayers = new HashMap<>();
+    private ArrayList<Integer> endedGames = new ArrayList<>();
     private final Gson serializer = new Gson();
 
     public void add(String authToken, Session session, Integer gameID){
@@ -30,14 +31,24 @@ public class ConnectionManager {
     public void leaveGame(String authToken, Integer gameID){
         gamesToUsers.get(gameID).remove(authToken);
         allUsers.remove(authToken);
-        resignedPlayers.remove(authToken);
+//        resignedPlayers.remove(authToken);
     }
-    public void resign(String authToken){
-        Connection currentUser = allUsers.get(authToken);
-        resignedPlayers.put(authToken, currentUser);
+//    public void resign(String authToken, Integer gameID){
+//        Connection currentUser = allUsers.get(authToken);
+////        resignedPlayers.put(authToken, currentUser);
+//        endGame(gameID);
+//    }
+    public void endGame(Integer gameID){
+        if(!gameEnded(gameID)){endedGames.add(gameID);}
     }
-    public boolean userResigned(String authToken){
-        return resignedPlayers.get(authToken) != null;
+//    public boolean userResigned(){
+//        return !resignedPlayers.isEmpty();
+//    }
+    public boolean gameEnded(Integer gameID){
+        for(Integer game : endedGames){
+            if (Objects.equals(game, gameID)){return true;}
+        }
+        return false;
     }
     public void notifyUser(String authToken, ServerMessage message) throws IOException {
         Connection userConn = allUsers.get(authToken);

@@ -16,10 +16,10 @@ import java.util.Objects;
 
 @WebSocket
 public class WebsocketServer {
-    private ConnectionManager manager = new ConnectionManager();
+    private final ConnectionManager manager = new ConnectionManager();
     private String message = "";
-    private AuthDAO authDataAccess;
-    private GameDAO gameDataAccess;
+    private final AuthDAO authDataAccess;
+    private final GameDAO gameDataAccess;
     private AuthData user;
     public WebsocketServer(AuthDAO authDataAccess, GameDAO gameDataAccess) {
         this.gameDataAccess = gameDataAccess;
@@ -40,14 +40,28 @@ public class WebsocketServer {
             //session.getRemote().sendString("WebSocket response: " + message);
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             user = authDataAccess.getAuthByToken(command.getAuthToken());
-            switch (command.getCommandType()){
-                case LEAVE -> leave(command.getAuthToken(), command.getGameID());
-                case RESIGN -> resign(command.getAuthToken(), command.getGameID());
-                case CONNECT -> connect(command.getAuthToken(), session, command.getGameID());
-                case MAKE_MOVE -> {
-                    MakeMoveCommand mmCommand = new Gson().fromJson(message, MakeMoveCommand.class);
-                    makeMove(command.getAuthToken(), command.getGameID(), mmCommand.getMove());}
-            }
+            Integer gameID = command.getGameID();
+//            if(user == null){
+//                message = "unauthorized";
+//                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
+//                manager.notifyUser(command.getAuthToken(), toUser);
+//            }
+//            else if(gameDataAccess.getGame(gameID)==null){
+//                message = "no such game";
+//                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
+//                manager.notifyUser(command.getAuthToken(), toUser);
+//            }
+//            else {
+                switch (command.getCommandType()) {
+                    case LEAVE -> leave(command.getAuthToken(), gameID);
+                    case RESIGN -> resign(command.getAuthToken(), gameID);
+                    case CONNECT -> connect(command.getAuthToken(), session, gameID);
+                    case MAKE_MOVE -> {
+                        MakeMoveCommand mmCommand = new Gson().fromJson(message, MakeMoveCommand.class);
+                        makeMove(command.getAuthToken(), gameID, mmCommand.getMove());
+                    }
+                }
+//            }
         }
         private void leave(String authToken, Integer gameID) throws Exception {
             GameData gameData = gameDataAccess.getGame(gameID);
@@ -71,10 +85,16 @@ public class WebsocketServer {
         private void resign(String authToken, Integer gameID) throws Exception {
             GameData gameData = gameDataAccess.getGame(gameID);
             String color = playerColor(gameData);
-            if (Objects.equals(color, "white") || Objects.equals(color, "black")){
+            if (manager.gameEnded(gameID)){
+                message = "the game has already ended";
+                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
+                manager.notifyUser(authToken, toUser);
+            }
+            else if (Objects.equals(color, "white") || Objects.equals(color, "black")){
                 message = String.format("%s has resigned.\n", user.username());
                 ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 manager.notifyAllButUser(null, gameID, toOthers);
+                manager.endGame(gameID);
             }
             else{
                 message = "observers cannot resign.";
@@ -104,8 +124,8 @@ public class WebsocketServer {
             String color = playerColor(gameData);
             ChessGame game = gameData.game();
             ChessGame.TeamColor teamColor = game.getTeamTurn();
-            if(manager.userResigned(authToken)){
-                message = "you cannot play after resigning";
+            if(manager.gameEnded(gameID)){
+                message = "you cannot play after the game has ended";
                 ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
                 manager.notifyUser(authToken, toUser);
             }
@@ -136,6 +156,7 @@ public class WebsocketServer {
                     message = String.format("%s is in checkmate", color);
                     toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                     manager.notifyAllButUser(null, gameID, toOthers);
+                    manager.endGame(gameID);
                 } else if (game.isInCheck(game.getTeamTurn())) {
                     message = String.format("%s is in check", color);
                     toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
@@ -144,12 +165,12 @@ public class WebsocketServer {
                     message = String.format("%s is in stalemate", gameData.gameName());
                     toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                     manager.notifyAllButUser(null, gameID, toOthers);
+                    manager.endGame(gameID);
                 }
             }
         }
-        @OnWebSocketError
-    public void errorTime(Throwable ex) throws IOException {
-        ServerMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
-        manager.notifyUser(user.authToken(), errorMessage);
-    }
+//        @OnWebSocketError
+//    public void errorTime(Throwable ex) throws Exception {
+//        throw new Exception("connection error");
+//    }
 }
