@@ -166,8 +166,8 @@ public class ChessClient {
         return pretty.toString();
     }
     public void initGameBoard(String[][] arr, ChessBoard chessBoard){
-        char[] letters = {'0','a','b','c','d','e','f','g','h'};
-        char[] nums = {'0', '8', '7', '6', '5', '4', '3', '2', '1'};
+        char[] letters = {' ','a','b','c','d','e','f','g','h'};
+        char[] nums = {' ', '8', '7', '6', '5', '4', '3', '2', '1'};
         String space = "";
         ChessPiece piece = null;
         for (int i = 0; i < 9; i ++){

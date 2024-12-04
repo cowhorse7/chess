@@ -16,11 +16,6 @@ import java.util.Objects;
 
 @WebSocket
 public class WebsocketServer {
-//        public static void main(String[] args) {
-//            Spark.port(8080);
-//            Spark.webSocket("/ws", WSServer.class);
-//            Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
-//        }
     private ConnectionManager manager = new ConnectionManager();
     private String message = "";
     private AuthDAO authDataAccess;
@@ -29,6 +24,16 @@ public class WebsocketServer {
     public WebsocketServer(AuthDAO authDataAccess, GameDAO gameDataAccess) {
         this.gameDataAccess = gameDataAccess;
         this.authDataAccess = authDataAccess;
+    }
+    private String playerColor(GameData gameData){
+        String color = null;
+        if (Objects.equals(gameData.whiteUsername(), user.username())){
+            color = "white";
+        }
+        else if (Objects.equals(gameData.blackUsername(), user.username())){
+            color = "black";
+        }
+        return color;
     }
         @OnWebSocketMessage
         public void onMessage(Session session, String message) throws Exception {
@@ -45,28 +50,47 @@ public class WebsocketServer {
             }
         }
         private void leave(String authToken, Integer gameID) throws Exception {
-            manager.leaveGame(authToken, gameID);
+            GameData gameData = gameDataAccess.getGame(gameID);
+            String color = playerColor(gameData);
+
             message = String.format("%s has left the game.\n", user.username());
             ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllButUser(authToken, gameID, toOthers);
+
+            if (Objects.equals(color, "white")){
+                gameData = new GameData(gameID, null, gameData.blackUsername(), gameData.gameName(), gameData.game());
+                gameDataAccess.updateGame(gameID, gameData);
+            }
+            else if (Objects.equals(color, "black")){
+                gameData = new GameData(gameID, gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
+                gameDataAccess.updateGame(gameID, gameData);
+            }
+
+            manager.leaveGame(authToken, gameID);
         }
         private void resign(String authToken, Integer gameID) throws Exception {
-            leave(authToken,gameID);
-            message = String.format("%s has resigned.\n", user.username());
-            ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            manager.notifyAllInGame(gameID, toOthers);
+            GameData gameData = gameDataAccess.getGame(gameID);
+            String color = playerColor(gameData);
+            if (Objects.equals(color, "white") || Objects.equals(color, "black")){
+                message = String.format("%s has resigned.\n", user.username());
+                ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                manager.notifyAllButUser(null, gameID, toOthers);
+            }
+            else{
+                message = "observers cannot resign.";
+                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
+                manager.notifyUser(authToken, toUser);
+            }
         }
         private void connect(String authToken, Session session, Integer gameID) throws Exception {
             GameData gameData = gameDataAccess.getGame(gameID);
-            String color = "";
+            String color = playerColor(gameData);
             ChessGame game = gameData.game();
             manager.add(authToken, session, gameID);
-            if (Objects.equals(gameData.whiteUsername(), user.username())){
-                color = "white";
+            if (Objects.equals(color, "white")){
                 message = String.format("%s has joined %s as %s.\n", user.username(), gameData.gameName(), color);
             }
-            else if (Objects.equals(gameData.blackUsername(), user.username())){
-                color = "black";
+            else if (Objects.equals(color, "black")){
                 message = String.format("%s has joined %s as %s.\n", user.username(), gameData.gameName(), color);
             }
             else{message = String.format("%s has joined %s as observer.\n", user.username(), gameData.gameName());}
@@ -77,31 +101,50 @@ public class WebsocketServer {
         }
         private void makeMove(String authToken, Integer gameID, ChessMove move) throws Exception {
             GameData gameData = gameDataAccess.getGame(gameID);
+            String color = playerColor(gameData);
             ChessGame game = gameData.game();
-            ChessPosition start = move.getStartPosition();
-            ChessPosition end = move.getEndPosition();
-            game.makeMove(move);
-            ServerMessage onMove = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
-            manager.notifyAllInGame(gameID, onMove);
-            message = String.format("%s moved piece at %d,%d to %d,%d.\n",
-                    user.username(), start.getRow(), start.getColumn(), end.getRow(), end.getColumn());
-            ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            manager.notifyAllButUser(authToken, gameID, toOthers);
-            String color = String.valueOf(game.getTeamTurn());
-            if (game.isInCheckmate(game.getTeamTurn())){
-                message = String.format("%s is in checkmate", color);
-                toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-                manager.notifyAllInGame(gameID, toOthers);
+            ChessGame.TeamColor teamColor = game.getTeamTurn();
+            if(manager.userResigned(authToken)){
+                message = "you cannot play after resigning";
+                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
+                manager.notifyUser(authToken, toUser);
             }
-            else if (game.isInCheck(game.getTeamTurn())){
-                message = String.format("%s is in check", color);
-                toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-                manager.notifyAllInGame(gameID, toOthers);
+            else if(!color.equals("white") && !color.equals("black")){
+                message = "observers cannot play";
+                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
+                manager.notifyUser(authToken, toUser);
             }
-            else if (game.isInStalemate(game.getTeamTurn())){
-                message = String.format("%s is in stalemate", gameData.gameName());
-                toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-                manager.notifyAllInGame(gameID, toOthers);
+            else if((color.equals("white") && !teamColor.equals(ChessGame.TeamColor.WHITE)) ||
+                    (color.equals("black") && !teamColor.equals(ChessGame.TeamColor.BLACK))){
+                message = "you cannot move when it is not your turn";
+                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
+                manager.notifyUser(authToken, toUser);
+            }
+            else {
+                ChessPosition start = move.getStartPosition();
+                ChessPosition end = move.getEndPosition();
+                game.makeMove(move);
+                ServerMessage onMove = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+                manager.notifyAllButUser(null, gameID, onMove);
+                message = String.format("%s moved piece at %d,%d to %d,%d.\n",
+                        user.username(), start.getRow(), start.getColumn(), end.getRow(), end.getColumn());
+                ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                manager.notifyAllButUser(authToken, gameID, toOthers);
+                if(color.equals("white")){color = "black";}
+                else if(color.equals("black")){color = "white";}
+                if (game.isInCheckmate(game.getTeamTurn())) {
+                    message = String.format("%s is in checkmate", color);
+                    toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                    manager.notifyAllButUser(null, gameID, toOthers);
+                } else if (game.isInCheck(game.getTeamTurn())) {
+                    message = String.format("%s is in check", color);
+                    toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                    manager.notifyAllButUser(null, gameID, toOthers);
+                } else if (game.isInStalemate(game.getTeamTurn())) {
+                    message = String.format("%s is in stalemate", gameData.gameName());
+                    toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+                    manager.notifyAllButUser(null, gameID, toOthers);
+                }
             }
         }
         @OnWebSocketError
