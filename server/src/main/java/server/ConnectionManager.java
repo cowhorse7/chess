@@ -14,7 +14,6 @@ import java.util.Objects;
 public class ConnectionManager {
     private HashMap<Integer, ArrayList<String>> gamesToUsers = new HashMap<>();
     private HashMap<String, Connection> allUsers = new HashMap<>();
-//    public HashMap<String, Connection> resignedPlayers = new HashMap<>();
     private ArrayList<Integer> endedGames = new ArrayList<>();
     private final Gson serializer = new Gson();
 
@@ -31,19 +30,10 @@ public class ConnectionManager {
     public void leaveGame(String authToken, Integer gameID){
         gamesToUsers.get(gameID).remove(authToken);
         allUsers.remove(authToken);
-//        resignedPlayers.remove(authToken);
     }
-//    public void resign(String authToken, Integer gameID){
-//        Connection currentUser = allUsers.get(authToken);
-////        resignedPlayers.put(authToken, currentUser);
-//        endGame(gameID);
-//    }
     public void endGame(Integer gameID){
         if(!gameEnded(gameID)){endedGames.add(gameID);}
     }
-//    public boolean userResigned(){
-//        return !resignedPlayers.isEmpty();
-//    }
     public boolean gameEnded(Integer gameID){
         for(Integer game : endedGames){
             if (Objects.equals(game, gameID)){return true;}

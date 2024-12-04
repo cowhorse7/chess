@@ -41,27 +41,16 @@ public class WebsocketServer {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             user = authDataAccess.getAuthByToken(command.getAuthToken());
             Integer gameID = command.getGameID();
-//            if(user == null){
-//                message = "unauthorized";
-//                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
-//                manager.notifyUser(command.getAuthToken(), toUser);
-//            }
-//            else if(gameDataAccess.getGame(gameID)==null){
-//                message = "no such game";
-//                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
-//                manager.notifyUser(command.getAuthToken(), toUser);
-//            }
-//            else {
-                switch (command.getCommandType()) {
+             switch (command.getCommandType()) {
                     case LEAVE -> leave(command.getAuthToken(), gameID);
                     case RESIGN -> resign(command.getAuthToken(), gameID);
                     case CONNECT -> connect(command.getAuthToken(), session, gameID);
                     case MAKE_MOVE -> {
                         MakeMoveCommand mmCommand = new Gson().fromJson(message, MakeMoveCommand.class);
-                        makeMove(command.getAuthToken(), gameID, mmCommand.getMove());
+                        makeMove(command.getAuthToken(), session, gameID, mmCommand.getMove());
                     }
                 }
-//            }
+
         }
         private void leave(String authToken, Integer gameID) throws Exception {
             GameData gameData = gameDataAccess.getGame(gameID);
@@ -107,9 +96,11 @@ public class WebsocketServer {
             if(gameData == null) {
                 message = "game could not be found.\n";
                 ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
-                manager.notifyUser(authToken, toUser);
+                String msg = new Gson().toJson(toUser);
+                session.getRemote().sendString(msg);
                 return;
             }
+            if(!checkAuth(session)){return;}
             String color = playerColor(gameData);
             ChessGame game = gameData.game();
             manager.add(authToken, session, gameID);
@@ -125,7 +116,8 @@ public class WebsocketServer {
             ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             manager.notifyAllButUser(authToken, gameID, toOthers);
         }
-        private void makeMove(String authToken, Integer gameID, ChessMove move) throws Exception {
+        private void makeMove(String authToken, Session session, Integer gameID, ChessMove move) throws Exception {
+            if(!checkAuth(session)){return;}
             GameData gameData = gameDataAccess.getGame(gameID);
             String color = playerColor(gameData);
             ChessGame game = gameData.game();
@@ -192,6 +184,16 @@ public class WebsocketServer {
                     manager.notifyAllButUser(null, gameID, toOthers);
                     manager.endGame(gameID);
                 }
+        }
+        private boolean checkAuth(Session session) throws IOException {
+            if(user == null) {
+                message = "not authorized.\n";
+                ServerMessage toUser = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
+                String msg = new Gson().toJson(toUser);
+                session.getRemote().sendString(msg);
+                return false;
+            }
+            return true;
         }
 //        @OnWebSocketError
 //    public void errorTime(Throwable ex) throws Exception {
