@@ -28,7 +28,14 @@ public class ConnectionManager {
         players.add(authToken);
     }
     public void leaveGame(String authToken, Integer gameID){
-        gamesToUsers.get(gameID).remove(authToken);
+        ArrayList<String> users = gamesToUsers.get(gameID);
+        for(int i = 0; i < users.size(); i++){
+            if (Objects.equals(users.get(i), authToken)){
+                users.remove(i);
+                break;
+            }
+        }
+        gamesToUsers.put(gameID, users);
         allUsers.remove(authToken);
     }
     public void endGame(Integer gameID){

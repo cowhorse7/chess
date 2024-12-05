@@ -12,6 +12,7 @@ import websocket.commands.*;
 import websocket.messages.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 @WebSocket
@@ -56,10 +57,6 @@ public class WebsocketServer {
             GameData gameData = gameDataAccess.getGame(gameID);
             String color = playerColor(gameData);
 
-            message = String.format("%s has left the game.\n", user.username());
-            ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            manager.notifyAllButUser(authToken, gameID, toOthers);
-
             if (Objects.equals(color, "white")){
                 gameData = new GameData(gameID, null, gameData.blackUsername(), gameData.gameName(), gameData.game());
                 gameDataAccess.updateGame(gameID, gameData);
@@ -68,6 +65,9 @@ public class WebsocketServer {
                 gameData = new GameData(gameID, gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
                 gameDataAccess.updateGame(gameID, gameData);
             }
+            message = String.format("%s has left the game.\n", user.username());
+            ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            manager.notifyAllButUser(authToken, gameID, toOthers);
 
             manager.leaveGame(authToken, gameID);
         }
@@ -141,6 +141,7 @@ public class WebsocketServer {
             else {
                 ChessPosition start = move.getStartPosition();
                 ChessPosition end = move.getEndPosition();
+                char[] columns = {' ','a','b','c','d','e','f','g','h'};
                 try{
                 game.makeMove(move);
                 }catch (Exception ex){
@@ -155,8 +156,8 @@ public class WebsocketServer {
                 ServerMessage onMove = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
                 manager.notifyAllButUser(null, gameID, onMove);
 
-                message = String.format("%s moved piece at %d,%d to %d,%d.\n",
-                        user.username(), start.getRow(), start.getColumn(), end.getRow(), end.getColumn());
+                message = String.format("%s moved piece at %d,%s to %d,%s.\n",
+                        user.username(), start.getRow(), columns[start.getColumn()], end.getRow(), columns[end.getColumn()]);
                 ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 manager.notifyAllButUser(authToken, gameID, toOthers);
 
