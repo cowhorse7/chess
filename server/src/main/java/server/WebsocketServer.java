@@ -166,20 +166,27 @@ public class WebsocketServer {
         }
             private void checkGameConditions(Integer gameID, ChessGame game, String color) throws Exception {
                 ServerMessage toOthers;
-                if(color.equals("white")){color = "black";}
-                else if(color.equals("black")){color = "white";}
+                String username = null;
+                GameData gameData = gameDataAccess.getGame(gameID);
+                if(color.equals("white")){
+                    color = "black";
+                    username = gameData.blackUsername();
+                }
+                else if(color.equals("black")){
+                    color = "white";
+                    username = gameData.whiteUsername();
+                }
                 ChessGame.TeamColor teamColor = game.getTeamTurn();
                 if (game.isInCheckmate(teamColor)) {
-                    message = String.format("%s is in checkmate\n", color);
+                    message = String.format("%s is in checkmate\n", username);
                     toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                     manager.notifyAllButUser(null, gameID, toOthers);
                     manager.endGame(gameID);
                 } else if (game.isInCheck(teamColor)) {
-                    message = String.format("%s is in check\n", color);
+                    message = String.format("%s is in check\n", username);
                     toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                     manager.notifyAllButUser(null, gameID, toOthers);
                 } else if (game.isInStalemate(teamColor)) {
-                    GameData gameData = gameDataAccess.getGame(gameID);
                     message = String.format("%s is in stalemate\n", gameData.gameName());
                     toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                     manager.notifyAllButUser(null, gameID, toOthers);
