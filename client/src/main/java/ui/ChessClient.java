@@ -12,12 +12,13 @@ import java.util.*;
 public class ChessClient {
     private String username = null;
     private final ServerFacade server;
-    private final String serverUrl;
     private State state = State.SIGNEDOUT;
+    private PlayerPosition playerPosition;
     private final Gson serializer = new Gson();
-    private DrawBoard drawBoard = new DrawBoard();
+    private final DrawBoard drawBoard = new DrawBoard();
+    private ChessBoard chessBoard;
+    private Integer gameNum;
     public ChessClient(String serverUrl){
-        this.serverUrl = serverUrl;
         server = new ServerFacade(serverUrl);
     }
     public String eval(String input){
@@ -125,10 +126,18 @@ public class ChessClient {
         }
         assertLoggedIn();
         int gameNum = Integer.parseInt(params[0]);
-        ChessBoard chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
+        chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
         server.joinGame(gameNum, params[1]);
         state = State.INGAME;
-        return drawBoard.gameBoard(chessBoard);
+        this.gameNum = gameNum;
+        if(Objects.equals(params[1], "white")){
+            playerPosition = PlayerPosition.WHITE;
+            return drawBoard.gameBoardWhite(chessBoard);
+        }
+        else{
+            playerPosition = PlayerPosition.BLACK;
+            return drawBoard.gameBoardBlack(chessBoard);
+        }
     }
     public String observeGame(String... params) throws Exception {
         if (params.length != 1) {
@@ -136,16 +145,24 @@ public class ChessClient {
         }
         assertLoggedIn();
         int gameNum = Integer.parseInt(params[0]);
-        ChessBoard chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
+        chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
         state = State.INGAME;
+        playerPosition = PlayerPosition.OBSERVER;
+        this.gameNum = gameNum;
         return drawBoard.gameBoard(chessBoard);
     }
     public String redraw(){
-        return null;
+        if(playerPosition == PlayerPosition.WHITE) {
+            return drawBoard.gameBoardWhite(chessBoard);
+        } else if (playerPosition == PlayerPosition.BLACK) {
+            return drawBoard.gameBoardBlack(chessBoard);
+        }
+        else {return drawBoard.gameBoard(chessBoard);}
     }
-    public String leave(){
+    public String leave() throws Exception {
         state = State.SIGNEDIN;
-        return null;
+        server.leaveGame(gameNum);
+        return  "Successfully left game.\nType \"help\" for options";
     }
     public String makeMove(){
         return null;

@@ -18,6 +18,17 @@ public class DrawBoard {
         printBoards.append(prettyBoard(arr));
         return printBoards.toString();
     }
+    public String gameBoardWhite(ChessBoard chessBoard){
+        String[][] arr = new String[9][9];
+        initGameBoard(arr, chessBoard);
+        return STR."\{prettyBoard(arr)}\n";
+    }
+    public String gameBoardBlack(ChessBoard chessBoard){
+        String[][] arr = new String[9][9];
+        initGameBoard(arr, chessBoard);
+        reverseBoard(arr);
+        return STR."\{prettyBoard(arr)}\n";
+    }
     public void reverseBoard(String[][]arr){
         reverseRows(arr);
         reverseColumns(arr);
