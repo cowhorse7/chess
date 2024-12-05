@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import websocket.commands.UserGameCommand;
+
 import java.io.*;
 import java.net.*;
 
@@ -67,6 +69,12 @@ public class ServerFacade {
         int gameID = listOfGames.linkedGames.get(gameNum);
         JoinRequest request = new JoinRequest(playerColor, gameID);
         this.makeRequest("PUT", path, request, null);
+    }
+    public void leaveGame(int gameNum) throws Exception {
+        int gameID = listOfGames.linkedGames.get(gameNum);
+        String path = "/ws";
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+        this.makeRequest("websocket", path, command, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
