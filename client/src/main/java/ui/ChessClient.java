@@ -1,11 +1,10 @@
 package ui;
+
 import chess.ChessBoard;
-import chess.ChessPiece;
-import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
-import serverfacade.ServerFacade;
+import serverfacade.*;
 import static ui.EscapeSequences.*;
 import java.util.*;
 
@@ -18,8 +17,11 @@ public class ChessClient {
     private final DrawBoard drawBoard = new DrawBoard();
     private ChessBoard chessBoard;
     private Integer gameNum;
-    public ChessClient(String serverUrl){
+    private NotificationHandler notificationHandler;
+    private WebsocketFacade ws;
+    public ChessClient(String serverUrl, NotificationHandler notificationHandler){
         server = new ServerFacade(serverUrl);
+        this.notificationHandler = notificationHandler;
     }
     public String eval(String input){
         try{
@@ -133,10 +135,12 @@ public class ChessClient {
         if(Objects.equals(params[1], "white")){
             playerPosition = PlayerPosition.WHITE;
             return drawBoard.gameBoardWhite(chessBoard);
+            //FIXME: ws.joinGameWhite
         }
         else{
             playerPosition = PlayerPosition.BLACK;
             return drawBoard.gameBoardBlack(chessBoard);
+            //FIXME: ws.joinGameBlack
         }
     }
     public String observeGame(String... params) throws Exception {
@@ -148,6 +152,7 @@ public class ChessClient {
         chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
         state = State.INGAME;
         playerPosition = PlayerPosition.OBSERVER;
+        //FIXME: ws.observeGame
         this.gameNum = gameNum;
         return drawBoard.gameBoard(chessBoard);
     }
@@ -162,15 +167,19 @@ public class ChessClient {
     public String leave() throws Exception {
         state = State.SIGNEDIN;
         server.leaveGame(gameNum);
+        //FIXME: ws.leaveGame
         return  "Successfully left game.\nType \"help\" for options";
     }
     public String makeMove(){
+        //FIXME: ws.makeMove
         return null;
     }
     public String resign(){
+        //FIXME: ws.resign
         return null;
     }
     public String highlight(){
+        //FIXME: drawBoard.highlightMoves(space)
         return null;
     }
 }

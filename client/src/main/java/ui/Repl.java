@@ -1,14 +1,15 @@
 package ui;
 
+import serverfacade.NotificationHandler;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final ChessClient client;
     public Repl(String serverUrl){
-        client = new ChessClient(serverUrl);
+        client = new ChessClient(serverUrl, this);
     }
     public void run() {
         System.out.println(SET_TEXT_ITALIC + SET_TEXT_COLOR_MAGENTA + "Hello brave warrior. Sign in to start.");

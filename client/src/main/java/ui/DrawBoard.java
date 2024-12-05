@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
@@ -77,38 +78,31 @@ public class DrawBoard {
                 else {
                     piece = chessBoard.getPiece(new ChessPosition(i, j));
                     if (piece == null){space = "   ";}
-                    else{space = setSpace(piece, i);}
+                    else{space = setSpace(piece, piece.getTeamColor());}
 
                     if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) {
-                        arr[i][j] = SET_BG_COLOR_BLACK + SET_TEXT_COLOR_LIGHT_GREY + space;
+                        arr[i][j] = SET_BG_COLOR_BLACK + space; // + SET_TEXT_COLOR_LIGHT_GREY
                     } else {
-                        arr[i][j] = SET_BG_COLOR_WHITE + SET_TEXT_COLOR_DARK_GREY + space;
+                        arr[i][j] = SET_BG_COLOR_WHITE + space; //+ SET_TEXT_COLOR_DARK_GREY
                     }
                 }
             }
         }
     }
-    public String setSpace(ChessPiece piece, int definingLine){
-        if(definingLine < 5) {
-            switch (piece.getPieceType()) {
-                case PAWN -> {return " p ";}
-                case KNIGHT ->{ return " n ";}
-                case KING -> {return " k ";}
-                case QUEEN -> {return " q ";}
-                case ROOK -> {return " r ";}
-                case BISHOP -> {return " b ";}
-            }
+    public String setSpace(ChessPiece piece, ChessGame.TeamColor color){
+        String returnString = "";
+        if(color == ChessGame.TeamColor.BLACK) {
+            returnString = SET_TEXT_COLOR_MAGENTA;
         }
-        else{
-            switch (piece.getPieceType()) {
-                case PAWN -> {return " P ";}
-                case KNIGHT -> {return " N ";}
-                case KING -> {return " K ";}
-                case QUEEN -> {return " Q ";}
-                case ROOK -> {return " R ";}
-                case BISHOP -> {return " B ";}
-            }
+        else{returnString = SET_TEXT_COLOR_BLUE;}
+        switch (piece.getPieceType()) {
+                case PAWN -> {returnString += " P ";}
+                case KNIGHT -> {returnString += " N ";}
+                case KING -> {returnString += " K ";}
+                case QUEEN -> {returnString += " Q ";}
+                case ROOK -> {returnString += " R ";}
+                case BISHOP -> {returnString += " B ";}
         }
-        return "   ";
+        return returnString;
     }
 }
