@@ -76,7 +76,7 @@ public class DrawBoard {
                     arr[i][j] = SET_TEXT_COLOR_GREEN + RESET_BG_COLOR + String.format(" %s ", nums[i]);
                 }
                 else {
-                    piece = chessBoard.getPiece(new ChessPosition(i, j));
+                    piece = chessBoard.getPiece(new ChessPosition(9-i, 9-j));
                     if (piece == null){space = "   ";}
                     else{space = setSpace(piece, piece.getTeamColor());}
 

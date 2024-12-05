@@ -80,7 +80,7 @@ public class DatabaseManager {
                 }
                 ps.executeUpdate();
             }catch (SQLException e){
-                throw new Exception(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+                throw new Exception("unable to update database");//: %s, %s", statement, e.getMessage()));
             }
         }
     }
