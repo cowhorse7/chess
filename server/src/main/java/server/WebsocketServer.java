@@ -166,7 +166,7 @@ public class WebsocketServer {
         }
             private void checkGameConditions(Integer gameID, ChessGame game, String color) throws Exception {
                 ServerMessage toOthers;
-                String username = null;
+                String username = "";
                 GameData gameData = gameDataAccess.getGame(gameID);
                 if(color.equals("white")){
                     color = "black";
