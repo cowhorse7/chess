@@ -41,7 +41,7 @@ public class ChessClient {
                 case "leave" -> leave();
                 case "move" -> makeMove();
                 case "resign" -> resign();
-                case "highlight" -> highlight();
+                case "highlight" -> highlight(params);
 
                 default -> help();
             };
@@ -175,7 +175,7 @@ public class ChessClient {
         assertLoggedIn();
         assertInGame();
         state = State.SIGNEDIN;
-        server.leaveGame(gameNum);
+//        server.leaveGame(gameNum);
         //FIXME: ws.leaveGame
         return  "Successfully left game.\nType \"help\" for options";
     }

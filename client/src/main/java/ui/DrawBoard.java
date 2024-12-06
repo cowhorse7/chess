@@ -17,9 +17,10 @@ public class DrawBoard {
         Collection<ChessMove> vMoves = game.validMoves(position);
         ArrayList<ChessPosition> endPositions = new ArrayList<>();
         endPositions.add(position);
-
-        for(ChessMove move : vMoves){
-            endPositions.add(move.getEndPosition());
+        if(vMoves != null) {
+            for (ChessMove move : vMoves) {
+                endPositions.add(move.getEndPosition());
+            }
         }
 
         if(playerPosition == PlayerPosition.WHITE) {
@@ -36,8 +37,7 @@ public class DrawBoard {
     }
     public String gameBoard(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String[][] arr = new String[9][9];
-        if(vMoves != null){initBoardHighlight(arr, chessBoard, vMoves);}
-        else {initGameBoard(arr, chessBoard);}
+        initGameBoard(arr, chessBoard, vMoves);
         StringBuilder printBoards = new StringBuilder();
         printBoards.append(prettyBoard(arr));
         reverseBoard(arr);
@@ -48,14 +48,12 @@ public class DrawBoard {
     }
     public String gameBoardWhite(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String[][] arr = new String[9][9];
-        if(vMoves != null){initBoardHighlight(arr, chessBoard, vMoves);}
-        else {initGameBoard(arr, chessBoard);}
+        initGameBoard(arr, chessBoard, vMoves);
         return STR."\{prettyBoard(arr)}\n";
     }
     public String gameBoardBlack(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String[][] arr = new String[9][9];
-        if(vMoves != null){initBoardHighlight(arr, chessBoard, vMoves);}
-        else {initGameBoard(arr, chessBoard);}
+        initGameBoard(arr, chessBoard, vMoves);
         reverseBoard(arr);
         return STR."\{prettyBoard(arr)}\n";
     }
@@ -91,9 +89,10 @@ public class DrawBoard {
         }
         return pretty.toString();
     }
-    public void initGameBoard(String[][] arr, ChessBoard chessBoard){
+    public void initGameBoard(String[][] arr, ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String space = "";
         ChessPiece piece = null;
+        boolean highlight = (vMoves!=null);
         for (int i = 0; i < 9; i ++){
             for(int j = 0; j < 9; j++){
                 if (i == 0){
@@ -103,35 +102,34 @@ public class DrawBoard {
                     arr[i][j] = SET_TEXT_COLOR_GREEN + RESET_BG_COLOR + String.format(" %s ", nums[i]);
                 }
                 else {
-                    piece = chessBoard.getPiece(new ChessPosition(9-i, j));
+                    ChessPosition current = new ChessPosition(9-i, j);
+                    piece = chessBoard.getPiece(current);
                     if (piece == null){space = "   ";}
                     else{space = setSpace(piece, piece.getTeamColor());}
 
-                    if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) {
-                        arr[i][j] = SET_BG_COLOR_BLACK + space;
-                    } else {
-                        arr[i][j] = SET_BG_COLOR_WHITE + space;
+                    if(highlight){
+                        ChessPosition match = vMoves.getFirst();
+                        //match = new ChessPosition(9-match.getRow(), match.getColumn());
+                        if (match.getRow() == i && match.getColumn() == j){
+                            for(ChessPosition position : vMoves) {
+                                arr[9-position.getRow()][position.getColumn()] = SET_BG_COLOR_GREEN;
+                            }
+                            arr[i][j] = SET_BG_COLOR_YELLOW;
+                        }
+                        if(arr[i][j]==null){setBackgroundNormal(arr, i, j);}
                     }
+                    else {setBackgroundNormal(arr, i, j);}
+                    arr[i][j] += space;
                 }
             }
         }
     }
-    public void initBoardHighlight(String[][] arr, ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
-        initGameBoard(arr, chessBoard);
-        int i = 0;
-        int j = 0;
-        String space = "";
-        for(ChessPosition position : vMoves){
-            i = position.getRow();
-            j = position.getColumn();
-            space = arr[i][j].substring((arr[i][j]).length()-3);
-            arr[i][j] = SET_BG_COLOR_GREEN + space;
+    public void setBackgroundNormal(String[][] arr, int i, int j){
+        if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) {
+            arr[i][j] = SET_BG_COLOR_BLACK;
+        } else {
+            arr[i][j] = SET_BG_COLOR_WHITE;
         }
-        ChessPosition position = vMoves.getFirst();
-        i = position.getRow();
-        j = position.getColumn();
-        space = arr[i][j].substring((arr[i][j]).length()-3);
-        arr[i][j] = SET_BG_COLOR_YELLOW + space;
     }
     public String setSpace(ChessPiece piece, ChessGame.TeamColor color){
         String returnString = "";
