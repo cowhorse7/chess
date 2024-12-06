@@ -101,6 +101,11 @@ public class ChessClient {
             throw new Exception("You must sign in");
         }
     }
+    private void assertInGame() throws Exception {
+        if (state != State.INGAME) {
+            throw new Exception("You must join a game first");
+        }
+    }
     public String register(String... params) throws Exception {
         if (state == State.SIGNEDIN){return "You are already signed in!";}
         if (params.length != 3){
@@ -156,7 +161,9 @@ public class ChessClient {
         this.gameNum = gameNum;
         return drawBoard.gameBoard(chessBoard);
     }
-    public String redraw(){
+    public String redraw() throws Exception {
+        assertLoggedIn();
+        assertInGame();
         if(playerPosition == PlayerPosition.WHITE) {
             return drawBoard.gameBoardWhite(chessBoard);
         } else if (playerPosition == PlayerPosition.BLACK) {
@@ -165,21 +172,34 @@ public class ChessClient {
         else {return drawBoard.gameBoard(chessBoard);}
     }
     public String leave() throws Exception {
+        assertLoggedIn();
+        assertInGame();
         state = State.SIGNEDIN;
         server.leaveGame(gameNum);
         //FIXME: ws.leaveGame
         return  "Successfully left game.\nType \"help\" for options";
     }
-    public String makeMove(){
+    public String makeMove() throws Exception {
+        assertLoggedIn();
+        assertInGame();
         //FIXME: ws.makeMove
         return null;
     }
-    public String resign(){
+    public String resign() throws Exception {
+        assertLoggedIn();
+        assertInGame();
         //FIXME: ws.resign
         return null;
     }
-    public String highlight(){
-        //FIXME: drawBoard.highlightMoves(space)
-        return null;
+    public String highlight(String... params) throws Exception {
+        if (params.length != 2) {
+            return "Please format request: <rowNumber> <columnLetter>";
+        }
+        assertLoggedIn();
+        assertInGame();
+        int row = Integer.parseInt(params[0]);
+        char column = params[1].charAt(0);
+        return drawBoard.highlightLegalMoves(chessBoard, row, column, playerPosition);
     }
+
 }

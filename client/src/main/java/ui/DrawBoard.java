@@ -1,14 +1,29 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
-
+import chess.*;
 import static ui.EscapeSequences.*;
-import static ui.EscapeSequences.SET_TEXT_COLOR_DARK_GREY;
 
 public class DrawBoard {
+
+    private char[] letters = {' ','a','b','c','d','e','f','g','h'};
+    public String highlightLegalMoves(ChessBoard chessBoard, int row, char colLetter, PlayerPosition playerPosition) throws Exception {
+        int col = extractColumn(colLetter);
+        ChessPosition position = new ChessPosition(row, col);
+        String gameBoardClean;
+        if(playerPosition == PlayerPosition.WHITE) {
+            gameBoardClean = gameBoardWhite(chessBoard);
+        } else if (playerPosition == PlayerPosition.BLACK) {
+            gameBoardClean = gameBoardBlack(chessBoard);
+        }
+        else {gameBoardClean = gameBoard(chessBoard);}
+
+        return "";
+    }
+    public int extractColumn(char colLetter) throws Exception {
+        int col = new String(letters).indexOf(colLetter);
+        if (col == -1){throw new Exception("invalid column");}
+        return col;
+    }
     public String gameBoard(ChessBoard chessBoard){
         String[][] arr = new String[9][9];
         initGameBoard(arr, chessBoard);
@@ -63,7 +78,6 @@ public class DrawBoard {
         return pretty.toString();
     }
     public void initGameBoard(String[][] arr, ChessBoard chessBoard){
-        char[] letters = {' ','a','b','c','d','e','f','g','h'};
         char[] nums = {' ', '8', '7', '6', '5', '4', '3', '2', '1'};
         String space = "";
         ChessPiece piece = null;
@@ -81,9 +95,9 @@ public class DrawBoard {
                     else{space = setSpace(piece, piece.getTeamColor());}
 
                     if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) {
-                        arr[i][j] = SET_BG_COLOR_BLACK + space; // + SET_TEXT_COLOR_LIGHT_GREY
+                        arr[i][j] = SET_BG_COLOR_BLACK + space;
                     } else {
-                        arr[i][j] = SET_BG_COLOR_WHITE + space; //+ SET_TEXT_COLOR_DARK_GREY
+                        arr[i][j] = SET_BG_COLOR_WHITE + space;
                     }
                 }
             }
