@@ -36,7 +36,7 @@ public class DrawBoard {
     }
     public String gameBoard(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String[][] arr = new String[9][9];
-        if(vMoves != null){}
+        if(vMoves != null){initBoardHighlight(arr, chessBoard, vMoves);}
         else {initGameBoard(arr, chessBoard);}
         StringBuilder printBoards = new StringBuilder();
         printBoards.append(prettyBoard(arr));
@@ -48,13 +48,13 @@ public class DrawBoard {
     }
     public String gameBoardWhite(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String[][] arr = new String[9][9];
-        if(vMoves != null){}
+        if(vMoves != null){initBoardHighlight(arr, chessBoard, vMoves);}
         else {initGameBoard(arr, chessBoard);}
         return STR."\{prettyBoard(arr)}\n";
     }
     public String gameBoardBlack(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String[][] arr = new String[9][9];
-        if(vMoves != null){}
+        if(vMoves != null){initBoardHighlight(arr, chessBoard, vMoves);}
         else {initGameBoard(arr, chessBoard);}
         reverseBoard(arr);
         return STR."\{prettyBoard(arr)}\n";
@@ -115,6 +115,23 @@ public class DrawBoard {
                 }
             }
         }
+    }
+    public void initBoardHighlight(String[][] arr, ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
+        initGameBoard(arr, chessBoard);
+        int i = 0;
+        int j = 0;
+        String space = "";
+        for(ChessPosition position : vMoves){
+            i = position.getRow();
+            j = position.getColumn();
+            space = arr[i][j].substring((arr[i][j]).length()-3);
+            arr[i][j] = SET_BG_COLOR_GREEN + space;
+        }
+        ChessPosition position = vMoves.getFirst();
+        i = position.getRow();
+        j = position.getColumn();
+        space = arr[i][j].substring((arr[i][j]).length()-3);
+        arr[i][j] = SET_BG_COLOR_YELLOW + space;
     }
     public String setSpace(ChessPiece piece, ChessGame.TeamColor color){
         String returnString = "";
