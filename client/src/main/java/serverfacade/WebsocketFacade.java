@@ -33,7 +33,7 @@ public class WebsocketFacade extends Endpoint{
 
     public void enterGame(String authToken, int gameID) throws Exception {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            UserGameCommand action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (Exception ex) {
             throw new Exception(ex.getMessage());

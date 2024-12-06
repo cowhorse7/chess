@@ -47,13 +47,15 @@ public class ChessGame {
 
     private boolean forwardMove(ChessMove move){
         ChessBoard boardCopy = new ChessBoard(cBoard);
+        ChessBoard pointer = cBoard;
+        cBoard = boardCopy;
         ChessGame.TeamColor team = cBoard.getPiece(move.getStartPosition()).getTeamColor();
         movePiece(move); //should this be makeMove?
         if(isInCheck(team)){
-            cBoard = boardCopy;
+            cBoard = pointer;
             return false;
         }
-        cBoard = boardCopy;
+        cBoard = pointer;
         return true;
     }
 

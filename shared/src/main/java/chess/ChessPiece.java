@@ -207,9 +207,13 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return "ChessPiece{" +
-                "pieceColor=" + pieceColor +
-                ", type=" + type +
-                '}';
+        return switch(type) {
+            case PAWN -> "P";
+            case KNIGHT -> "N";
+            case BISHOP -> "B";
+            case ROOK -> "R";
+            case QUEEN -> "Q";
+            case KING -> "K";
+        };
     }
 }

@@ -9,6 +9,7 @@ import static ui.EscapeSequences.*;
 import java.util.*;
 
 public class ChessClient {
+    private AuthData currentUser;
     private String username = null;
     private final ServerFacade server;
     private State state = State.SIGNEDOUT;
@@ -85,6 +86,7 @@ public class ChessClient {
         }
         UserData user = new UserData(params[0], params[1], null);
         AuthData auth = server.loginUser(user);
+        currentUser = auth;
         state = State.SIGNEDIN;
         username = auth.username();
         return String.format("Successfully signed in as %s.\nType \"help\" for options", username);
@@ -157,7 +159,7 @@ public class ChessClient {
         chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
         state = State.INGAME;
         playerPosition = PlayerPosition.OBSERVER;
-        //FIXME: ws.observeGame
+        //ws.enterGame(currentUser.authToken(), );
         this.gameNum = gameNum;
         return drawBoard.gameBoard(chessBoard, null);
     }

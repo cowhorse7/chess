@@ -89,9 +89,16 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "spaces=" + Arrays.deepToString(spaces) +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < 8; i ++){
+            for(int j = 0; j < 8; j++){
+                sb.append('|');
+                if(spaces[i][j] != null){sb.append(spaces[i][j]);}
+                else{sb.append(" ");}
+            }
+            sb.append("|\n");
+        }
+        return sb.toString();
     }
 }
 

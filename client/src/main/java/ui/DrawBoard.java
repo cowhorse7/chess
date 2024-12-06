@@ -24,11 +24,11 @@ public class DrawBoard {
         }
 
         if(playerPosition == PlayerPosition.WHITE) {
-            return gameBoardWhite(chessBoard, endPositions);
+            return gameBoardWhite(game.cBoard, endPositions);
         } else if (playerPosition == PlayerPosition.BLACK) {
-            return gameBoardBlack(chessBoard, endPositions);
+            return gameBoardBlack(game.cBoard, endPositions);
         }
-        else {return gameBoard(chessBoard, endPositions);}
+        else {return gameBoard(game.cBoard, endPositions);}
     }
     public int extractColumn(char colLetter) throws Exception {
         int col = new String(letters).indexOf(colLetter);
@@ -36,8 +36,9 @@ public class DrawBoard {
         return col;
     }
     public String gameBoard(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
+        game.cBoard = chessBoard;
         String[][] arr = new String[9][9];
-        initGameBoard(arr, chessBoard, vMoves);
+        initGameBoard(arr, vMoves);
         StringBuilder printBoards = new StringBuilder();
         printBoards.append(prettyBoard(arr));
         reverseBoard(arr);
@@ -47,13 +48,15 @@ public class DrawBoard {
 
     }
     public String gameBoardWhite(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
+        game.cBoard = chessBoard;
         String[][] arr = new String[9][9];
-        initGameBoard(arr, chessBoard, vMoves);
+        initGameBoard(arr, vMoves);
         return STR."\{prettyBoard(arr)}\n";
     }
     public String gameBoardBlack(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
+        game.cBoard = chessBoard;
         String[][] arr = new String[9][9];
-        initGameBoard(arr, chessBoard, vMoves);
+        initGameBoard(arr, vMoves);
         reverseBoard(arr);
         return STR."\{prettyBoard(arr)}\n";
     }
@@ -89,7 +92,7 @@ public class DrawBoard {
         }
         return pretty.toString();
     }
-    public void initGameBoard(String[][] arr, ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
+    public void initGameBoard(String[][] arr, ArrayList<ChessPosition> vMoves){
         String space = "";
         ChessPiece piece = null;
         boolean highlight = (vMoves!=null);
@@ -103,20 +106,19 @@ public class DrawBoard {
                 }
                 else {
                     ChessPosition current = new ChessPosition(9-i, j);
-                    piece = chessBoard.getPiece(current);
+                    piece = game.cBoard.getPiece(current);
                     if (piece == null){space = "   ";}
                     else{space = setSpace(piece, piece.getTeamColor());}
 
                     if(highlight){
                         ChessPosition match = vMoves.getFirst();
-                        //match = new ChessPosition(9-match.getRow(), match.getColumn());
-                        if (match.getRow() == i && match.getColumn() == j){
-                            for(ChessPosition position : vMoves) {
-                                arr[9-position.getRow()][position.getColumn()] = SET_BG_COLOR_GREEN;
-                            }
+                        if (9-match.getRow() == i && match.getColumn() == j){
                             arr[i][j] = SET_BG_COLOR_YELLOW;
                         }
-                        if(arr[i][j]==null){setBackgroundNormal(arr, i, j);}
+                        else if(vMoves.contains(current)){
+                            arr[i][j] = SET_BG_COLOR_GREEN;
+                        }
+                        else{setBackgroundNormal(arr, i, j);}
                     }
                     else {setBackgroundNormal(arr, i, j);}
                     arr[i][j] += space;
