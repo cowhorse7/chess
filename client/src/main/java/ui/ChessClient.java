@@ -139,12 +139,12 @@ public class ChessClient {
         this.gameNum = gameNum;
         if(Objects.equals(params[1], "white")){
             playerPosition = PlayerPosition.WHITE;
-            return drawBoard.gameBoardWhite(chessBoard);
+            return drawBoard.gameBoardWhite(chessBoard, null);
             //FIXME: ws.joinGameWhite
         }
         else{
             playerPosition = PlayerPosition.BLACK;
-            return drawBoard.gameBoardBlack(chessBoard);
+            return drawBoard.gameBoardBlack(chessBoard, null);
             //FIXME: ws.joinGameBlack
         }
     }
@@ -159,17 +159,17 @@ public class ChessClient {
         playerPosition = PlayerPosition.OBSERVER;
         //FIXME: ws.observeGame
         this.gameNum = gameNum;
-        return drawBoard.gameBoard(chessBoard);
+        return drawBoard.gameBoard(chessBoard, null);
     }
     public String redraw() throws Exception {
         assertLoggedIn();
         assertInGame();
         if(playerPosition == PlayerPosition.WHITE) {
-            return drawBoard.gameBoardWhite(chessBoard);
+            return drawBoard.gameBoardWhite(chessBoard, null);
         } else if (playerPosition == PlayerPosition.BLACK) {
-            return drawBoard.gameBoardBlack(chessBoard);
+            return drawBoard.gameBoardBlack(chessBoard, null);
         }
-        else {return drawBoard.gameBoard(chessBoard);}
+        else {return drawBoard.gameBoard(chessBoard, null);}
     }
     public String leave() throws Exception {
         assertLoggedIn();

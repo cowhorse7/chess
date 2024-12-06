@@ -1,47 +1,61 @@
 package ui;
 
 import chess.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import static ui.EscapeSequences.*;
 
 public class DrawBoard {
-
-    private char[] letters = {' ','a','b','c','d','e','f','g','h'};
+    private final ChessGame game = new ChessGame();
+    private final char[] letters = {' ','a','b','c','d','e','f','g','h'};
+    private final char[] nums = {' ', '8', '7', '6', '5', '4', '3', '2', '1'};
     public String highlightLegalMoves(ChessBoard chessBoard, int row, char colLetter, PlayerPosition playerPosition) throws Exception {
+        game.cBoard = chessBoard;
         int col = extractColumn(colLetter);
         ChessPosition position = new ChessPosition(row, col);
-        String gameBoardClean;
-        if(playerPosition == PlayerPosition.WHITE) {
-            gameBoardClean = gameBoardWhite(chessBoard);
-        } else if (playerPosition == PlayerPosition.BLACK) {
-            gameBoardClean = gameBoardBlack(chessBoard);
-        }
-        else {gameBoardClean = gameBoard(chessBoard);}
+        Collection<ChessMove> vMoves = game.validMoves(position);
+        ArrayList<ChessPosition> endPositions = new ArrayList<>();
+        endPositions.add(position);
 
-        return "";
+        for(ChessMove move : vMoves){
+            endPositions.add(move.getEndPosition());
+        }
+
+        if(playerPosition == PlayerPosition.WHITE) {
+            return gameBoardWhite(chessBoard, endPositions);
+        } else if (playerPosition == PlayerPosition.BLACK) {
+            return gameBoardBlack(chessBoard, endPositions);
+        }
+        else {return gameBoard(chessBoard, endPositions);}
     }
     public int extractColumn(char colLetter) throws Exception {
         int col = new String(letters).indexOf(colLetter);
         if (col == -1){throw new Exception("invalid column");}
         return col;
     }
-    public String gameBoard(ChessBoard chessBoard){
+    public String gameBoard(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String[][] arr = new String[9][9];
-        initGameBoard(arr, chessBoard);
+        if(vMoves != null){}
+        else {initGameBoard(arr, chessBoard);}
         StringBuilder printBoards = new StringBuilder();
         printBoards.append(prettyBoard(arr));
         reverseBoard(arr);
         printBoards.append("\n");
         printBoards.append(prettyBoard(arr));
         return printBoards.toString();
+
     }
-    public String gameBoardWhite(ChessBoard chessBoard){
+    public String gameBoardWhite(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String[][] arr = new String[9][9];
-        initGameBoard(arr, chessBoard);
+        if(vMoves != null){}
+        else {initGameBoard(arr, chessBoard);}
         return STR."\{prettyBoard(arr)}\n";
     }
-    public String gameBoardBlack(ChessBoard chessBoard){
+    public String gameBoardBlack(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         String[][] arr = new String[9][9];
-        initGameBoard(arr, chessBoard);
+        if(vMoves != null){}
+        else {initGameBoard(arr, chessBoard);}
         reverseBoard(arr);
         return STR."\{prettyBoard(arr)}\n";
     }
@@ -78,7 +92,6 @@ public class DrawBoard {
         return pretty.toString();
     }
     public void initGameBoard(String[][] arr, ChessBoard chessBoard){
-        char[] nums = {' ', '8', '7', '6', '5', '4', '3', '2', '1'};
         String space = "";
         ChessPiece piece = null;
         for (int i = 0; i < 9; i ++){
