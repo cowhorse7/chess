@@ -55,10 +55,13 @@ public class ServerFacade {
         String path = "/db";
         this.makeRequest("DELETE", path, null, null);
     }
-    public String getGame(int gameNum) throws Exception{
+    public int getGameID(int gameNum) throws Exception{
         if (listOfGames == null){throw new Exception("You must \"list\" before joining");}
         if (!listOfGames.linkedGames.containsKey(gameNum)){throw new Exception("Game does not exist");}
-        int gameID = listOfGames.linkedGames.get(gameNum);
+        return listOfGames.linkedGames.get(gameNum);
+    }
+    public String getGame(int gameNum) throws Exception{
+        int gameID = getGameID(gameNum);
         return new Gson().toJson(listOfGames.game(gameID), ChessBoard.class);
     }
     public void joinGame(int gameNum, String playerColor) throws Exception {
@@ -70,13 +73,6 @@ public class ServerFacade {
         JoinRequest request = new JoinRequest(playerColor, gameID);
         this.makeRequest("PUT", path, request, null);
     }
-//    public void leaveGame(int gameNum) throws Exception {
-//        int gameID = listOfGames.linkedGames.get(gameNum);
-//        String path = "/ws";
-//        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
-//        this.makeRequest("websocket", path, command, null);
-//    }
-
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
         try {
             URL url = (new URI(serverUrl + path)).toURL();

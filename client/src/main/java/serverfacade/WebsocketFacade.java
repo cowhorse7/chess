@@ -1,5 +1,7 @@
 package serverfacade;
+import chess.ChessMove;
 import com.google.gson.*;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 import java.net.URI;
@@ -39,6 +41,29 @@ public class WebsocketFacade extends Endpoint{
             throw new Exception(ex.getMessage());
         }
     }
-    public void leaveGame(){}
-
+    public void leaveGame(String authToken, int gameID) throws Exception{
+        try{
+            UserGameCommand action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            this.session.close();
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+    public void resignGame(String authToken, int gameID) throws Exception {
+        try {
+            UserGameCommand action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+    public void makeMove(String authToken, int gameID, ChessMove move) throws Exception {
+        try {
+            UserGameCommand action = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
 }

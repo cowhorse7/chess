@@ -19,8 +19,10 @@ public class ChessClient {
     private ChessBoard chessBoard;
     private Integer gameNum;
     private NotificationHandler notificationHandler;
+    private final String serverUrl;
     private WebsocketFacade ws;
     public ChessClient(String serverUrl, NotificationHandler notificationHandler){
+        this.serverUrl = serverUrl;
         server = new ServerFacade(serverUrl);
         this.notificationHandler = notificationHandler;
     }
@@ -141,13 +143,15 @@ public class ChessClient {
         this.gameNum = gameNum;
         if(Objects.equals(params[1], "white")){
             playerPosition = PlayerPosition.WHITE;
+            ws = new WebsocketFacade(serverUrl, notificationHandler);
+            ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
             return drawBoard.gameBoardWhite(chessBoard, null);
-            //FIXME: ws.joinGameWhite
         }
         else{
             playerPosition = PlayerPosition.BLACK;
+            ws = new WebsocketFacade(serverUrl, notificationHandler);
+            ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
             return drawBoard.gameBoardBlack(chessBoard, null);
-            //FIXME: ws.joinGameBlack
         }
     }
     public String observeGame(String... params) throws Exception {
@@ -156,11 +160,12 @@ public class ChessClient {
         }
         assertLoggedIn();
         int gameNum = Integer.parseInt(params[0]);
+        this.gameNum = gameNum;
         chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
         state = State.INGAME;
         playerPosition = PlayerPosition.OBSERVER;
-        //ws.enterGame(currentUser.authToken(), );
-        this.gameNum = gameNum;
+        ws = new WebsocketFacade(serverUrl, notificationHandler);
+        ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
         return drawBoard.gameBoard(chessBoard, null);
     }
     public String redraw() throws Exception {
@@ -177,8 +182,7 @@ public class ChessClient {
         assertLoggedIn();
         assertInGame();
         state = State.SIGNEDIN;
-//        server.leaveGame(gameNum);
-        //FIXME: ws.leaveGame
+        ws.leaveGame(currentUser.authToken(), server.getGameID(gameNum));
         return  "Successfully left game.\nType \"help\" for options";
     }
     public String makeMove() throws Exception {
@@ -190,7 +194,7 @@ public class ChessClient {
     public String resign() throws Exception {
         assertLoggedIn();
         assertInGame();
-        //FIXME: ws.resign
+        ws.resignGame(currentUser.authToken(), server.getGameID(gameNum));
         return null;
     }
     public String highlight(String... params) throws Exception {
