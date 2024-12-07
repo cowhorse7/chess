@@ -38,7 +38,6 @@ public class WebsocketServer {
     }
         @OnWebSocketMessage
         public void onMessage(Session session, String message) throws Exception {
-            session.getRemote().sendString("WebSocket response: " + message);
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             user = authDataAccess.getAuthByToken(command.getAuthToken());
             Integer gameID = command.getGameID();
@@ -84,6 +83,7 @@ public class WebsocketServer {
                 ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 manager.notifyAllButUser(null, gameID, toOthers);
                 manager.endGame(gameID);
+                gameDataAccess.removeGame(gameID);
             }
             else{
                 message = "observers cannot resign.\n";

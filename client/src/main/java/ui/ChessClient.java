@@ -118,6 +118,7 @@ public class ChessClient {
         UserData newUser = new UserData(params[0], params[1], params[2]);
         AuthData auth = server.createUser(newUser);
         username = auth.username();
+        currentUser = auth;
         state = State.SIGNEDIN;
         return String.format("Successfully registered as %s\nType \"help\" for options", username);
     }

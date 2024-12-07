@@ -62,6 +62,11 @@ public class SQLGameDAO implements GameDAO{
         String statement = "UPDATE games SET jsonGame=? WHERE gameID=?";
         DatabaseManager.executeUpdate(statement, serializer.toJson(newGame), gameID);
     }
+    public void removeGame(Integer gameID) throws Exception{
+        if(getGame(gameID) == null){throw new Exception("no such game");}
+        String statement = "DELETE FROM games WHERE gameID=?";
+        DatabaseManager.executeUpdate(statement, gameID);
+    }
     public void clear() throws Exception {
         String statement = "TRUNCATE games";
         DatabaseManager.executeUpdate(statement);

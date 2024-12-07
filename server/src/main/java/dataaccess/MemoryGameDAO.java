@@ -19,4 +19,7 @@ public class MemoryGameDAO implements GameDAO{
     public void clear() {
         gameDatabase.clear();
     }
+    public void removeGame(Integer gameID) throws Exception {
+        System.out.print("method not implemented");
+    }
 }
