@@ -194,8 +194,17 @@ public class ChessClient {
     public String resign() throws Exception {
         assertLoggedIn();
         assertInGame();
-        ws.resignGame(currentUser.authToken(), server.getGameID(gameNum));
-        return null;
+        if(playerPosition == PlayerPosition.OBSERVER){
+            return "observers cannot resign!";
+        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Are you sure you want to resign? This will end the game! (y/n)");
+        String line = scanner.nextLine();
+        if(Objects.equals(line, "y")){
+            ws.resignGame(currentUser.authToken(), server.getGameID(gameNum));
+        } else if (Objects.equals(line, "n")) {return "You have not resigned";}
+        else{return "please type either \"y\" or \"n\"";}
+        return "";
     }
     public String highlight(String... params) throws Exception {
         if (params.length != 2) {
