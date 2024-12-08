@@ -35,14 +35,14 @@ public class Repl implements NotificationHandler {
         System.out.println();
     }
     public void notify(ServerMessage serverMessage) {
-        String printStatement = SET_TEXT_COLOR_YELLOW;
+        String printStatement = "";
         try{
-        printStatement += messageParser.getMessage(serverMessage);
+        printStatement = messageParser.getMessage(serverMessage);
         }catch (Exception ex){
-            System.out.print("program error\n");
+            System.out.print(SET_TEXT_COLOR_RED + "program error\n");
             return;
         }
-        System.out.println(printStatement);
+        System.out.println("\n" + SET_TEXT_COLOR_YELLOW + printStatement);
         printPrompt();
     }
     private void printPrompt(){

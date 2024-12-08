@@ -146,13 +146,13 @@ public class ChessClient {
             playerPosition = PlayerPosition.WHITE;
             ws = new WebsocketFacade(serverUrl, notificationHandler);
             ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
-            return drawBoard.gameBoardWhite(chessBoard, null);
+            return "now playing as white";//drawBoard.gameBoardWhite(chessBoard, null);
         }
         else{
             playerPosition = PlayerPosition.BLACK;
             ws = new WebsocketFacade(serverUrl, notificationHandler);
             ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
-            return drawBoard.gameBoardBlack(chessBoard, null);
+            return "now playing as black";// drawBoard.gameBoardBlack(chessBoard, null);
         }
     }
     public String observeGame(String... params) throws Exception {
@@ -167,7 +167,7 @@ public class ChessClient {
         playerPosition = PlayerPosition.OBSERVER;
         ws = new WebsocketFacade(serverUrl, notificationHandler);
         ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
-        return drawBoard.gameBoard(chessBoard, null);
+        return String.format("now observing game %d", gameNum);//drawBoard.gameBoard(chessBoard, null);
     }
     public String redraw() throws Exception {
         assertLoggedIn();
