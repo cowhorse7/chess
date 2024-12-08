@@ -209,12 +209,12 @@ public class ChessClient {
     }
     public String highlight(String... params) throws Exception {
         if (params.length != 2) {
-            return "Please format request: <rowNumber> <columnLetter>";
+            return "Please format request: <columnLetter> <rowNumber>";
         }
         assertLoggedIn();
         assertInGame();
-        int row = Integer.parseInt(params[0]);
-        char column = params[1].charAt(0);
+        int row = Integer.parseInt(params[1]);
+        char column = params[0].charAt(0);
         return drawBoard.highlightLegalMoves(chessBoard, row, column, playerPosition);
     }
 
