@@ -34,9 +34,14 @@ public class Repl implements NotificationHandler {
         }
         System.out.println();
     }
-    public void notify(ServerMessage serverMessage) throws Exception {
+    public void notify(ServerMessage serverMessage) {
         String printStatement = SET_TEXT_COLOR_YELLOW;
+        try{
         printStatement += messageParser.getMessage(serverMessage);
+        }catch (Exception ex){
+            System.out.print("program error\n");
+            return;
+        }
         System.out.println(printStatement);
         printPrompt();
     }
