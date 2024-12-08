@@ -12,7 +12,6 @@ import websocket.commands.*;
 import websocket.messages.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Objects;
 
 @WebSocket
@@ -36,7 +35,7 @@ public class WebsocketServer {
         }
         return color;
     }
-        @OnWebSocketMessage
+    @OnWebSocketMessage
         public void onMessage(Session session, String message) throws Exception {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             user = authDataAccess.getAuthByToken(command.getAuthToken());
@@ -203,8 +202,4 @@ public class WebsocketServer {
             }
             return true;
         }
-//        @OnWebSocketError
-//    public void errorTime(Throwable ex) throws Exception {
-//        throw new Exception("connection error");
-//    }
 }
