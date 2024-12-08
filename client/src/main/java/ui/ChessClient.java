@@ -182,8 +182,8 @@ public class ChessClient {
     public String leave() throws Exception {
         assertLoggedIn();
         assertInGame();
-        state = State.SIGNEDIN;
         ws.leaveGame(currentUser.authToken(), server.getGameID(gameNum));
+        state = State.SIGNEDIN;
         return  "Successfully left game.\nType \"help\" for options";
     }
     public String makeMove() throws Exception {

@@ -1,6 +1,7 @@
 package ui;
 
 import serverfacade.NotificationHandler;
+import websocket.messages.ErrorMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
@@ -8,8 +9,10 @@ import static ui.EscapeSequences.*;
 
 public class Repl implements NotificationHandler {
     private final ChessClient client;
-    public Repl(String serverUrl){
+    private final MessageParser messageParser;
+    public Repl(String serverUrl) throws Exception {
         client = new ChessClient(serverUrl, this);
+        messageParser = new MessageParser(client);
     }
     public void run() {
         System.out.println(SET_TEXT_ITALIC + SET_TEXT_COLOR_MAGENTA + "Hello brave warrior. Sign in to start.");
@@ -31,8 +34,10 @@ public class Repl implements NotificationHandler {
         }
         System.out.println();
     }
-    public void notify(ServerMessage serverMessage){
-        System.out.println(SET_TEXT_COLOR_YELLOW + serverMessage);
+    public void notify(ServerMessage serverMessage) throws Exception {
+        String printStatement = SET_TEXT_COLOR_YELLOW;
+        printStatement += messageParser.getMessage(serverMessage);
+        System.out.println(printStatement);
         printPrompt();
     }
     private void printPrompt(){
