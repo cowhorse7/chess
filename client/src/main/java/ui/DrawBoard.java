@@ -45,14 +45,14 @@ public class DrawBoard {
         game.cBoard = chessBoard;
         String[][] arr = new String[9][9];
         initGameBoard(arr, vMoves);
-        return STR."\{prettyBoard(arr)}\n";
+        return prettyBoard(arr);
     }
     public String gameBoardBlack(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         game.cBoard = chessBoard;
         String[][] arr = new String[9][9];
         initGameBoard(arr, vMoves);
         reverseBoard(arr);
-        return STR."\{prettyBoard(arr)}\n";
+        return prettyBoard(arr);
     }
     public void reverseBoard(String[][]arr){
         reverseRows(arr);

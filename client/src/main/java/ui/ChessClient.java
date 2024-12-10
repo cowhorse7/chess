@@ -231,7 +231,7 @@ public class ChessClient {
                 ChessPiece.PieceType promPiece = null;
                 while (!contains) {
                     System.out.print("Please check your spelling. The available types are:\n");
-                    System.out.print(STR."\{String.join(", ", validTypes)}\n");
+                    System.out.print(String.join(", ", validTypes) + "\n");
                     line = scanner.nextLine();
                     line = line.toLowerCase();
                     contains = Arrays.asList(validTypes).contains(line);
