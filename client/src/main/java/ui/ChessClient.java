@@ -214,7 +214,7 @@ public class ChessClient {
 
         ws.makeMove(currentUser.authToken(), server.getGameID(gameNum), move);
         game.makeMove(move);
-        return "";
+        return "Move made";
     }
     public ChessPiece.PieceType promotionPieceCheck(ChessGame game, ChessPosition start, ChessPosition end) throws Exception{
         String[] validTypes = {"bishop", "queen", "rook", "knight"};

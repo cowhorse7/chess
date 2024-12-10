@@ -101,14 +101,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if(cBoard.getPiece(move.getStartPosition()) == null){ throw new InvalidMoveException(); }
+        if(cBoard.getPiece(move.getStartPosition()) == null){ throw new InvalidMoveException("No piece to move"); }
         ChessGame.TeamColor team = cBoard.getPiece(move.getStartPosition()).getTeamColor();
-        if(isInCheck(team) && !forwardMove(move)){throw new InvalidMoveException();}
+        if(isInCheck(team) && !forwardMove(move)){throw new InvalidMoveException("You are in check!");}
         Collection<ChessMove> vMoves = validMoves(move.getStartPosition());
-        if (vMoves.isEmpty() || !vMoves.contains(move)){throw new InvalidMoveException();}
+        if (vMoves.isEmpty() || !vMoves.contains(move)){throw new InvalidMoveException("Piece cannot move");}
 
         TeamColor gameTime = getTeamTurn();
-        if (team != gameTime){ throw new InvalidMoveException(); }
+        if (team != gameTime){ throw new InvalidMoveException("It is not your turn"); }
         movePiece(move);
 
         if (gameTime == TeamColor.WHITE){setTeamTurn(TeamColor.BLACK);}
