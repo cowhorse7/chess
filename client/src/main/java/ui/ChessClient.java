@@ -1,6 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
+import chess.*;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
@@ -42,7 +42,7 @@ public class ChessClient {
                 case "observe" -> observeGame(params);
                 case "redraw" -> redraw();
                 case "leave" -> leave();
-                case "move" -> makeMove();
+                case "move" -> makeMove(params);
                 case "resign" -> resign();
                 case "highlight" -> highlight(params);
 
@@ -138,7 +138,7 @@ public class ChessClient {
         }
         assertLoggedIn();
         int gameNum = Integer.parseInt(params[0]);
-        chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
+        chessBoard = serializer.fromJson(server.getGameBoardString(gameNum), ChessBoard.class);
         server.joinGame(gameNum, params[1]);
         state = State.INGAME;
         this.gameNum = gameNum;
@@ -162,7 +162,7 @@ public class ChessClient {
         assertLoggedIn();
         int gameNum = Integer.parseInt(params[0]);
         this.gameNum = gameNum;
-        chessBoard = serializer.fromJson(server.getGame(gameNum), ChessBoard.class);
+        chessBoard = serializer.fromJson(server.getGameBoardString(gameNum), ChessBoard.class);
         state = State.INGAME;
         playerPosition = PlayerPosition.OBSERVER;
         ws = new WebsocketFacade(serverUrl, notificationHandler);
@@ -186,11 +186,34 @@ public class ChessClient {
         state = State.SIGNEDIN;
         return  "Successfully left game.\nType \"help\" for options";
     }
-    public String makeMove() throws Exception {
+    public String makeMove(String... params) throws Exception {
+        if (params.length != 2 && params.length != 3) {
+            return "Please format request: <currentColumnLetter><currentRowNumber> <endColumnLetter><endRowNumber> <pawnPromotionPiece(if applicable)>";
+        }
         assertLoggedIn();
         assertInGame();
+        int startRow = Integer.parseInt(String.valueOf(params[0].charAt(1)));
+        char startColumn = params[0].charAt(0);
+        int sCol = extractColumn(startColumn);
+        int endRow = Integer.parseInt(String.valueOf(params[1].charAt(1)));
+        char endColumn = params[1].charAt(0);
+        int eCol = extractColumn(endColumn);
+        ChessPosition start = new ChessPosition(startRow, sCol);
+        ChessGame game = server.getGame(gameNum);
+        ChessMove move = new ChessMove(start, new ChessPosition(endRow, eCol), null);
+
         //FIXME: ws.makeMove
         return null;
+    }
+    public ChessPiece promotionPieceCheck(ChessGame game, ChessMove move) throws Exception{
+        ChessPosition start = move.getStartPosition();
+        ChessPiece piece = game.cBoard.getPiece(start);
+        if(piece == null){throw new Exception("invalid move");}
+        else if (piece.getPieceType() != ChessPiece.PieceType.PAWN){return null;}
+        else{
+            ChessPosition end = move.getEndPosition();
+
+        }
     }
     public String resign() throws Exception {
         assertLoggedIn();
@@ -208,14 +231,22 @@ public class ChessClient {
         return "";
     }
     public String highlight(String... params) throws Exception {
-        if (params.length != 2) {
-            return "Please format request: <columnLetter> <rowNumber>";
+        if (params.length != 1) {
+            return "Please format request: <columnLetter><rowNumber>";
         }
         assertLoggedIn();
         assertInGame();
-        int row = Integer.parseInt(params[1]);
+        int row = Integer.parseInt(String.valueOf(params[0].charAt(1)));
         char column = params[0].charAt(0);
-        return drawBoard.highlightLegalMoves(chessBoard, row, column, playerPosition);
+        int col = extractColumn(column);
+        return drawBoard.highlightLegalMoves(chessBoard, row, col, playerPosition);
+    }
+
+    public int extractColumn(char colLetter) throws Exception {
+        char[] letters = {' ','a','b','c','d','e','f','g','h'};
+        int col = new String(letters).indexOf(colLetter);
+        if (col == -1){throw new Exception("invalid column");}
+        return col;
     }
 
 }
