@@ -78,7 +78,7 @@ public class WebsocketServer {
                 manager.notifyUser(authToken, toUser);
             }
             else if (Objects.equals(color, "white") || Objects.equals(color, "black")){
-                message = String.format("%s has resigned.\n", user.username());
+                message = String.format("%s has resigned.\nThe game is now ended.\n", user.username());
                 ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 manager.notifyAllButUser(null, gameID, toOthers);
                 manager.endGame(gameID);
@@ -177,12 +177,12 @@ public class WebsocketServer {
                 }
                 ChessGame.TeamColor teamColor = game.getTeamTurn();
                 if (game.isInCheckmate(teamColor)) {
-                    message = String.format("%s is in checkmate\n", username);
+                    message = String.format("%s (%s) is in checkmate\n", username, color);
                     toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                     manager.notifyAllButUser(null, gameID, toOthers);
                     manager.endGame(gameID);
                 } else if (game.isInCheck(teamColor)) {
-                    message = String.format("%s is in check\n", username);
+                    message = String.format("%s (%s) is in check\n", username, color);
                     toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                     manager.notifyAllButUser(null, gameID, toOthers);
                 } else if (game.isInStalemate(teamColor)) {

@@ -26,17 +26,4 @@ public class MessageParser {
         }
         return message;
     }
-//    public String getMessage(ServerMessage serverMessage) throws Exception {
-//        String message = "";
-//        if (serverMessage instanceof ErrorMessage errorMessage) {
-//            message = errorMessage.getErrorMessage();
-//        }
-//        else if(serverMessage instanceof NotificationMessage note) {
-//            message = note.getMessage();
-//        }
-//        else if(serverMessage instanceof LoadGameMessage) {
-//            message = client.redraw();
-//        }
-//        return message;
-//    }
 }

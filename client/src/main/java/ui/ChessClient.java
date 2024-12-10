@@ -18,7 +18,7 @@ public class ChessClient {
     private final DrawBoard drawBoard = new DrawBoard();
     private ChessBoard chessBoard;
     private Integer gameNum;
-    private NotificationHandler notificationHandler;
+    private final NotificationHandler notificationHandler;
     private final String serverUrl;
     private WebsocketFacade ws;
     public ChessClient(String serverUrl, NotificationHandler notificationHandler){
@@ -213,8 +213,7 @@ public class ChessClient {
         else{move = new ChessMove(start, end, promPiece);}
 
         ws.makeMove(currentUser.authToken(), server.getGameID(gameNum), move);
-        game.makeMove(move);
-        return "Move made";
+        return "";
     }
     public ChessPiece.PieceType promotionPieceCheck(ChessGame game, ChessPosition start, ChessPosition end) throws Exception{
         String[] validTypes = {"bishop", "queen", "rook", "knight"};
@@ -251,9 +250,6 @@ public class ChessClient {
     public String resign() throws Exception {
         assertLoggedIn();
         assertInGame();
-        if(playerPosition == PlayerPosition.OBSERVER){
-            return "Observers cannot resign!";
-        }
         Scanner scanner = new Scanner(System.in);
         System.out.print("Are you sure you want to resign? This will end the game! (y/n)\n");
         String line = scanner.nextLine();

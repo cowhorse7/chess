@@ -10,7 +10,7 @@ public class DrawBoard {
     private final ChessGame game = new ChessGame();
     private final char[] letters = {' ','a','b','c','d','e','f','g','h'};
     private final char[] nums = {' ', '8', '7', '6', '5', '4', '3', '2', '1'};
-    public String highlightLegalMoves(ChessBoard chessBoard, int row, int col, PlayerPosition playerPosition) throws Exception {
+    public String highlightLegalMoves(ChessBoard chessBoard, int row, int col, PlayerPosition playerPosition) {
         game.cBoard = chessBoard;
         ChessPosition position = new ChessPosition(row, col);
         Collection<ChessMove> vMoves = game.validMoves(position);
@@ -87,8 +87,8 @@ public class DrawBoard {
         return pretty.toString();
     }
     public void initGameBoard(String[][] arr, ArrayList<ChessPosition> vMoves){
-        String space = "";
-        ChessPiece piece = null;
+        String space;
+        ChessPiece piece;
         boolean highlight = (vMoves!=null);
         for (int i = 0; i < 9; i ++){
             for(int j = 0; j < 9; j++){
@@ -128,18 +128,18 @@ public class DrawBoard {
         }
     }
     public String setSpace(ChessPiece piece, ChessGame.TeamColor color){
-        String returnString = "";
+        String returnString;
         if(color == ChessGame.TeamColor.BLACK) {
             returnString = SET_TEXT_COLOR_MAGENTA;
         }
         else{returnString = SET_TEXT_COLOR_BLUE;}
         switch (piece.getPieceType()) {
-                case PAWN -> {returnString += " P ";}
-                case KNIGHT -> {returnString += " N ";}
-                case KING -> {returnString += " K ";}
-                case QUEEN -> {returnString += " Q ";}
-                case ROOK -> {returnString += " R ";}
-                case BISHOP -> {returnString += " B ";}
+                case PAWN -> returnString += " P ";
+                case KNIGHT -> returnString += " N ";
+                case KING -> returnString += " K ";
+                case QUEEN -> returnString += " Q ";
+                case ROOK -> returnString += " R ";
+                case BISHOP -> returnString += " B ";
         }
         return returnString;
     }

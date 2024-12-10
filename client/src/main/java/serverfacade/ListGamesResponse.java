@@ -1,6 +1,5 @@
 package serverfacade;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import model.GameData;
 
@@ -24,8 +23,12 @@ public class ListGamesResponse {
     public void updateGame(int gameID, ChessGame changedGame){
         for(GameData gameIterator : games){
             if(gameIterator.gameID() != gameID){continue;}
-            else{gameIterator = new GameData(gameID, gameIterator.whiteUsername(),
-                    gameIterator.blackUsername(), gameIterator.gameName(), changedGame);}
+            else{
+                games.remove(gameIterator);
+                games.add(new GameData(gameID, gameIterator.whiteUsername(),
+                    gameIterator.blackUsername(), gameIterator.gameName(), changedGame));
+                break;
+            }
         }
     }
 
