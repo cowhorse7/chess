@@ -225,16 +225,18 @@ public class ChessClient {
                 line = line.toLowerCase();
                 boolean contains = Arrays.asList(validTypes).contains(line);
                 ChessPiece.PieceType promPiece = null;
-                if (!contains) {
+                while (!contains) {
                     System.out.print("Please check your spelling. The available types are:\n");
                     System.out.print(STR."\{String.join(", ", validTypes)}\n");
-                }else {
-                    switch (line) {
-                        case "bishop" -> promPiece = ChessPiece.PieceType.BISHOP;
-                        case "queen" -> promPiece = ChessPiece.PieceType.QUEEN;
-                        case "rook" -> promPiece = ChessPiece.PieceType.ROOK;
-                        case "knight" -> promPiece = ChessPiece.PieceType.KNIGHT;
-                    }
+                    line = scanner.nextLine();
+                    line = line.toLowerCase();
+                    contains = Arrays.asList(validTypes).contains(line);
+                }
+                switch (line) {
+                    case "bishop" -> promPiece = ChessPiece.PieceType.BISHOP;
+                    case "queen" -> promPiece = ChessPiece.PieceType.QUEEN;
+                    case "rook" -> promPiece = ChessPiece.PieceType.ROOK;
+                    case "knight" -> promPiece = ChessPiece.PieceType.KNIGHT;
                 }
                 return promPiece;
             }
