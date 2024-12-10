@@ -10,9 +10,8 @@ public class DrawBoard {
     private final ChessGame game = new ChessGame();
     private final char[] letters = {' ','a','b','c','d','e','f','g','h'};
     private final char[] nums = {' ', '8', '7', '6', '5', '4', '3', '2', '1'};
-    public String highlightLegalMoves(ChessBoard chessBoard, int row, char colLetter, PlayerPosition playerPosition) throws Exception {
+    public String highlightLegalMoves(ChessBoard chessBoard, int row, int col, PlayerPosition playerPosition) throws Exception {
         game.cBoard = chessBoard;
-        int col = extractColumn(colLetter);
         ChessPosition position = new ChessPosition(row, col);
         Collection<ChessMove> vMoves = game.validMoves(position);
         ArrayList<ChessPosition> endPositions = new ArrayList<>();
@@ -29,11 +28,6 @@ public class DrawBoard {
             return gameBoardBlack(game.cBoard, endPositions);
         }
         else {return gameBoard(game.cBoard, endPositions);}
-    }
-    public int extractColumn(char colLetter) throws Exception {
-        int col = new String(letters).indexOf(colLetter);
-        if (col == -1){throw new Exception("invalid column");}
-        return col;
     }
     public String gameBoard(ChessBoard chessBoard, ArrayList<ChessPosition> vMoves){
         game.cBoard = chessBoard;

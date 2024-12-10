@@ -14,10 +14,10 @@ public class ListGamesResponse {
         games = listOfGames;
     }
     public int listSize(){return games.size();}
-    public ChessBoard game(int gameID){
+    public ChessGame game(int gameID){
         for(GameData gameIterator : games){
             if(gameIterator.gameID() != gameID){continue;}
-            else{return gameIterator.game().cBoard;}
+            else{return gameIterator.game();}
         }
         return null;
     }

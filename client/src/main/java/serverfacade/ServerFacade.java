@@ -1,6 +1,7 @@
 package serverfacade;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import com.google.gson.Gson;
 
 import model.AuthData;
@@ -60,9 +61,13 @@ public class ServerFacade {
         if (!listOfGames.linkedGames.containsKey(gameNum)){throw new Exception("Game does not exist");}
         return listOfGames.linkedGames.get(gameNum);
     }
-    public String getGame(int gameNum) throws Exception{
+    public String getGameBoardString(int gameNum) throws Exception{
+        ChessGame game = getGame(gameNum);
+        return new Gson().toJson(game.cBoard, ChessBoard.class);
+    }
+    public ChessGame getGame(int gameNum) throws Exception{
         int gameID = getGameID(gameNum);
-        return new Gson().toJson(listOfGames.game(gameID), ChessBoard.class);
+        return listOfGames.game(gameID);
     }
     public void joinGame(int gameNum, String playerColor) throws Exception {
         if (listOfGames == null){throw new Exception("You must \"list\" before joining");}
