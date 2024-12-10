@@ -146,13 +146,13 @@ public class ChessClient {
             playerPosition = PlayerPosition.WHITE;
             ws = new WebsocketFacade(serverUrl, notificationHandler);
             ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
-            return "now playing as white";//drawBoard.gameBoardWhite(chessBoard, null);
+            return "Now playing as white";//drawBoard.gameBoardWhite(chessBoard, null);
         }
         else{
             playerPosition = PlayerPosition.BLACK;
             ws = new WebsocketFacade(serverUrl, notificationHandler);
             ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
-            return "now playing as black";// drawBoard.gameBoardBlack(chessBoard, null);
+            return "Now playing as black";// drawBoard.gameBoardBlack(chessBoard, null);
         }
     }
     public String observeGame(String... params) throws Exception {
@@ -167,7 +167,7 @@ public class ChessClient {
         playerPosition = PlayerPosition.OBSERVER;
         ws = new WebsocketFacade(serverUrl, notificationHandler);
         ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
-        return String.format("now observing game %d", gameNum);//drawBoard.gameBoard(chessBoard, null);
+        return String.format("Now observing game %d", gameNum);//drawBoard.gameBoard(chessBoard, null);
     }
     public String redraw() throws Exception {
         assertLoggedIn();
@@ -188,46 +188,72 @@ public class ChessClient {
     }
     public String makeMove(String... params) throws Exception {
         if (params.length != 2 && params.length != 3) {
-            return "Please format request: <currentColumnLetter><currentRowNumber> <endColumnLetter><endRowNumber> <pawnPromotionPiece(if applicable)>";
+            return "Please format request: <currentColumnLetter><currentRowNumber> <endColumnLetter><endRowNumber>";
         }
         assertLoggedIn();
         assertInGame();
+
         int startRow = Integer.parseInt(String.valueOf(params[0].charAt(1)));
         char startColumn = params[0].charAt(0);
         int sCol = extractColumn(startColumn);
         int endRow = Integer.parseInt(String.valueOf(params[1].charAt(1)));
         char endColumn = params[1].charAt(0);
         int eCol = extractColumn(endColumn);
-        ChessPosition start = new ChessPosition(startRow, sCol);
-        ChessGame game = server.getGame(gameNum);
-        ChessMove move = new ChessMove(start, new ChessPosition(endRow, eCol), null);
 
-        //FIXME: ws.makeMove
-        return null;
+        ChessPosition start = new ChessPosition(startRow, sCol);
+        ChessPosition end = new ChessPosition(endRow, eCol);
+        ChessGame game = server.getGame(gameNum);
+        ChessPiece.PieceType promPiece = promotionPieceCheck(game, start, end);
+        ChessMove move;
+        if(promPiece== null){move =new ChessMove(start, end, null);}
+        else{move = new ChessMove(start, end, promPiece);}
+
+        ws.makeMove(currentUser.authToken(), server.getGameID(gameNum), move);
+        return "";
     }
-    public ChessPiece promotionPieceCheck(ChessGame game, ChessMove move) throws Exception{
-        ChessPosition start = move.getStartPosition();
+    public ChessPiece.PieceType promotionPieceCheck(ChessGame game, ChessPosition start, ChessPosition end) throws Exception{
+        String[] validTypes = {"bishop", "queen", "rook", "knight"};
         ChessPiece piece = game.cBoard.getPiece(start);
-        if(piece == null){throw new Exception("invalid move");}
+        if(piece == null){throw new Exception("Invalid move");}
         else if (piece.getPieceType() != ChessPiece.PieceType.PAWN){return null;}
         else{
-            ChessPosition end = move.getEndPosition();
-
+            Scanner scanner = new Scanner(System.in);
+            if(piece.getTeamColor() == ChessGame.TeamColor.BLACK && end.getRow() == 1
+                    || piece.getTeamColor() == ChessGame.TeamColor.WHITE && end.getRow() == 8) {
+                System.out.print("Please input the type of piece to which you would like to promote your pawn:\n");
+                String line = scanner.nextLine();
+                line = line.toLowerCase();
+                boolean contains = Arrays.asList(validTypes).contains(line);
+                ChessPiece.PieceType promPiece = null;
+                if (!contains) {
+                    System.out.print("Please check your spelling. The available types are:\n");
+                    System.out.print(STR."\{String.join(", ", validTypes)}\n");
+                }else {
+                    switch (line) {
+                        case "bishop" -> promPiece = ChessPiece.PieceType.BISHOP;
+                        case "queen" -> promPiece = ChessPiece.PieceType.QUEEN;
+                        case "rook" -> promPiece = ChessPiece.PieceType.ROOK;
+                        case "knight" -> promPiece = ChessPiece.PieceType.KNIGHT;
+                    }
+                }
+                return promPiece;
+            }
         }
+        return null;
     }
     public String resign() throws Exception {
         assertLoggedIn();
         assertInGame();
         if(playerPosition == PlayerPosition.OBSERVER){
-            return "observers cannot resign!";
+            return "Observers cannot resign!";
         }
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Are you sure you want to resign? This will end the game! (y/n)");
+        System.out.print("Are you sure you want to resign? This will end the game! (y/n)\n");
         String line = scanner.nextLine();
         if(Objects.equals(line, "y")){
             ws.resignGame(currentUser.authToken(), server.getGameID(gameNum));
         } else if (Objects.equals(line, "n")) {return "You have not resigned";}
-        else{return "please type either \"y\" or \"n\"";}
+        else{return "Please type either \"y\" or \"n\"";}
         return "";
     }
     public String highlight(String... params) throws Exception {
@@ -245,7 +271,7 @@ public class ChessClient {
     public int extractColumn(char colLetter) throws Exception {
         char[] letters = {' ','a','b','c','d','e','f','g','h'};
         int col = new String(letters).indexOf(colLetter);
-        if (col == -1){throw new Exception("invalid column");}
+        if (col == -1){throw new Exception("Invalid column");}
         return col;
     }
 
