@@ -39,8 +39,9 @@ public class Repl implements NotificationHandler {
         try{
         printStatement = messageParser.getMessage(serverMessage);
         }catch (Exception ex){
-            System.out.print(SET_TEXT_COLOR_RED + "program error\n");
-            return;
+//            System.out.print(SET_TEXT_COLOR_RED + "program error\n" + SET_TEXT_COLOR_GREEN);
+//            return;
+            printStatement = ex.getMessage();
         }
         System.out.println("\n" + SET_TEXT_COLOR_YELLOW + printStatement);
         printPrompt();

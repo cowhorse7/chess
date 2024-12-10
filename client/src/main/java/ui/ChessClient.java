@@ -169,6 +169,10 @@ public class ChessClient {
         ws.enterGame(currentUser.authToken(), server.getGameID(gameNum));
         return String.format("Now observing game %d", gameNum);//drawBoard.gameBoard(chessBoard, null);
     }
+    public void setBoard(ChessGame game) throws Exception {
+        this.chessBoard = game.cBoard;
+        server.setGame(gameNum, game);
+    }
     public String redraw() throws Exception {
         assertLoggedIn();
         assertInGame();
@@ -209,12 +213,13 @@ public class ChessClient {
         else{move = new ChessMove(start, end, promPiece);}
 
         ws.makeMove(currentUser.authToken(), server.getGameID(gameNum), move);
+        game.makeMove(move);
         return "";
     }
     public ChessPiece.PieceType promotionPieceCheck(ChessGame game, ChessPosition start, ChessPosition end) throws Exception{
         String[] validTypes = {"bishop", "queen", "rook", "knight"};
         ChessPiece piece = game.cBoard.getPiece(start);
-        if(piece == null){throw new Exception("Invalid move");}
+        if(piece == null){throw new Exception("No piece to move");}
         else if (piece.getPieceType() != ChessPiece.PieceType.PAWN){return null;}
         else{
             Scanner scanner = new Scanner(System.in);

@@ -61,6 +61,10 @@ public class ServerFacade {
         if (!listOfGames.linkedGames.containsKey(gameNum)){throw new Exception("Game does not exist");}
         return listOfGames.linkedGames.get(gameNum);
     }
+    public void setGame(int gameNum, ChessGame game) throws Exception {
+        int gameID = getGameID(gameNum);
+        listOfGames.updateGame(gameID, game);
+    }
     public String getGameBoardString(int gameNum) throws Exception{
         ChessGame game = getGame(gameNum);
         return new Gson().toJson(game.cBoard, ChessBoard.class);

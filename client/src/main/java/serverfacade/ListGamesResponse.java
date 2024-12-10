@@ -21,6 +21,13 @@ public class ListGamesResponse {
         }
         return null;
     }
+    public void updateGame(int gameID, ChessGame changedGame){
+        for(GameData gameIterator : games){
+            if(gameIterator.gameID() != gameID){continue;}
+            else{gameIterator = new GameData(gameID, gameIterator.whiteUsername(),
+                    gameIterator.blackUsername(), gameIterator.gameName(), changedGame);}
+        }
+    }
 
     @Override
     public String toString() {

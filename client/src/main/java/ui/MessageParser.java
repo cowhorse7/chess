@@ -19,7 +19,8 @@ public class MessageParser {
                 message = note.getMessage();
                 break;
             case LOAD_GAME:
-                //LoadGameMessage game = (LoadGameMessage) serverMessage;
+                LoadGameMessage gameMessage = (LoadGameMessage) serverMessage;
+                client.setBoard(gameMessage.getGame());
                 message = client.redraw();
                 break;
         }
