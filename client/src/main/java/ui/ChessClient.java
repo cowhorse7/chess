@@ -207,6 +207,10 @@ public class ChessClient {
         ChessPosition start = new ChessPosition(startRow, sCol);
         ChessPosition end = new ChessPosition(endRow, eCol);
         ChessGame game = server.getGame(gameNum);
+        if(game == null){
+            ws.makeMove(currentUser.authToken(), server.getGameID(gameNum), new ChessMove(start, end, null));
+            return "";
+        }
         ChessPiece.PieceType promPiece = promotionPieceCheck(game, start, end);
         ChessMove move;
         if(promPiece== null){move =new ChessMove(start, end, null);}

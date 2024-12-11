@@ -68,6 +68,9 @@ public class WebsocketServer {
             manager.notifyAllButUser(authToken, gameID, toOthers);
 
             manager.leaveGame(authToken, gameID);
+            if(manager.gameEnded(gameID)){
+                gameDataAccess.removeGame(gameID);
+            }
         }
         private void resign(String authToken, Integer gameID) throws Exception {
             GameData gameData = gameDataAccess.getGame(gameID);
@@ -82,7 +85,6 @@ public class WebsocketServer {
                 ServerMessage toOthers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
                 manager.notifyAllButUser(null, gameID, toOthers);
                 manager.endGame(gameID);
-                gameDataAccess.removeGame(gameID);
             }
             else{
                 message = "observers cannot resign.\n";

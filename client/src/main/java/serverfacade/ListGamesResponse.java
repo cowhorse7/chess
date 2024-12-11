@@ -13,25 +13,25 @@ public class ListGamesResponse {
         games = listOfGames;
     }
     public int listSize(){return games.size();}
-    public ChessGame game(int gameID){
+    private GameData getGameData(int gameID){
         for(GameData gameIterator : games){
             if(gameIterator.gameID() != gameID){continue;}
-            else{return gameIterator.game();}
+            else{return gameIterator;}
         }
         return null;
     }
-    public void updateGame(int gameID, ChessGame changedGame){
-        for(GameData gameIterator : games){
-            if(gameIterator.gameID() != gameID){continue;}
-            else{
-                games.remove(gameIterator);
-                games.add(new GameData(gameID, gameIterator.whiteUsername(),
-                    gameIterator.blackUsername(), gameIterator.gameName(), changedGame));
-                break;
-            }
-        }
+    public ChessGame getGame(int gameID){
+        GameData gameData = getGameData(gameID);
+        if (gameData == null){return null;}
+        return gameData.game();
     }
-
+    public void updateGame(int gameID, ChessGame changedGame) {
+        GameData gameData = getGameData(gameID);
+        if (gameData == null) {return;}
+        games.remove(gameData);
+        games.add(new GameData(gameID, gameData.whiteUsername(),
+                gameData.blackUsername(), gameData.gameName(), changedGame));
+    }
     @Override
     public String toString() {
         if (listSize() == 0){

@@ -70,7 +70,7 @@ public class ServerFacade {
     }
     public ChessGame getGame(int gameNum) throws Exception{
         int gameID = getGameID(gameNum);
-        return listOfGames.game(gameID);
+        return listOfGames.getGame(gameID);
     }
     public void joinGame(int gameNum, String playerColor) throws Exception {
         if (listOfGames == null){throw new Exception("You must \"list\" before joining");}
