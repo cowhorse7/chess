@@ -87,9 +87,6 @@ public class DrawBoard {
         return pretty.toString();
     }
     public void initGameBoard(String[][] arr, ArrayList<ChessPosition> vMoves){
-        String space;
-        ChessPiece piece;
-        boolean highlight = (vMoves!=null);
         for (int i = 0; i < 9; i ++){
             for(int j = 0; j < 9; j++){
                 if (i == 0){
@@ -99,26 +96,32 @@ public class DrawBoard {
                     arr[i][j] = SET_TEXT_COLOR_GREEN + RESET_BG_COLOR + String.format(" %s ", nums[i]);
                 }
                 else {
-                    ChessPosition current = new ChessPosition(9-i, j);
-                    piece = game.cBoard.getPiece(current);
-                    if (piece == null){space = "   ";}
-                    else{space = setSpace(piece, piece.getTeamColor());}
-
-                    if(highlight){
-                        ChessPosition match = vMoves.getFirst();
-                        if (9-match.getRow() == i && match.getColumn() == j){
-                            arr[i][j] = SET_BG_COLOR_YELLOW;
-                        }
-                        else if(vMoves.contains(current)){
-                            arr[i][j] = SET_BG_COLOR_GREEN;
-                        }
-                        else{setBackgroundNormal(arr, i, j);}
-                    }
-                    else {setBackgroundNormal(arr, i, j);}
-                    arr[i][j] += space;
+                    setBoard(arr, i, j, vMoves);
                 }
             }
         }
+    }
+    public void setBoard(String[][] arr, int i, int j, ArrayList<ChessPosition> vMoves){
+        String space;
+        ChessPiece piece;
+        boolean highlight = (vMoves!=null);
+        ChessPosition current = new ChessPosition(9-i, j);
+        piece = game.cBoard.getPiece(current);
+        if (piece == null){space = "   ";}
+        else{space = setSpace(piece, piece.getTeamColor());}
+
+        if(highlight){
+            ChessPosition match = vMoves.getFirst();
+            if (9-match.getRow() == i && match.getColumn() == j){
+                arr[i][j] = SET_BG_COLOR_YELLOW;
+            }
+            else if(vMoves.contains(current)){
+                arr[i][j] = SET_BG_COLOR_GREEN;
+            }
+            else{setBackgroundNormal(arr, i, j);}
+        }
+        else {setBackgroundNormal(arr, i, j);}
+        arr[i][j] += space;
     }
     public void setBackgroundNormal(String[][] arr, int i, int j){
         if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) {
